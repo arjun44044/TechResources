@@ -1,0 +1,2 @@
+-->error: failed to push some refs to 'https://github.com/arun-s3/Serpent-portfolio.git'
+  This happens coz the refs in local and remote repository is different. In my case the main branch name in local is "master" whereas in remote it was "main". Hence HEAD pointed to main vs master. Hence needed to rename local main branch as "main" [git branch  -M main](no need to specify master as we are currently in master branch)

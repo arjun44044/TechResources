@@ -1,0 +1,2 @@
+delete array element
+get user input from console
