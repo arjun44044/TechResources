@@ -3050,7 +3050,7 @@ This is a virtual CD/DVD drive that loads `VBoxGuestAdditions.iso`. It lets you:
 
 # Shortcut -- ctrl + l
 
-Shows the exact path on top of the window when pressed ctrl + I in the file systme windows
+Shows the exact path on top of the window when pressed ctrl + I in the file system windows
 
 ---
 
@@ -3561,6 +3561,48 @@ The full form of **`apt`** is:
 
 > **A**dvanced **P**ackaging **T**ool
 
+> ##### 🔄 `sudo apt update` **vs** `sudo apt upgrade`
+>
+> | Feature                  | `sudo apt update`                                                  | `sudo apt upgrade`                                      |
+> | ------------------------ | -------------------------------------------------------------------- | --------------------------------------------------------- |
+> | ✅**What it does** | Updates the**local package index**(list of available versions) | Installs the**newer versions**of installed packages |
+> | 📦 Affects packages?     | ❌ No packages are installed/updated                                 | ✅ Yes — upgrades installed packages                     |
+> | 📁 Downloads?            | ✅ Downloads**metadata**(not actual packages)                  | ✅ Downloads and installs updated packages                |
+> | ❓ User prompts?         | ❌ No prompt                                                         | ✅ Prompts for confirmation (can skip with `-y`)        |
+> | 📅 When to run?          | Run**first** , to get the latest list                          | Run**after update** , to apply new versions         |
+> | 🧠 Think of it as…      | "Check what's available"                                             | "Apply available updates"                                 |
+>
+> ✅ Example Flow:
+>
+> ```bash
+> sudo apt update       # Step 1: Refresh list of available updates
+> sudo apt upgrade      # Step 2: Actually apply the updates
+> ```
+>
+> 🔁 Analogy:
+>
+>> `apt update` is like checking what groceries are in stock at the store.
+>>
+>> `apt upgrade` is like buying the newer versions of the groceries you already have at home.
+>>
+>
+> Bonus:
+>
+> If you run `upgrade` **without** `update`, you may:
+>
+> * Not see the latest versions
+> * Miss security or software patches
+>
+> ⚠️ Tip:
+>
+> You can automate both safely:
+>
+> ```bash
+> sudo apt update && sudo apt upgrade -y
+> ```
+>
+> Would you like to also know the difference between `apt upgrade` and `apt full-upgrade`?
+
 #### 🔹 b. Then install a package:
 
 ```bash
@@ -3603,7 +3645,7 @@ sudo apt install --only-upgrade vlc
 
 This will upgrade **VLC** if a newer version is available, without reinstalling it completely.
 
-**🧠 Bonus: Update All Packages**
+#### **📦 Update All Packages**
 
 If you want to update  **all installed packages** , use:
 
@@ -3617,6 +3659,26 @@ sudo apt upgrade     # Upgrade all upgradable packages
 ```bash
 apt list --upgradable
 ```
+
+> ##### 🧾 `sudo apt update` vs `sudo apt list --upgradable`
+>
+> | Feature                                 | `sudo apt update`                           | `apt list --upgradable`                            |
+> | --------------------------------------- | --------------------------------------------- | ---------------------------------------------------- |
+> | 📌**Purpose**                     | Updates the local package index               | Lists packages that**can be upgraded**         |
+> | 📦 Downloads package info?              | ✅ Yes<br />(but not the packages themselves) | ❌ No                                                |
+> | 📋 Shows which packages are upgradable? | ❌ No (just updates the list)                 | ✅ Yes                                               |
+> | 🧠 Think of it as…                     | "Check for updates"                           | "Show me what updates are available"                 |
+> | 🔧 Needs `sudo`?                      | ✅ Yes                                        | ❌ No (unless system is restricted)                  |
+> | 📅 When to use?                         | Run first (before listing or upgrading)       | Run**after** `apt update`to see what changed |
+>
+> ✅ Typical Flow Example:
+>
+> ```bash
+> sudo apt update                      # Step 1: Refresh package info
+> apt list --upgradable               # Step 2: See what can be upgraded
+> sudo apt upgrade                    # Step 3: Upgrade them
+> ```
+>
 
 #### 🧹 To clean up unused packages:
 
@@ -4181,6 +4243,47 @@ Command utilities are preinstalled (or installable) CLI programs used for:
 | `stat`  | Show file metadata               |
 | `file`  | Detect file type                 |
 
+> #### 🧩 Why named `touch`?
+>
+> The `touch` command originally meant:
+>
+>> **"Touch the timestamp of a file"** — i.e., update its last modified/accessed time.
+>>
+>
+> Just like physically "touching" something updates its state slightly, `touch` updates the **file metadata** without changing its content.
+>
+> ##### ✅ Main Behaviors of `touch`
+>
+> | Scenario                         | What it does                                                              |
+> | -------------------------------- | ------------------------------------------------------------------------- |
+> | File**does not exist**     | Creates an**empty file**with current timestamp                      |
+> | File**already exists**     | Updates its**modification time (mtime)**                            |
+> | Used with `-a`or `-m`options | You can update access (`atime`) or modify (`mtime`) time specifically |
+>
+> 📜 Example
+>
+> ```bash
+> touch myfile.txt
+> ```
+>
+> * If `myfile.txt` doesn’t exist → creates an empty file
+> * If it exists → updates the timestamp
+>
+> ##### 🧠 Why it matters:
+>
+> Before modern GUI file explorers, **updating timestamps** was often used in:
+>
+> * **Build systems** like `make` to trigger rebuilds
+> * **Backup scripts** to track changes
+> * **Sorting** files by "recently touched"
+>
+> ##### 💡 Mnemonic
+>
+>> Think: *“I just touched this file, so it's marked as recently touched/used.”*
+>>
+>
+> So, it’s not named for creating files originally — that’s just a useful  **side effect** .
+
 #### 🧾 **Text Viewing and Editing**
 
 | Command        | Use                                    |
@@ -4193,6 +4296,427 @@ Command utilities are preinstalled (or installable) CLI programs used for:
 | `nano`       | Terminal-based text editor (easy)      |
 | `vim`/`vi` | Advanced text editor                   |
 | `echo`       | Print text or variable value           |
+
+> #### 📦 Why named `cat`?
+>
+> Because its original and primary purpose is to:
+>
+>> **Concatenate files and print their content to standard output.**
+>>
+>
+> That means:
+>
+> * It takes one or more files,
+> * Joins them together ("concatenates"),
+> * And displays the result in your terminal.
+>
+> 📜 Example:
+>
+> ```bash
+> cat file1.txt file2.txt
+> ```
+>
+> This  **doesn't just show the files** , it **merges** their contents and prints them as one continuous stream:
+>
+> ```
+> (contents of file1)
+> (contents of file2)
+> ```
+>
+> So the name `cat` =  **"concatenate"** .
+>
+> ##### 🧠 Why we often use it to view a file?
+>
+> Even though `cat` was designed for joining files, it’s also super handy for:
+>
+> * Viewing short files:
+>   ```bash
+>   cat notes.txt
+>   ```
+> * Piping file content into other commands:
+>   ```bash
+>   cat notes.txt | grep "error"
+>   ```
+>
+> #### ....................................................................................................
+>
+> #### 📚 What are `less` and `more`?
+>
+> They are **file pagers** — tools used to **view (not edit)** large files or command outputs **one screen at a time** in the terminal.
+>
+> | Tool     | What it does                                                          |
+> | -------- | --------------------------------------------------------------------- |
+> | `more` | Shows the file**page by page**(older tool)                      |
+> | `less` | Shows the file**with better scrolling & search**(improved tool) |
+>
+> They are especially useful when viewing:
+>
+> * Large text files (logs, configs, scripts)
+> * Long command outputs (e.g., `ls -lR /`, `dmesg`)
+>
+> ##### 🧩 Why are they named `more` and `less`?
+>
+> ###### 🔹 `more` — because it shows you "more" of the file/page
+>
+> * You type `more filename.txt` → it shows a screenful
+> * Then prompts: `--More--` → press space to see more
+>
+> ###### 🔹 `less` — joke on `more`:
+>
+>> **“Less is more.”**
+>>
+>> It was created as an  **improved pager** , so the name is a witty reversal.
+>>
+>
+> ##### 🛠️ Basic Usage
+>
+> 📄 View a file with `less` or `more`:
+>
+> ```bash
+> less filename.txt
+> more filename.txt
+> ```
+>
+> ##### 🎮 Controls / Shortcuts
+>
+> | Action               | `less`            | `more`           |
+> | -------------------- | ------------------- | ------------------ |
+> | Scroll down one line | ↓ or `j`         | Enter              |
+> | Scroll down one page | Space               | Space              |
+> | Scroll up            | ↑ or `k`         | ❌ (not supported) |
+> | Search forward       | `/text`then Enter | `/text`          |
+> | Search backward      | `?text`           | ❌                 |
+> | Quit                 | `q`               | `q`              |
+>
+> ##### ✅ Why `less` is better than `more`
+>
+> | Feature                  | `less` | `more` |
+> | ------------------------ | -------- | -------- |
+> | Scroll up                | ✅ Yes   | ❌ No    |
+> | Search forward           | ✅ Yes   | ✅ Yes   |
+> | Search backward          | ✅ Yes   | ❌ No    |
+> | Works on pipes           | ✅ Yes   | ✅ Yes   |
+> | Faster and more flexible | ✅       | ❌       |
+>
+> ##### 🧪 Examples
+>
+>> ```bash
+>> less /etc/passwd            # Scroll through file
+>> cat largefile.txt | less    # Pipe into less
+>> dmesg | less                # View long output from kernel logs
+>> ```
+>>
+>
+> #### ............................................
+>
+> #### ✅ **How to define `N` (number of lines) in `head` and `tail`**
+>
+> You use the `-n` option like this:
+>
+> 🔹 `head` — First N lines
+>
+> ```bash
+> head -n 5 filename.txt
+> ```
+>
+> ➡️ Shows the **first 5 lines** of the file.
+>
+> 🔹 `tail` — Last N lines
+>
+> ```bash
+> tail -n 10 filename.txt
+> ```
+>
+> ➡️ Shows the **last 10 lines** of the file.
+>
+> ##### 📜 Default behavior:
+>
+> * If you **don’t** specify `-n`, both `head` and `tail` default to  **10 lines** .
+>
+> ```bash
+> head filename.txt      # shows first 10 lines
+> tail filename.txt      # shows last 10 lines
+> ```
+>
+> ##### 🧠 Bonus Tips:
+>
+> 🔄 `tail -f`
+>
+> ```bash
+> tail -f /var/log/syslog
+> ```
+>
+> ➡️ "Follow" the file as it grows — useful for watching logs in real-time.
+>
+> Would you like a quick cheat sheet of all `head`, `tail`, `less`, `cat`, `more` usage?
+>
+> .......................................................................................................
+>
+> #### 🔤 Why is it called  **`echo`** ?
+>
+> The name **comes from the idea of sound echoing** — when you speak, it repeats back.
+>
+> So in the same way:
+>
+>> `echo` = **Repeat or output whatever you give it**
+>>
+>
+> It **"echoes"** your input back to the terminal (stdout).
+>
+> ##### 🧰 **What does `echo` do?**
+>
+> It  **prints text** ,  **variable values** , or **results of expressions** to the screen or to a file.
+>
+> ##### ✅ Basic Usage
+>
+> ### 🔹 Print plain text:
+>
+> ```bash
+> echo Hello World
+> ```
+>
+> **Output:**
+>
+> ```
+> Hello World
+> ```
+>
+> ##### 🔹 Print variable values:
+>
+> ```bash
+> name="Arun"
+> echo $name
+> ```
+>
+> **Output:**
+>
+> ```
+> Arun
+> ```
+>
+> ##### 🔹 Use with special characters:
+>
+> ```bash
+> echo "Today is $(date)"
+> ```
+>
+> **Output:**
+>
+> ```
+> Today is Sat Jun 29 22:00:00 IST 2025
+> ```
+>
+>> 🔄 What’s really happening in this command?
+>>
+>> ```bash
+>> echo "Today is $(date)"
+>> ```
+>>
+>> This uses a shell feature called  **command substitution** .
+>>
+>> ##### 🧠 What is  **Command Substitution** ?
+>>
+>> It means:
+>>
+>>> "Run this command inside `$(...)`, take its  **output** , and substitute it right into the place."
+>>>
+>>
+>> So in this case:
+>>
+>> * `$(date)` runs the **`date`** command.
+>> * That command returns something like:
+>>
+>>   `Sat Jun 29 22:15:00 IST 2025`
+>> * Then the shell **replaces `$(date)` with that output** before executing `echo`.
+>>
+>> So internally, it becomes:
+>>
+>> ```bash
+>> echo "Today is Sat Jun 29 22:15:00 IST 2025"
+>> ```
+>>
+>> ##### 🧪 Try it yourself:
+>>
+>> ```bash
+>> echo "Time now: $(date +%T)"
+>> ```
+>>
+>> Will output:
+>>
+>> ```
+>> Time now: 22:16:01
+>> ```
+>>
+>> You can substitute **any command** inside `$(...)`, not just `date`.
+>>
+>> ##### ✅ Why it’s powerful
+>>
+>> You can dynamically insert output of:
+>>
+>> * `whoami` → current user
+>> * `pwd` → current path
+>> * `uptime` → system uptime
+>> * `df -h` → disk usage
+>>   > 🔹 1. `df` — **Disk Free**
+>>   >
+>>   > * `df` stands for  **disk free** .
+>>   > * It shows you the **amount of disk space used and available** on file systems.
+>>   >
+>>   > ```bash
+>>   > df
+>>   > ```
+>>   >
+>>   > ➡️ Shows raw numbers in  **blocks** , which are hard to read.
+>>   >
+>>   > 🔹 2. `-h` — **Human-readable**
+>>   >
+>>   > * The `-h` flag stands for  **"human-readable"** .
+>>   > * It changes the output from blocks to something readable like `KB`, `MB`, `GB`.
+>>   >
+>>   > 🧪 Example:
+>>   >
+>>   > ```bash
+>>   > df
+>>   > ```
+>>   >
+>>   > | Filesystem | 1K-blocks | Used    | Available | Use% |
+>>   > | ---------- | --------- | ------- | --------- | ---- |
+>>   > | /dev/sda1  | 10240000  | 5824000 | 4416000   | 57%  |
+>>   >
+>>   > ```bash
+>>   > df -h
+>>   > ```
+>>   >
+>>   > | Filesystem | Size | Used | Avail | Use% |
+>>   > | ---------- | ---- | ---- | ----- | ---- |
+>>   > | /dev/sda1  | 10G  | 5.6G | 4.4G  | 57%  |
+>>   >
+>>   >
+>>
+>> Example:
+>>
+>> ```bash
+>> echo "You are in $(pwd)"
+>> ```
+>>
+>>
+>
+> ##### 🧠 Common Options
+>
+> | Option | Meaning                                       |
+> | ------ | --------------------------------------------- |
+> | `-n` | Don’t print the newline at the end           |
+> | `-e` | Enable escape sequences (`\n`,`\t`, etc.) |
+> | `-E` | Disable escape sequences (default)            |
+>
+> Example:
+>
+> ```bash
+> echo -e "Line1\nLine2"
+> ```
+>
+> **Output:**
+>
+> ```
+> Line1
+> Line2
+> ```
+>
+>
+>> # `-n` of echo
+>>
+>> `-n` **does not** mean “enable newline” even though that sounds intuitive.
+>>
+>> Let me clarify:
+>>
+>> 🧠 Meaning of `-n` in `echo`
+>>
+>> | Option | What it does                                                     |
+>> | ------ | ---------------------------------------------------------------- |
+>> | `-n` | **Suppresses**the**newline**at the end of the output |
+>>
+>> 🔹 Without `-n`:
+>>
+>> ```bash
+>> echo "Hello"
+>> ```
+>>
+>> **Output:**
+>>
+>> ```
+>> Hello⏎
+>> ```
+>>
+>> (the cursor moves to the next line)
+>>
+>> 🔹 With `-n`:
+>>
+>> ```bash
+>> echo -n "Hello"
+>> ```
+>>
+>> **Output:**
+>>
+>> ```
+>> Hello▊
+>> ```
+>>
+>> (no newline — the cursor stays on the same line)
+>>
+>> ###### 🧪 Example comparison:
+>>
+>> ```bash
+>> echo "One"
+>> echo "Two"
+>> ```
+>>
+>> **Output:**
+>>
+>> ```
+>> One
+>> Two
+>> ```
+>>
+>> ```bash
+>> echo -n "One "
+>> echo "Two"
+>> ```
+>>
+>> **Output:**
+>>
+>> ```
+>> One Two
+>> ```
+>>
+>> ##### 🔁 Why it's not `+n` to enable newline?
+>>
+>> Because:
+>>
+>> * Newline is  **enabled by default** .
+>> * So there's no need for an option to enable it.
+>> * `-n` is a flag to **turn off** the newline behavior when needed.
+>>
+>>
+>
+> ##### 📂 Redirecting output
+>
+> You can also  **send echo output to a file** :
+>
+> ```bash
+> echo "Log started" > logfile.txt   # Overwrites
+> echo "Next entry" >> logfile.txt   # Appends
+> ```
+>
+> #####   🔁 Summary
+>
+> | Task          | Command Example           |
+> | ------------- | ------------------------- |
+> | Print text    | `echo Hello`            |
+> | Show variable | `echo $USER`            |
+> | Newline/tab   | `echo -e "A\nB"`        |
+> | No newline    | `echo -n "Hello"`       |
+> | Save to file  | `echo "Hi" >> file.txt` |
+>
 
 #### ✂️ **Text Processing**
 
@@ -4222,6 +4746,537 @@ Command utilities are preinstalled (or installable) CLI programs used for:
 | `who`    | Who is logged in                       |
 | `uname`  | Kernel and system info                 |
 
+> #### 🧠 Why named `top`?
+>
+> Because it shows the **"top" (highest)** resource-consuming processes running on your system —  **in real time** .
+>
+> ##### 🔹 `top` = Top of the process list
+>
+> By default, it ranks all currently running processes by  **CPU usage** , so the most resource-hungry processes float to the **top** of the list.
+>
+> ##### 🔍 What does `top` show?
+>
+> When you run:
+>
+> ```bash
+> top
+> ```
+>
+> You get a live dashboard showing:
+>
+> * CPU usage
+> * Memory usage
+> * Running processes
+> * System uptime
+> * Load average
+> * And more
+>
+> ##### 📊 Sample Output:
+>
+> ```
+> top - 14:55:01 up 3 days,  4:21,  2 users,  load average: 0.12, 0.10, 0.05
+> Tasks: 185 total,   1 running, 184 sleeping,   0 stopped,   0 zombie
+> %Cpu(s):  2.0 us,  1.0 sy,  0.0 ni, 96.7 id,  0.3 wa,  0.0 hi,  0.0 si,  0.0 st
+> KiB Mem :  8000000 total,  3000000 free,  1000000 used,  4000000 buff/cache
+> PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND
+> 1234 root      20   0  500000  50000  30000 S   5.0  0.6   0:12.34 firefox
+> ```
+>
+> Here, the `COMMAND` column shows the **top processes** using resources.
+>
+> ........................................................................................................
+>
+> #### 🧠 Why named `ps`?
+>
+> `ps` stands for:
+>
+>> **“Process Status”**
+>>
+>
+> It’s a shorthand from early Unix systems when most command names were **just 2–3 characters long** to save memory and typing effort.
+>
+> So:
+>
+> * `p` = process
+> * `s` = status
+>
+> Together: `ps` = **show me the current status of running processes**
+>
+> ##### 🔍 What does `ps` do?
+>
+> It lists processes that are currently running — that is, **programs or commands being executed** on the system.
+>
+> By default, it only shows  **your processes in the current terminal** , but you can use flags to see everything.
+>
+> ##### 🧪 Examples:
+>
+> 🔹 Basic usage:
+>
+> ```bash
+> ps
+> ```
+>
+> Shows processes running  **in your current shell** .
+>
+> 🔹 Show all processes:
+>
+> ```bash
+> ps aux
+> ```
+>
+> | Column  | Meaning              |
+> | ------- | -------------------- |
+> | USER    | Owner of the process |
+> | PID     | Process ID           |
+> | %CPU    | CPU usage            |
+> | %MEM    | Memory usage         |
+> | COMMAND | What was run         |
+>
+> ##### 🧠 Options:
+>
+> First, there are two styles of options:
+>
+> ###### 🔸 1. **UNIX-style (`-`)**
+>
+> Examples: `ps -e`, `ps -f`, `ps -u username`
+>
+> ###### 🔸 2. **BSD-style (no dash)**
+>
+> Examples: `ps aux`, `ps ux`
+>
+> You can  **combine both** , but it's best to know what each flag means.
+>
+> ###### 📌 Most Commonly Used `ps` Flags
+>
+> | Flag           | Meaning                                                                |
+> | -------------- | ---------------------------------------------------------------------- |
+> | `a`          | Show processes of**all users**with terminals (not just your own) |
+> | `u`          | Show user-oriented format (adds columns like `%CPU`,`%MEM`, etc.)  |
+> | `x`          | Show processes**without a terminal**(like background services)   |
+> | `e`or `-e` | Show**every**process on the system (all users, all terminals)    |
+> | `f`or `-f` | Show**full format**(tree-like command hierarchy with PPID info)  |
+> | `-u USER`    | Show processes owned by a specific user                                |
+> | `-p PID`     | Show a specific process ID                                             |
+> | `-C name`    | Show processes by command name (e.g.,`ps -C nginx`)                  |
+> | `-o`         | Customize output format (e.g.,`ps -eo pid,cmd,%mem`)                 |
+>
+>> ###### 🧠 What does `x` in `ps aux` mean?
+>>
+>> * The `x` flag tells `ps` to  **include processes that do NOT have a controlling terminal** .
+>> * These are often:
+>>   * **Background processes**
+>>   * **System daemons**
+>>   * **Startup services**
+>>   * **Graphical programs started at login**
+>>
+>> 🧪 Example:
+>>
+>> Let’s compare:
+>>
+>> 🔹 Without `x`:
+>>
+>> ```bash
+>> ps au
+>> ```
+>>
+>> Shows only processes that:
+>>
+>> * Belong to you **AND**
+>> * Are connected to a terminal (TTY)
+>>
+>> 🔹 With `x`:
+>>
+>> ```bash
+>> ps aux
+>> ```
+>>
+>> Includes:
+>>
+>> * Everything above **PLUS**
+>> * GUI programs, background services, cron jobs, and system daemons
+>>
+>>
+>
+> ###### 🧪 Common `ps` Commands (ready to use)
+>
+> 🔹 Show **all processes** in full detail:
+>
+> ```bash
+> ps aux
+> ```
+>
+> 🔹 Same as above, but using UNIX-style:
+>
+> ```bash
+> ps -e -f
+> ```
+>
+> 🔹 Show only processes of a specific user:
+>
+> ```bash
+> ps -u your_username
+> ```
+>
+> 🔹 Show a  **specific PID** :
+>
+> ```bash
+> ps -p 1234
+> ```
+>
+> 🔹 Show process tree (with hierarchy):
+>
+> ```bash
+> ps -ef --forest
+> ```
+>
+> 📊 Sample Output of `ps aux`
+>
+> ```
+> USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+> root         1  0.0  0.1  92128  7800 ?        Ss   10:00   0:01 /sbin/init
+> youruser   123  0.3  1.2 123456 45600 pts/0    Sl   10:10   0:05 /usr/lib/firefox/firefox
+> ```
+>
+> ###### ✅ Summary of the Most Useful `ps` Flags
+>
+> | Command            | What it does                        |
+> | ------------------ | ----------------------------------- |
+> | `ps`             | Your processes in this terminal     |
+> | `ps -ef`         | All system processes (UNIX style)   |
+> | `ps aux`         | All system processes (BSD style)    |
+> | `ps -u root`     | All root-owned processes            |
+> | `ps -p 1234`     | Show info about PID 1234            |
+> | `ps -C nginx`    | Find processes named `nginx`      |
+> | `ps -eo pid,cmd` | Custom output: just PID and command |
+>
+> ......................................................................................................................
+>
+> #### 🧠 Why is it called `free`?
+>
+> Because originally, its main purpose was to show:
+>
+>> ✅ **How much free memory (RAM) is available** in your system.
+>>
+>
+> So `free` = **free memory** (that’s it — simple and literal).
+>
+> ##### 🔍 What does `free` really show?
+>
+> Even though it’s called `free`, it shows  **a full summary of memory usage** , not just what's free:
+>
+> ```bash
+> free -h
+> ```
+>
+> You’ll see something like:
+>
+> ```
+>               total        used        free      shared  buff/cache   available
+> Mem:           8.0G        2.5G        1.2G        200M        4.3G        5.1G
+> Swap:          2.0G        0.0G        2.0G
+> ```
+>
+> ###### 🔹 Column meanings:
+>
+> | Column               | Meaning                                                                      |
+> | -------------------- | ---------------------------------------------------------------------------- |
+> | **total**      | Total physical RAM                                                           |
+> | **used**       | RAM actively used by processes                                               |
+> | **free**       | Completely unused RAM (almost always small)                                  |
+> | **buff/cache** | RAM used by Linux to cache files (can be reclaimed anytime)                  |
+> | **available**  | How much memory is**really available**for programs (the best to trust) |
+>
+>> 🧠 Modern Linux uses free RAM to **cache** files, so “free” doesn’t mean “wasted” — it’s smart usage.
+>>
+>
+> ##### 🔧 Common Options
+>
+> | Option   | What it does                             |
+> | -------- | ---------------------------------------- |
+> | `-h`   | Human-readable (MB/GB)                   |
+> | `-m`   | Show in MB                               |
+> | `-g`   | Show in GB                               |
+> | `-t`   | Show total row (Mem + Swap)              |
+> | `-s N` | Refresh every N seconds (like `watch`) |
+>
+> 🔹 Example:
+>
+> ```bash
+> free -h -s 2
+> ```
+>
+> Shows RAM usage every 2 seconds.
+>
+> ......................................................................................................................
+>
+> #### `du`
+>
+> `du` stands for:
+>
+>> **"Disk Usage"**
+>>
+>
+> It reports the **amount of disk space used** by files and directories.
+>
+> ##### 🔍 What does `du` do?
+>
+> It **summarizes** how much disk space is being used by:
+>
+> * A single file
+> * A directory (and all its subdirectories recursively)
+>
+> ##### 🧪 Example:
+>
+> ```bash
+> du -h /home/arun
+> ```
+>
+> Might output:
+>
+> ```
+> 4.0K    /home/arun/Documents
+> 256M    /home/arun/Downloads
+> 2.3G    /home/arun
+> ```
+>
+> This means `/home/arun/Downloads` is using 256 MB, and the entire `/home/arun` folder is using 2.3 GB.
+>
+> 🔧 Common `du` Options
+>
+> | Option            | Meaning                                  |
+> | ----------------- | ---------------------------------------- |
+> | `-h`            | Human-readable (KB, MB, GB)              |
+> | `-s`            | Summary (just show total, not each file) |
+> | `-a`            | Show**all**files and directories   |
+> | `--max-depth=N` | Limit recursion to N levels              |
+> | `-c`            | Include a grand total at the end         |
+>
+> 📜 Example for summary:
+>
+> ```bash
+> du -sh *
+> ```
+>
+> Shows the disk usage for each item in the current directory:
+>
+> ```
+> 12M  folder1
+> 4.0K file1.txt
+> 56M  folder2
+> ```
+>
+> ✅ Summary
+>
+> | Command | Stands For           | Purpose                           |
+> | ------- | -------------------- | --------------------------------- |
+> | `du`  | **Disk Usage** | Show how much space is being used |
+> | `df`  | **Disk Free**  | Show how much space is available  |
+>
+> .............................................................................................................................
+>
+> #### `uptime`
+>
+> The `uptime` command is a simple yet very useful Linux/Unix utility that tells you  **how long your system has been running** , along with some  **basic load information** .
+>
+> ###### 🧠 Why is it called `uptime`?
+>
+> Because it literally shows the **"up time"** of your system — i.e., how long the system has been continuously running  **since the last boot** .
+>
+>> `uptime` = "System uptime"
+>>
+>
+> ##### 📜 Basic Usage
+>
+> ```bash
+> uptime
+> ```
+>
+> ##### 🧪 Sample Output:
+>
+> ```
+> 14:35:26 up 2 days,  3:10,  2 users,  load average: 0.23, 0.45, 0.52
+> ```
+>
+> ##### 🧩 Breakdown of the Output:
+>
+> | Part                               | Meaning                                                         |
+> | ---------------------------------- | --------------------------------------------------------------- |
+> | `14:35:26`                       | Current system time                                             |
+> | `up 2 days, 3:10`                | System has been up for**2 days and 3 hours 10 minutes**   |
+> | `2 users`                        | Number of**currently logged-in users**                    |
+> | `load average: 0.23, 0.45, 0.52` | System load average over the**last 1, 5, and 15 minutes** |
+>
+> ##### 📊 What is Load Average?
+>
+> * It represents how **busy your CPU(s)** are.
+> * A load of **1.00** means  **1 CPU core is fully used** .
+> * So on a  **4-core CPU** , a load of `4.00` means  **full usage** .
+>
+> If load average is:
+>
+> * **< number of cores** ➝ your system is fine.
+> * **> number of cores** ➝ your system might be under load.
+>
+> Excellent follow-up! That’s a very good question — and an important concept in Linux system monitoring.
+>
+> -- 🧠 Why are there**three values** in `load average`?
+>
+> The three numbers in the output of `uptime`, `top`, or `w` represent:
+>
+>> **System load average over the last:**
+>>
+>
+> * **1 minute**
+> * **5 minutes**
+> * **15 minutes**
+>
+> Example:
+>
+> ```bash
+> load average: 0.23, 0.45, 0.52
+> ```
+>
+> | Value    | Time window     | Meaning               |
+> | -------- | --------------- | --------------------- |
+> | `0.23` | Last 1 minute   | Immediate system load |
+> | `0.45` | Last 5 minutes  | Short-term average    |
+> | `0.52` | Last 15 minutes | Long-term average     |
+>
+> These are averages of how many  **processes were either running or waiting for CPU** .
+>
+> ###### --- 🔧 Why 3 different timeframes?
+>
+> It gives you a  **trend** :
+>
+> * 📉 **Decreasing** numbers → load is dropping
+> * 📈 **Increasing** numbers → system is getting busier
+>
+> For example:
+>
+> ```
+> load average: 0.23, 0.45, 0.52
+> ```
+>
+> The **numbers are increasing** from **left to right**:
+>
+> → `0.23` (1 min) → `0.45` (5 min) → `0.52` (15 min)
+>
+> → Load is  **falling** , which means system is  **getting less busy** .
+>
+> ###### 🧠 What's a "good" load value?
+>
+> It depends on **how many CPU cores** you have:
+>
+> | Cores | Max "safe" load average |
+> | ----- | ----------------------- |
+> | 1     | 1.00                    |
+> | 2     | 2.00                    |
+> | 4     | 4.00                    |
+> | 8     | 8.00                    |
+>
+> If any of the 3 values consistently  **exceeds the number of CPU cores** , your system is  **overloaded** .
+>
+> ##### 🔧 More options (via `w`, `top`, or `uptime` itself)
+>
+> * `w` also shows uptime, users, and what each is doing:
+>   ```bash
+>   w
+>   ```
+> * `top` shows uptime at the top left corner.
+>
+> ......................................................................................................................
+>
+> #### 🧑‍💻 1. `who` — **Who is logged in**
+>
+> 🔹 What it does:
+>
+> Displays a  **list of users currently logged into the system** .
+>
+> ✅ Example:
+>
+> ```bash
+> who
+> ```
+>
+> **Output:**
+>
+> ```
+> arun     tty7         2025-06-29 10:45 (:0)
+> ```
+>
+> 📘 When to use:
+>
+> * To see **all currently active users**
+> * Useful in multi-user or remote systems
+>
+> #### 🧍 2. `whoami` — **Who am I (as current user)**
+>
+> 🔹 What it does:
+>
+> Returns the  **username of the user running the command** .
+>
+> ✅ Example:
+>
+> ```bash
+> whoami
+> ```
+>
+> **Output:**
+>
+> ```
+> arun
+> ```
+>
+> 📘 When to use:
+>
+> * To confirm **your current user**
+> * Especially useful after using `sudo` or switching users with `su`
+>
+>> ✅ `whoami` = shortcut for `id -un`
+>>
+>
+> ......................................................................................................................
+>
+> #### 💻 3. `uname` — **Unix Name (system info)**
+>
+> 🔹 What it does:
+>
+> Displays  **system and kernel-related information** .
+>
+> ✅ Example:
+>
+> ```bash
+> uname
+> ```
+>
+> **Output:**
+>
+> ```
+> Linux
+> ```
+>
+> ```bash
+> uname -a
+> ```
+>
+> **Output:**
+>
+> ```
+> Linux lubuntu 5.15.0-92-generic #102~20.04.1-Ubuntu SMP Wed Jan 10 11:31:21 UTC 2024 x86_64 x86_64 x86_64 GNU/Linux
+> ```
+>
+> 📘 Useful flags:
+>
+> | Flag   | What it shows               |
+> | ------ | --------------------------- |
+> | `-s` | Kernel name (default)       |
+> | `-n` | Hostname                    |
+> | `-r` | Kernel release version      |
+> | `-v` | Kernel version              |
+> | `-m` | Machine hardware (e.g. x86) |
+> | `-a` | All the above               |
+>
+
 #### 🌐 **Networking Tools**
 
 | Command              | Use                                         |
@@ -4233,6 +5288,402 @@ Command utilities are preinstalled (or installable) CLI programs used for:
 | `netstat`          | Network connections and ports               |
 | `ss`               | Socket statistics (replacement for netstat) |
 | `nslookup`/`dig` | DNS lookup tools                            |
+
+> #### 🧠 1. `ping` — Check if a host is reachable
+>
+> 🔹 Purpose:
+>
+> * Tests **connectivity** between your machine and another (host, IP, or domain)
+> * Sends **ICMP Echo Requests** and waits for replies
+>
+> ✅ Example:
+>
+> ```bash
+> ping google.com
+> ```
+>
+> 📘 Output:
+>
+> ```
+> 64 bytes from google.com: icmp_seq=1 ttl=115 time=28.5 ms
+> ```
+>
+> 🧾 When to use:
+>
+> * Check if a server/website is **online**
+> * Diagnose **network issues**
+> * Test **latency (response time)**
+>
+> #### 🧠 2. `curl` — Transfer data over the internet (client for APIs, URLs)
+>
+> 🔹 Purpose:
+>
+> * **Fetch, send, or interact** with URLs
+> * Works with many protocols: `HTTP`, `HTTPS`, `FTP`, `SCP`, `SMTP`, etc.
+> * Often used in **APIs, scripting, testing REST endpoints**
+>
+> ✅ Example:
+>
+> ```bash
+> curl https://example.com
+> ```
+>
+> Fetches and prints the HTML of `example.com`.
+>
+> 🧾 Other examples:
+>
+> ```bash
+> curl -O https://file.com/image.jpg     # download file
+> curl -I https://example.com            # show headers only
+> curl -X POST -d "name=arun" https://api.com/form  # send data
+> ```
+>
+> ###### 🔹 Most Useful `curl` Options:
+>
+> | Option               | Description                                                                                            |
+> | -------------------- | ------------------------------------------------------------------------------------------------------ |
+> | `-O`               | Save file with**original filename**from URL                                                      |
+> | `-o filename`      | Save file with**custom name**                                                                    |
+> | `-I`               | Fetch only HTTP**headers**(like `HEAD`request)  I for-- **"Include only the headers"** |
+> | `-L`               | Follow**redirects**(like 301/302)                                                                |
+> | `-X`               | Specify HTTP**request method**(`GET`,`POST`, etc.)                                           |
+> | `-d`               | Send**POST data**                                                                                |
+> | `-H`               | Add**custom headers**                                                                            |
+> | `-u`               | Use HTTP**basic authentication**(e.g.,`user:pass`)                                             |
+> | `-s`               | **Silent mode**(no progress or errors)                                                           |
+> | `-k`               | Allow**insecure**SSL connections (not recommended unless needed)                                 |
+> | `-v`               | **Verbose**mode (see full request/response)                                                      |
+> | `--http2`          | Force use of**HTTP/2**                                                                           |
+> | `--data-urlencode` | URL-encode the POST data automatically                                                                 |
+>
+> ✅ Examples:
+>
+> ```bash
+> curl -O https://example.com/file.zip
+> ```
+>
+> → Downloads file and keeps original name
+>
+> ```bash
+> curl -o myfile.zip https://example.com/file.zip
+> ```
+>
+> → Downloads and renames it
+>
+> ```bash
+> curl -X POST -d "name=arun&age=21" https://example.com/form
+> ```
+>
+> → Sends POST data
+>
+> ```bash
+> curl -H "Authorization: Bearer TOKEN" https://api.example.com/user
+> ```
+>
+> → Sends API request with custom header
+>
+> ```bash
+> curl -I https://example.com
+> ```
+>
+> → View only HTTP headers (like server type, status code, etc.)
+>
+> #### 🧠 3. `wget` — Download files from web (simpler, heavier than curl)
+>
+> 🔹 Purpose:
+>
+> * **Download files or entire websites**
+> * Supports  **resuming downloads** , recursive downloads
+>
+> ✅ Example:
+>
+> ```bash
+> wget https://example.com/file.zip
+> ```
+>
+> 🧾 Features:
+>
+> * Save directly to disk (no need for `-O`)
+> * Useful for **mirroring** sites:
+>
+> ```bash
+> wget -r https://example.com
+> ```
+>
+> ###### 🔹 Most Useful `wget` Options:
+>
+> | Option                          | Description                                                             |
+> | ------------------------------- | ----------------------------------------------------------------------- |
+> | `-O filename`                 | Save as custom name                                                     |
+> | `-c`                          | **Resume**a partial download                                      |
+> | `-q`                          | Quiet mode (no output)                                                  |
+> | `-r`                          | **Recursive**download (e.g., whole website)                       |
+> | `--no-check-certificate`      | Ignore SSL errors                                                       |
+> | `--limit-rate=200k`           | Limit download speed                                                    |
+> | `--user=user --password=pass` | Basic auth                                                              |
+> | `-N`                          | Download only if**newer**version exists                           |
+> | `-P`                          | Save to specific**directory**                                     |
+> | `-np`                         | **No parent**– don't go to upper directories when mirroring      |
+> | `--mirror`                    | Website mirror mode (like `-r`+`-N`+`-l inf`+`--convert-links`) |
+>
+> ✅ Examples:
+>
+> ```bash
+> wget https://example.com/file.zip
+> ```
+>
+> ```bash
+> wget -c https://example.com/largefile.zip
+> ```
+>
+> → Resume interrupted download
+>
+> ```bash
+> wget -O myfile.zip https://example.com/file.zip
+> ```
+>
+> → Save with custom name
+>
+> ```bash
+> wget -r -np -k https://example.com/docs/
+> ```
+>
+> → Recursively download docs folder and convert links to local
+>
+> ```bash
+> wget --limit-rate=500k https://example.com/video.mp4
+> ```
+>
+> → Throttle download speed
+>
+> ✅ Summary Table
+>
+> | Feature               | `curl`                | `wget`                    |
+> | --------------------- | ----------------------- | --------------------------- |
+> | Downloads files       | ✅ Yes                  | ✅ Yes                      |
+> | POST requests/API     | ✅ Full support         | 🚫 No (basic HTTP GET only) |
+> | Resume download       | 🚫 Manual with `-C -` | ✅`-c`                    |
+> | Recursive download    | 🚫 No                   | ✅`-r`,`--mirror`       |
+> | Follow redirects      | ✅`-L`                | ✅ Default                  |
+> | Add headers/auth/data | ✅ Full support         | 🚫 Very limited             |
+>
+> ......................................................................................................................
+>
+> #### 🔧 `ifconfig` — Show or configure network interfaces
+>
+>> 🧠  **Old tool** , replaced by `ip` command in newer systems
+>>
+>
+> ✅ Purpose:
+>
+> * View or configure IP addresses, interfaces, MAC address, etc.
+>
+> 📘 Basic Usage:
+>
+> ```bash
+> ifconfig
+> ```
+>
+> #### 🔧 `ip` — Modern replacement for `ifconfig`
+>
+>> 🧠 Part of `iproute2`. Powerful and flexible.
+>>
+>
+> ✅ Purpose:
+>
+> * Manage interfaces, routing, IPs, ARP, etc.
+>
+> 📘 Basic Usage:
+>
+> ```bash
+> ip a
+> ```
+>
+> (same as `ip address show`)
+>
+> ###### 🔹 Most Common `ip` Commands:
+>
+> | Command                                  | Meaning                           |
+> | ---------------------------------------- | --------------------------------- |
+> | `ip a`or `ip addr`                   | Show all addresses and interfaces |
+> | `ip link`                              | Show/modify network interfaces    |
+> | `ip route`                             | Show routing table                |
+> | `ip link set eth0 up`                  | Enable interface                  |
+> | `ip link set eth0 down`                | Disable interface                 |
+> | `ip addr add 192.168.1.10/24 dev eth0` | Add IP                            |
+> | `ip addr del ...`                      | Remove IP                         |
+>
+> ##### ✅ `ip` vs `ifconfig`
+>
+> | Feature      | `ifconfig`(legacy) | `ip`(modern)   |
+> | ------------ | -------------------- | ---------------- |
+> | Deprecated   | ✅ Yes               | ❌ No            |
+> | Feature-rich | ❌ Limited           | ✅ Yes           |
+> | Availability | Not default          | Always installed |
+> | Recommended  | ❌ No                | ✅ Yes           |
+>
+> #### 📡 `netstat` — Show network connections, ports, routing (old tool)
+>
+>> ⚠️ **Deprecated** — replaced by `ss` and `ip route`
+>>
+>
+> ✅ Basic Usage:
+>
+> ```bash
+> netstat -tuln
+> ```
+>
+> #### ⚡ `ss` — **Socket Statistics** (modern netstat)
+>
+>> 🧠 Much faster, cleaner, and more powerful than `netstat`.
+>>
+>
+> ✅ Purpose:
+>
+> * Show current  **network connections** , ports, sockets
+>
+> 📘 Basic Usage:
+>
+> ```bash
+> ss -tuln
+> ```
+>
+> ###### 🔹 Common `ss` Options:
+>
+> | Option | Meaning                         |
+> | ------ | ------------------------------- |
+> | `-t` | TCP connections                 |
+> | `-u` | UDP connections                 |
+> | `-l` | Listening ports only            |
+> | `-n` | Don't resolve IP/port names     |
+> | `-p` | Show process info (PID/command) |
+> | `-a` | All sockets                     |
+> | `-r` | Show routing table              |
+>
+> ##### ✅ `netstat` vs `ss`
+>
+> | Feature             | `netstat`(legacy) | `ss`(modern)    |
+> | ------------------- | ------------------- | ----------------- |
+> | Speed               | ❌ Slower           | ✅ Faster         |
+> | Actively maintained | ❌ No               | ✅ Yes            |
+> | Socket stats        | ✅ Basic            | ✅ Full, detailed |
+> | Filtering           | ❌ Limited          | ✅ Advanced       |
+>
+> #### 🧪 Example Commands You’ll Use Often:
+>
+> ```bash
+> ip a                           # Show IPs and interfaces (modern)
+> ss -tulnp                      # Show listening ports + programs
+> netstat -rn                   # Show routing table (if ss not available)
+> ifconfig -a                   # (only on older systems)
+> ```
+>
+> ......................................................................................................................
+>
+> We're diving into  **DNS tools** , which are essential for understanding how domain names get translated into IP addresses.
+>
+> Let’s break down and compare:
+>
+> * `nslookup`
+> * `dig`
+>
+> #### 🌐 1. `nslookup` — Name Server Lookup (simpler DNS tool)
+>
+> ✅ Purpose:
+>
+> Used to **query DNS records** (like A, MX, NS) of a domain from the command line.
+>
+> 🔹 Basic Usage:
+>
+> ```bash
+> nslookup example.com
+> ```
+>
+> Returns:
+>
+> * IP address of the domain
+> * Default DNS server used
+>
+> ###### 🔧 Common `nslookup` Options/Usage:
+>
+> | Command                           | Purpose                           |
+> | --------------------------------- | --------------------------------- |
+> | `nslookup`                      | Interactive mode                  |
+> | `nslookup example.com`          | Get IP for domain                 |
+> | `nslookup 8.8.8.8`              | Reverse DNS lookup                |
+> | `nslookup -type=MX gmail.com`   | Find mail servers                 |
+> | `nslookup -type=NS google.com`  | Show name servers                 |
+> | `nslookup -type=TXT openai.com` | Show TXT records (e.g., SPF/DKIM) |
+>
+> 🧪 Example:
+>
+> ```bash
+> nslookup -type=MX gmail.com
+> ```
+>
+> → Shows Google’s mail servers
+>
+> #### 🧠 2. `dig` — Domain Information Groper (powerful DNS tool)
+>
+> ✅ Purpose:
+>
+> A more **modern and detailed DNS tool** than `nslookup`.
+>
+> 🔹 Basic Usage:
+>
+> ```bash
+> dig example.com
+> ```
+>
+> Returns:
+>
+> * A full DNS response
+> * Answer + query time + server info + TTL + sections
+>
+> ###### 🔧 Useful `dig` Options:
+>
+> | Option / Format              | Meaning                              |
+> | ---------------------------- | ------------------------------------ |
+> | `dig example.com`          | Query A record (default)             |
+> | `dig example.com MX`       | Query MX record                      |
+> | `dig example.com NS`       | Query NS record                      |
+> | `dig @8.8.8.8 example.com` | Use specific DNS server (Google DNS) |
+> | `+short`                   | Clean, IP-only output                |
+> | `+noall +answer`           | Show only the answer section         |
+> | `-x 8.8.8.8`               | Reverse lookup (IP ➝ domain)        |
+>
+> 🧪 Examples:
+>
+> ```bash
+> dig google.com +short
+> ```
+>
+> → Just gives you the IP address
+>
+> ```bash
+> dig openai.com TXT +noall +answer
+> ```
+>
+> → Show only TXT records (e.g., SPF, DKIM)
+>
+> ```bash
+> dig @1.1.1.1 example.com
+> ```
+>
+> → Query Cloudflare’s DNS server
+>
+> ##### ✅ `dig` vs `nslookup` — Comparison
+>
+> | Feature            | `nslookup`                    | `dig`                    |
+> | ------------------ | ------------------------------- | -------------------------- |
+> | Output             | Basic                           | Detailed + customizable    |
+> | Interactive mode   | ✅ Yes                          | ❌ No                      |
+> | Reverse lookup     | ✅ Yes                          | ✅ Yes (`dig -x IP`)     |
+> | Query specific DNS | ✅ Yes                          | ✅ Yes                     |
+> | Use in scripts     | ❌ Messy                        | ✅ Cleaner with `+short` |
+> | Maintained         | ⚠️ Deprecated on some distros | ✅ Fully supported         |
+> | Preferred tool     | ❌ No (legacy)                  | ✅ Yes (modern)            |
+>
 
 #### 🔐 **User and Permission Management**
 
@@ -4246,6 +5697,191 @@ Command utilities are preinstalled (or installable) CLI programs used for:
 | `chown`               | Change file ownership   |
 | `groups`              | Show group membership   |
 
+> #### 🔐 1. `id` — Show User Identity
+>
+> ✅ Purpose:
+>
+> Displays the  **user ID (UID), group ID (GID)** , and group memberships of the current or specified user.
+>
+> 🔹 Basic Usage:
+>
+> ```bash
+> id
+> ```
+>
+> Shows identity for the  **current user** .
+>
+> ```bash
+> id username
+> ```
+>
+> Shows identity for a  **specific user** .
+>
+> ###### 🔧 Example Output:
+>
+> ```bash
+> id arun
+> ```
+>
+> ```
+> uid=1000(arun) gid=1000(arun) groups=1000(arun),27(sudo)
+> ```
+>
+> 🔹 What it means:
+>
+> * `uid=1000` → User ID for `arun`
+> * `gid=1000` → Primary group ID
+> * `groups=...` → All groups this user belongs to
+>
+> ##### 🔧 Common `id` Options:
+>
+> | Option | Description                               |
+> | ------ | ----------------------------------------- |
+> | `-u` | Show only UID                             |
+> | `-g` | Show only GID                             |
+> | `-G` | Show all**supplementary group IDs** |
+> | `-n` | Show**names**instead of numbers     |
+> | `-r` | Show real IDs instead of effective ones   |
+>
+> ##### ✅ Examples:
+>
+> ```bash
+> id -u            # Only UID
+> id -g            # Only GID
+> id -Gn arun      # Group names
+> ```
+>
+> #### 👤 2. `adduser` — Add a New User
+>
+> ✅ Purpose:
+>
+> Creates a **new user account** interactively. It’s a **friendlier front-end** to the lower-level `useradd` command.
+>
+>> 💡 `adduser` handles more setup automatically — home directory, password, shell, etc.
+>>
+>
+> 🔹 Basic Usage:
+>
+> ```bash
+> sudo adduser newusername
+> ```
+>
+> This will prompt you to:
+>
+> * Set a password
+> * Enter full name (optional)
+> * Confirm creation
+>
+> ##### 🔧 Common Options:
+>
+> | Option                  | Description                                 |
+> | ----------------------- | ------------------------------------------- |
+> | `--home DIR`          | Specify custom home directory               |
+> | `--shell SHELL`       | Set default login shell (e.g.`/bin/bash`) |
+> | `--uid UID`           | Set custom UID                              |
+> | `--gid GID`           | Set primary group by GID or name            |
+> | `--disabled-password` | Don’t set a password (for system users)    |
+> | `--gecos "INFO"`      | Set full name and info non-interactively    |
+> | `--quiet`             | Run with minimal output                     |
+>
+> ##### ✅ Example:
+>
+> ```bash
+> sudo adduser devuser --shell /bin/bash --home /opt/devuser
+> ```
+>
+> → Adds `devuser` with specified shell and home directory
+>
+> ##### 🧠 `adduser` vs `useradd`
+>
+> | Feature           | `adduser` | `useradd`(low-level)      |
+> | ----------------- | ----------- | --------------------------- |
+> | Interactive       | ✅ Yes      | ❌ No (requires options)    |
+> | Creates home      | ✅ Yes      | ❌ Only with `-m`         |
+> | Sets password     | ✅ Prompts  | ❌ Use `passwd`separately |
+> | Beginner-friendly | ✅          | ❌                          |
+>
+> ......................................................................................................................
+>
+> #### 🔐 1. `passwd` — Change User Passwords
+>
+> ✅ Purpose:
+>
+> * Used to **set or change a user's password**
+> * Used to **lock/unlock accounts.**
+>
+> 🔹 Basic Usage:
+>
+> ```bash
+> passwd             # Change your own password
+> sudo passwd user1  # Change another user’s password (admin only)
+> ```
+>
+> ###### 🔧 Common `passwd` Options:
+>
+> | Option      | Description                                               |
+> | ----------- | --------------------------------------------------------- |
+> | `-l`      | Lock a user account (disables login)                      |
+> | `-u`      | Unlock a locked user account                              |
+> | `-d`      | Delete the user’s password (login without password)      |
+> | `-e`      | Expire password immediately (forces change on next login) |
+> | `-n DAYS` | Set minimum number of days between password changes       |
+> | `-x DAYS` | Set maximum number of days a password is valid            |
+> | `-w DAYS` | Set number of days before expiry to warn user             |
+> | `-i DAYS` | Set number of days after expiry before disabling account  |
+>
+> ✅ Examples:
+>
+> ```bash
+> passwd                 # Change your own password
+> sudo passwd john       # Admin sets password for user `john`
+> sudo passwd -l john    # Lock user account
+> sudo passwd -u john    # Unlock account
+> sudo passwd -d john    # Remove password (no password login)
+> ```
+>
+> #### 👥 2. `groups` — Show Group Memberships
+>
+> ✅ Purpose:
+>
+> Shows which groups a user belongs to.
+>
+> 🔹 Basic Usage:
+>
+> ```bash
+> groups               # Shows groups for current user
+> groups username      # Shows groups for specified user
+> ```
+>
+> 🔧 Notes:
+>
+> * No advanced options — it’s a  **simple command** .
+> * Useful for checking if a user is part of important groups (e.g., `sudo`, `docker`, etc.)
+>
+> ✅ Example:
+>
+> ```bash
+> groups
+> ```
+>
+> Might return:
+>
+> ```
+> arun : arun sudo docker
+> ```
+>
+> → This means the user `arun` is in the `arun`, `sudo`, and `docker` groups.
+>
+> #### 🔐 Admin Tip:
+>
+> You can use this to **secure or inspect** your Linux system:
+>
+> ```bash
+> sudo passwd -l olduser     # Disable unused accounts
+> groups newuser             # Ensure correct group access
+> ```
+>
+
 #### 📦 **Package Management** *(Debian/Ubuntu-based)*
 
 | Command         | Use                               |
@@ -4256,6 +5892,228 @@ Command utilities are preinstalled (or installable) CLI programs used for:
 | `apt remove`  | Remove installed packages         |
 | `dpkg`        | Low-level .deb package management |
 
+> #### 📦 `sudo apt update` — Update package lists
+>
+> 🔧 Common Options:
+>
+> | Option                         | Description                                                         |
+> | ------------------------------ | ------------------------------------------------------------------- |
+> | `-q`                         | Quiet mode (less output)                                            |
+> | `-qq`                        | Super quiet (no progress output)                                    |
+> | `--allow-releaseinfo-change` | Accept changes in repository metadata (used when repo info changes) |
+>
+> ✅ Example:
+>
+> ```bash
+> sudo apt update -q
+> ```
+>
+> #### 📦 `sudo apt upgrade` — Upgrade installed packages
+>
+> 🔧 Common Options:
+>
+> | Option              | Description                                       |
+> | ------------------- | ------------------------------------------------- |
+> | `-y`              | Automatically answer**yes**to prompts       |
+> | `--dry-run`       | Simulate the upgrade without applying             |
+> | `--with-new-pkgs` | Also install**new dependencies**if required |
+>
+> ✅ Example:
+>
+> ```bash
+> sudo apt upgrade -y
+> ```
+>
+> #### 📦 `sudo apt install` — Install packages
+>
+> 🔧 Common Options:
+>
+> | Option                      | Description                                           |
+> | --------------------------- | ----------------------------------------------------- |
+> | `-y`                      | Automatic yes to all prompts                          |
+> | `--no-install-recommends` | Don’t install recommended extras                     |
+> | `--reinstall`             | Reinstall the package even if it’s already installed |
+> | `--download-only`         | Just download the package, don’t install             |
+> | `--fix-broken`            | Fix broken dependencies and try to install again      |
+>
+> ✅ Examples:
+>
+> ```bash
+> sudo apt install vlc -y
+> sudo apt install --reinstall curl
+> ```
+>
+> #### 📦 `sudo apt remove` — Remove packages
+>
+> 🔧 Common Options:
+>
+> | Option        | Description                                 |
+> | ------------- | ------------------------------------------- |
+> | `-y`        | Assume "yes" to all prompts                 |
+> | `--purge`   | Remove package**and**its config files |
+> | `--dry-run` | Simulate removal without actually doing it  |
+>
+> ✅ Examples:
+>
+> ```bash
+> sudo apt remove firefox -y
+> sudo apt remove --purge nano
+> ```
+>
+> ##### ✅ Bonus Options for all APT commands:
+>
+> | Option                       | Description                                   |
+> | ---------------------------- | --------------------------------------------- |
+> | `-y`                       | Auto-confirm prompts (use with care)          |
+> | `-q`,`-qq`               | Reduce or suppress output                     |
+> | `--simulate`/`--dry-run` | Preview what would happen                     |
+> | `--allow-downgrades`       | Allow installing older versions               |
+> | `--only-upgrade`           | Upgrade only if already installed             |
+> | `--fix-missing`            | Fix missing packages (during install/upgrade) |
+>
+> ##### ✅ Example Real-World Commands
+>
+> ```bash
+> # Update and upgrade quietly with no user prompts
+> sudo apt update -qq && sudo apt upgrade -y
+>
+> # Install curl but skip recommended packages
+> sudo apt install curl --no-install-recommends
+>
+> # Remove VLC and its config
+> sudo apt remove --purge vlc
+>
+> # Fix and reinstall broken packages
+> sudo apt install --fix-broken
+> ```
+>
+> ##### ✅ Typical Flow Example for updating:
+>
+> ```bash
+> sudo apt update                      # Step 1: Refresh package info
+> apt list --upgradable               # Step 2: See what can be upgraded
+> sudo apt upgrade                    # Step 3: Upgrade them
+> ```
+>
+> #### ......................................................................................................................
+>
+> #### `dpkg`
+>
+> Let's explore  **`dpkg`** , the low-level Debian package manager used under the hood of tools like `apt`.
+>
+> ###### 📦 What is `dpkg`?
+>
+> * `dpkg` stands for  **Debian Package** .
+> * It's used to **install, remove, query, and inspect `.deb` packages** directly.
+> * Unlike `apt`, it doesn’t handle dependencies automatically.
+>
+> ###### 🧰 Basic Syntax
+>
+> ```bash
+> sudo dpkg [options] [package-name or .deb file]
+> ```
+>
+> ##### ✅ Common `dpkg` Commands & Options
+>
+> ###### 🔹 1. Install a `.deb` package
+>
+> ```bash
+> sudo dpkg -i package.deb
+> ```
+>
+> * `-i` = **Install**
+> * If dependencies are missing, it will warn you (use `apt -f install` to fix)
+>
+> ###### 🔹 2. Remove a package
+>
+> ```bash
+> sudo dpkg -r <package-name>
+> ```
+>
+> * `-r` = **Remove**
+> * Keeps configuration files (like `apt remove`)
+>
+> ###### 🔹 3. Purge a package (remove config too)
+>
+> ```bash
+> sudo dpkg -P <package-name>
+> ```
+>
+> * `-P` = **Purge**
+> * Removes package and all config files
+>
+> ###### 🔹 4. Query installed packages
+>
+> ```bash
+> dpkg -l
+> ```
+>
+> * Lists **all installed packages**
+>
+> ```bash
+> dpkg -l | grep firefox
+> ```
+>
+> * Filter for a specific package
+>
+> ###### 🔹 5. Check if a package is installed
+>
+> ```bash
+> dpkg -s <package-name>
+> ```
+>
+> * `-s` = **Status**
+> * Shows details if installed
+>
+> ###### 🔹 6. Get contents of a `.deb` file
+>
+> ```bash
+> dpkg -c package.deb
+> ```
+>
+> * Lists all files inside the `.deb` archive
+>
+> ###### 🔹 7. List files installed by a package
+>
+> ```bash
+> dpkg -L <package-name>
+> ```
+>
+> * Shows full file paths added to system
+>
+> ###### 🔹 8. Find which package owns a file
+>
+> ```bash
+> dpkg -S /path/to/file
+> ```
+>
+> * `-S` = **Search**
+> * Tells you which installed package the file belongs to
+>
+> 🧠 Summary Table
+>
+> | Command                | Purpose                         |
+> | ---------------------- | ------------------------------- |
+> | `dpkg -i file.deb`   | Install a `.deb`file          |
+> | `dpkg -r package`    | Remove a package                |
+> | `dpkg -P package`    | Purge (remove + config)         |
+> | `dpkg -l`            | List all installed packages     |
+> | `dpkg -s package`    | Show package status/details     |
+> | `dpkg -L package`    | List files installed by package |
+> | `dpkg -S /file/path` | Find package that owns a file   |
+> | `dpkg -c file.deb`   | List contents of a `.deb`file |
+>
+> ⚠️ Reminder:
+>
+> * `dpkg`  **does not resolve dependencies** . If install fails due to missing dependencies:
+>
+> ```bash
+> sudo apt -f install
+> ```
+>
+> This will fix broken installs by fetching dependencies.
+>
+
 #### 🗃️ **Archiving & Compression**
 
 | Command               | Use                                          |
@@ -4264,6 +6122,224 @@ Command utilities are preinstalled (or installable) CLI programs used for:
 | `gzip`/`gunzip`   | Compress/decompress files                    |
 | `bzip2`/`bunzip2` | Alternative compression tools                |
 | `zip`/`unzip`     | Compress/uncompress zip archives             |
+
+> ### `tar`
+>
+> ###### 📦 What is `tar`?
+>
+> * `tar` stands for **"Tape Archive"**
+> * It's used to  **create** ,  **extract** , and **compress** archives (usually with `.tar`, `.tar.gz`, `.tgz`, or `.tar.bz2` extensions)
+> * Common in backups, packaging, transfers, etc.
+>
+> ###### 🧰 Basic Syntax
+>
+> ```bash
+> tar [options] [archive-name] [file(s)/directory]
+> ```
+>
+> ###### ✅ Most Commonly Used Options
+>
+> | Option       | Long Form     | Description                                                                                                                                                                                                                                                                                                |
+> | ------------ | ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+> | `-c`       | `--create`  | Create a new archive                                                                                                                                                                                                                                                                                       |
+> | `-x`       | `--extract` | Extract files from archive                                                                                                                                                                                                                                                                                 |
+> | `-t`       | `--list`    | List contents of archive<br />Stands for **"table of contents"**                                                                                                                                                                                                                                     |
+> | `-v`       | `--verbose` | Show progress while working                                                                                                                                                                                                                                                                                |
+> | `-f`       | `--file`    | Specify archive file name                                                                                                                                                                                                                                                                                  |
+> | `-z`       | `--gzip`    | Use gzip compression (`.tar.gz`)                                                                                                                                                                                                                                                                         |
+> | `-j`       | `--bzip2`   | Use bzip2 compression (`.tar.bz2`)<br />👉 Stands for **"j" = `bzip2`**<br />👉 Because "b" was already taken in old UNIX tools, they chose "j" for **"**                                                                                                                                 |
+> | `-J`       | `--xz`      | Use xz compression (`.tar.xz`)<br />👉 Capital `J` stands for **"xz" compression**<br />👉 `xZ` could be confusing (conflict with older `compress`), so **`J`** was chosen as distinct<br />⭐ `xz` is a newer and more efficient compression tool than `gzip` and `bzip2`. |
+> | `--delete` |               | Delete file(s) from the archive (rare)                                                                                                                                                                                                                                                                     |
+>
+>> 🧠 You often combine options like `cvf`, `xvf`, etc.
+>>
+>
+> ##### 🔧 Common Tar Commands (Examples)
+>
+> ###### 📦 Create an archive:
+>
+> ```bash
+> tar -cvf archive.tar folder/
+> ```
+>
+> * `c` → create
+> * `v` → verbose
+> * `f` → filename
+>
+> ###### 📦 Create a gzip-compressed archive:
+>
+> ```bash
+> tar -czvf archive.tar.gz folder/
+> ```
+>
+> ###### 📦 Create a bzip2-compressed archive:
+>
+> ```bash
+> tar -cjvf archive.tar.bz2 folder/
+> ```
+>
+> ###### 📤 Extract an archive:
+>
+> ```bash
+> tar -xvf archive.tar
+> ```
+>
+> ###### 📤 Extract a `.tar.gz` file:
+>
+> ```bash
+> tar -xzvf archive.tar.gz
+> ```
+>
+> ###### 📤 Extract to a specific directory:
+>
+> ```bash
+> tar -xvf archive.tar -C /path/to/destination/
+> ```
+>
+> ###### 📋 List contents of an archive:
+>
+> ```bash
+> tar -tvf archive.tar
+> ```
+>
+> ##### 🎯 Cheat Sheet: Tar Modes Summary
+>
+> | Task                       | Command Example                             |
+> | -------------------------- | ------------------------------------------- |
+> | Create `.tar`            | `tar -cvf file.tar dir/`                  |
+> | Create `.tar.gz`         | `tar -czvf file.tar.gz dir/`              |
+> | Create `.tar.bz2`        | `tar -cjvf file.tar.bz2 dir/`             |
+> | Extract `.tar`           | `tar -xvf file.tar`                       |
+> | Extract `.tar.gz`        | `tar -xzvf file.tar.gz`                   |
+> | Extract `.tar.bz2`       | `tar -xjvf file.tar.bz2`                  |
+> | List archive contents      | `tar -tvf file.tar`                       |
+> | Extract to specific folder | `tar -xvf file.tar -C /target/directory/` |
+>
+> ##### 🔍 Why use `tar`?
+>
+> * Easy to **bundle many files** into one.
+> * Useful for  **backups** ,  **software packaging** ,  **transfers** .
+> * Combined with `gzip`, it's very space-efficient.
+>
+> ......................................................................................................................
+>
+>> ✅ **`tar` can handle compression with `gzip`, `bzip2`, `xz`, etc.**
+>>
+>> So, you don’t need to run `gzip`, `bzip2`, or `xz` separately in most cases.
+>>
+>
+> #### 📦 `gzip` — Compress files
+>
+> 🔧 Purpose:
+>
+> Compresses a file using the  **GNU zip algorithm** , creating a `.gz` file.
+>
+> ✅ Basic Usage:
+>
+> ```bash
+> gzip filename
+> ```
+>
+> This replaces `filename` with `filename.gz`.
+>
+> ###### 🔧 Common Options:
+>
+> | Option          | Description                                               |
+> | --------------- | --------------------------------------------------------- |
+> | `-k`          | Keep original file (don’t delete after compressing)      |
+> | `-v`          | Verbose — shows compression info                         |
+> | `-r`          | Recursively compress all files in a directory             |
+> | `-d`          | Decompress (same as `gunzip`)                           |
+> | `-1`to `-9` | Compression level (`-1`= fast/less,`-9`= slow/better) |
+>
+> ###### 🧪 Example:
+>
+> ```bash
+> gzip -k -v file.txt
+> ```
+>
+> → Compresses `file.txt` to `file.txt.gz` and keeps the original.
+>
+> #### 📤  `gunzip` — Decompress `.gz` files
+>
+> ✅ Basic Usage:
+>
+> ```bash
+> gunzip file.txt.gz
+> ```
+>
+> → Restores the original `file.txt`
+>
+> ###### 🔧 Options:
+>
+> | Option | Description                             |
+> | ------ | --------------------------------------- |
+> | `-k` | Keep `.gz`file after decompression    |
+> | `-v` | Verbose mode                            |
+> | `-f` | Force decompression even if file exists |
+>
+> ###### Example:
+>
+> ```bash
+> gunzip -k -v file.txt.gz
+> ```
+>
+> #### 🗜️ `bzip2` — Compress files with better compression
+>
+> 🔧 Purpose:
+>
+> Compresses using the  **Burrows-Wheeler algorithm** , better compression than `gzip` but slower.
+>
+> ✅ Basic Usage:
+>
+> ```bash
+> bzip2 filename
+> ```
+>
+> → Produces `filename.bz2`
+>
+> ###### 🔧 Common Options:
+>
+> | Option          | Description                      |
+> | --------------- | -------------------------------- |
+> | `-k`          | Keep original file               |
+> | `-v`          | Verbose                          |
+> | `-d`          | Decompress (same as `bunzip2`) |
+> | `-z`          | Force compression                |
+> | `-1`to `-9` | Compression levels               |
+> | `-f`          | Force overwrite                  |
+>
+> ###### Example:
+>
+> ```bash
+> bzip2 -k -v file.txt
+> ```
+>
+> #### 🔓 4. `bunzip2` — Decompress `.bz2` files
+>
+> ✅ Basic Usage:
+>
+> ```bash
+> bunzip2 file.txt.bz2
+> ```
+>
+> 🔧 Options:
+>
+> | Option | Description            |
+> | ------ | ---------------------- |
+> | `-k` | Keep original `.bz2` |
+> | `-v` | Verbose                |
+> | `-f` | Force overwrite        |
+>
+> ##### 🧠 Real-world Use Example:
+>
+> Combine with `tar`:
+>
+> ```bash
+> tar -czvf backup.tar.gz folder/
+> tar -cjvf backup.tar.bz2 folder/
+> ```
+>
 
 #### 🔧 **System Utilities & Misc**
 
