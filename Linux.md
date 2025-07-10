@@ -3678,7 +3678,6 @@ apt list --upgradable
 > apt list --upgradable               # Step 2: See what can be upgraded
 > sudo apt upgrade                    # Step 3: Upgrade them
 > ```
->
 
 #### 🧹 To clean up unused packages:
 
@@ -4208,6 +4207,408 @@ Used to access Linux systems over a network.
 
 ---
 
+# Parts of Command Line
+
+Let’s break down the **parts of a Linux command line** — understanding the structure will make it much easier to write, read, and debug shell commands.
+
+A typical command line looks like this:
+
+```bash
+command [options] [arguments] [redirection] [pipes] [control operators]
+```
+
+Let’s go through each part:
+
+### 1. ✅ **Command**
+
+This is the program or utility you want to run.
+
+```bash
+ls
+echo
+tar
+cat
+```
+
+### 2. ⚙️ **Options (flags or switches)**
+
+Options modify the behavior of the command.
+
+* Short form: starts with `-` (single dash)
+* Long form: starts with `--` (double dash)
+
+```bash
+ls -l           # short option: long listing format
+ls --all        # long option: show hidden files
+```
+
+### 3. 📦 **Arguments**
+
+Arguments are inputs to the command (files, directories, patterns, etc.).
+
+```bash
+ls -l /home/arun
+cat notes.txt
+tar -xf archive.tar.gz
+```
+
+### 4. 🔁 **Redirection**
+
+Redirect input/output to or from files or devices.
+
+| Symbol | Meaning                  | Example                   |
+| ------ | ------------------------ | ------------------------- |
+| `>`  | Redirect stdout to file  | `ls > file.txt`         |
+| `>>` | Append stdout to file    | `echo hi >> log.txt`    |
+| `<`  | Redirect input from file | `sort < data.txt`       |
+| `2>` | Redirect stderr          | `command 2> errors.log` |
+| `&>` | Redirect stdout + stderr | `command &> all.log`    |
+
+### 5. 🔗 **Pipes**
+
+Use `|` to send output of one command as input to another.
+
+```bash
+ls -l | grep ".txt"
+cat file.txt | wc -l
+```
+
+### 6. 🧮 **Control Operators**
+
+Used to combine multiple commands or define execution flow.
+
+| Operator | Meaning                           | Example                   |
+| -------- | --------------------------------- | ------------------------- |
+| `;`    | Run commands sequentially         | `echo A; echo B`        |
+| `&&`   | Run second only if first succeeds | `mkdir test && cd test` |
+| `        |                                   | `                         |
+| `&`    | Run in background                 | `sleep 10 &`            |
+
+### 📋 **Command Substitution**
+
+Use `$(...)` to use the output of a command as an argument.
+
+```bash
+echo "Today is $(date)"
+```
+
+### 🔧 **Variables**
+
+You can define and use variables.
+
+```bash
+name="Arun"
+echo "Hello, $name"
+```
+
+### 🧪 Full Example (with everything!)
+
+```bash
+tar -czf backup.tar.gz /home/arun | tee log.txt
+```
+
+Breakdown:
+
+* `tar` → command
+* `-czf` → options
+* `backup.tar.gz /home/arun` → arguments
+* `| tee log.txt` → pipe + redirection (log output)
+
+### 🧠 Summary Table
+
+| Part             | Purpose                               | Example                   |
+| ---------------- | ------------------------------------- | ------------------------- |
+| Command          | What to execute                       | `ls`,`cat`,`echo`   |
+| Option/Flag      | Modify behavior                       | `-l`,`--help`         |
+| Argument         | What to apply command to              | `file.txt`,`/home/`   |
+| Redirection      | Redirect input/output                 | `>`,`>>`,`<`,`2>` |
+| Pipe             | Pass output to another command        | `                         |
+| Control operator | Combine or conditionally run commands | `;`,`&&`, `           |
+| Substitution     | Insert result of a command            | `$(date)`               |
+| Variable         | Store and reuse values                | `$HOME`,`$USER`       |
+
+---
+
+# Sudo
+
+Great! Let's dive into one of the most commonly used (and powerful) commands in Linux:
+
+### 🔐 What is `sudo`?
+
+`sudo` stands for:
+
+> **"Superuser Do"**
+
+It allows a **normal user** to execute **commands as the root user** (or another user with elevated privileges),  **without logging in as root** .
+
+### ✅ Why is `sudo` used?
+
+* 🔐 To **perform administrative tasks** (installing software, modifying system files, changing ownership, etc.)
+* 🛡️ Provides **security** by logging and controlling who can run what
+* 👤 Keeps root account disabled or rarely used — safer and less risky
+
+### 🧠 Basic Syntax
+
+```bash
+sudo [options] command [arguments]
+```
+
+### 🧪 Example:
+
+```bash
+sudo apt update
+sudo rm -rf /opt/some-folder
+sudo nano /etc/hosts
+```
+
+### 🔧 Common `sudo` Options
+
+| Option      | Description                                      |
+| ----------- | ------------------------------------------------ |
+| `-v`      | Validate your credentials (refresh sudo timeout) |
+| `-k`      | Kill the current sudo session (force re-auth)    |
+| `-l`      | List allowed commands for current user           |
+| `-u user` | Run command as**another user**             |
+| `-s`      | Run shell with superuser privileges              |
+| `-i`      | Run full interactive login shell as root         |
+
+### 🔄 Example Use Cases
+
+##### ✔️ 1. Run a command as root
+
+```bash
+sudo apt install nginx
+```
+
+##### 👤 2. Run a command as another user
+
+```bash
+sudo -u john ls /home/john
+```
+
+##### 💻 3. Open a root shell
+
+```bash
+sudo -i
+```
+
+##### 🗒️ 4. Edit protected files
+
+```bash
+sudo nano /etc/fstab
+```
+
+##### 🔒 5. Re-authenticate session
+
+```bash
+sudo -k   # Will prompt for password next time
+```
+
+### ✅ What does `sudo -s` do?
+
+* It starts a new **shell session** (like bash or sh)  **as root** .
+* But it doesn't simulate a full login (unlike `sudo -i`).
+* You're still using your  **user's environment** , but with  **root permissions** .
+
+##### 💡 Example:
+
+```bash
+sudo -s
+```
+
+Output:
+
+Now your prompt changes from:
+
+```bash
+arun@lubuntu:~$
+```
+
+To:
+
+```bash
+root@lubuntu:/home/arun#
+```
+
+You’re now in a  **root shell** , and can run commands  **without prefixing `sudo`** :
+
+```bash
+# No need for sudo now:
+apt update
+rm /tmp/somefile
+nano /etc/hosts
+```
+
+##### ✅ To exit root shell:
+
+Just type:
+
+```bash
+exit
+```
+
+##### 🧠 When to use `sudo -s`?
+
+| Situation                               | Use `sudo`or `sudo -s`? |
+| --------------------------------------- | --------------------------- |
+| One admin command                       | `sudo <command>`          |
+| Running**several admin commands** | `sudo -s`(or `sudo -i`) |
+| Full root login shell (profile too)     | `sudo -i`                 |
+
+> ### `sudo -i` vs  `sudo -s`
+>
+> ###### 🔍 Overview
+>
+> | Command     | What it does                                               |
+> | ----------- | ---------------------------------------------------------- |
+> | `sudo -i` | Starts a**login shell**as root (like root logged in) |
+> | `sudo -s` | Starts a**non-login shell**as root                   |
+>
+> * `sudo -i` → **i = interactive login** → root's full environment
+> * `sudo -s` → **s = shell** → your environment with root powers
+>
+> ###### 🧠 The Key Differences
+>
+> | Feature                      | `sudo -i`                                  | `sudo -s`                               |
+> | ---------------------------- | -------------------------------------------- | ----------------------------------------- |
+> | 🧑 User                      | Root                                         | Root                                      |
+> | 📂 Starts in which directory | Root's home (`/root`)                      | Current user’s directory (`/home/you`) |
+> | 🧬 Environment loaded        | Root’s environment (`.profile`,`$PATH`) | User's environment (minimal changes)      |
+> | 📑 Shell type                | **Login shell**                        | **Non-login shell**                 |
+> | 🔁 Behaves like root login   | ✅ Yes                                       | ❌ No                                     |
+> | 🔄 Preserves your env        | ❌ No (uses root’s env)                     | ✅ Yes (inherits yours)                   |
+>
+> ###### 🔧 Example Outputs
+>
+> ###### `sudo -i`
+>
+> ```bash
+> arun@lubuntu:~$ sudo -i
+> root@lubuntu:~# pwd
+> /root
+> root@lubuntu:~# echo $HOME
+> /root
+> ```
+>
+> ###### `sudo -s`
+>
+> ```bash
+> arun@lubuntu:~$ sudo -s
+> root@lubuntu:~# pwd
+> /home/arun
+> root@lubuntu:~# echo $HOME
+> /home/arun
+> ```
+>
+> ###### ✅ When to Use
+>
+> | Use Case                                         | Recommended |
+> | ------------------------------------------------ | ----------- |
+> | You want a**true root login shell**        | `sudo -i` |
+> | You want root power**but your env**        | `sudo -s` |
+> | Running system admin tasks (root user context)   | `sudo -i` |
+> | Running a script as root, but want current paths | `sudo -s` |
+
+### 🔐 How Does `sudo` Work?
+
+* When you run a `sudo` command, you're asked for  **your own password** , not root's.
+* If you're allowed to use sudo (based on `/etc/sudoers`), the command runs with elevated rights.
+* By default, sudo access is  **cached for 15 minutes** .
+  > ##### 🔐 What is `sudo visudo`?
+  >
+  > `visudo` is a  **safe editor for the sudoers file** , which controls **who can use `sudo`** and  **what they can do with it** .
+  >
+  > You always use it as:
+  >
+  > ```bash
+  > sudo visudo
+  > ```
+  >
+  > It opens the file:
+  >
+  > ```
+  > /etc/sudoers
+  > ```
+  >
+  > …but it does it **safely** by:
+  >
+  > * 💥 Checking for syntax errors before saving
+  > * ⛔ Preventing you from saving an invalid config that could lock you out of `sudo`
+  >
+  > ##### 🔎 Why not just use `sudo nano /etc/sudoers`?
+  >
+  > You **should NOT** edit `/etc/sudoers` manually with regular editors like `nano` or `vim`, because:
+  >
+  > * A single typo can break `sudo` completely
+  > * If that happens, **you lose administrative access** 😱
+  >
+  > `visudo` avoids this by:
+  >
+  > ✅ Locking the file
+  >
+  > ✅ Syntax-checking before saving
+  >
+  > ✅ Protecting you from breaking the system
+  >
+  > ##### 🧠 How It Works
+  >
+  > When you run:
+  >
+  > ```bash
+  > sudo visudo
+  > ```
+  >
+  > It:
+  >
+  > 1. Opens `/etc/sudoers` in the default editor (usually `vi`, `nano`, or `vim`)
+  > 2. Lets you make safe changes
+  > 3. Performs syntax check on save
+  > 4. Rejects invalid changes
+  >
+  > ##### 👤 Example: Grant `arun` passwordless sudo
+  >
+  > 1. Run:
+  >    ```bash
+  >    sudo visudo
+  >    ```
+  > 2. Add this line at the bottom:
+  >    ```bash
+  >    arun ALL=(ALL) NOPASSWD: ALL
+  >    ```
+  >
+  > This means:
+  >
+  > ✅ User `arun` can run **all commands** on **all hosts** as  **any user** ,  **without being prompted for a password** .
+  >
+  > ##### 🧪 Real-World Example: Give limited `sudo` rights
+  >
+  > Only allow `arun` to restart `nginx`:
+  >
+  > ```bash
+  > arun ALL=(ALL) NOPASSWD: /bin/systemctl restart nginx
+  > ```
+  >
+
+### ⚠️ Be Careful!
+
+* `sudo` gives full root power — you can **break your system** if used carelessly.
+* Be cautious with commands like:
+  ```bash
+  sudo rm -rf /
+  sudo chmod -R 777 /
+  ```
+
+### 🔒 `sudo` Permissions and Sudoers File
+
+* Controlled by: `/etc/sudoers`
+* To edit it safely:
+  ```bash
+  sudo visudo
+  ```
+* Admin group (like `sudo` or `wheel`) controls who can use sudo.
+
+---
+
 # Command Utilities
 
  In Linux, **command-line utilities** (or command-line tools) are small, focused programs that perform specific tasks. They're the **core building blocks** of most Linux workflows and scripts — and mastering them makes you highly productive.
@@ -4243,6 +4644,77 @@ Command utilities are preinstalled (or installable) CLI programs used for:
 | `stat`  | Show file metadata               |
 | `file`  | Detect file type                 |
 
+> #### ✅ `ls` — **List Directory Contents**
+>
+> Displays files and directories in the current or specified directory.
+>
+> **Common options:**
+>
+> * `ls -l` → Long listing format (permissions, size, date, etc.)
+> * `ls -a` → Includes hidden files (those starting with `.`)
+> * `ls -lh` → Human-readable file sizes (e.g., KB, MB)
+> * `ls -R` → Recursively list all subdirectories
+> * `ls -lt` → Sort by modification time (newest first)
+>
+> #### ✅ `cd` — **Change Directory**
+>
+> Used to navigate between directories.
+>
+> **Examples:**
+>
+> * `cd folder_name` → Enter `folder_name`
+> * `cd ..` → Go up one directory
+> * `cd ~` or just `cd` → Go to home directory
+> * `cd /` → Go to root directory
+>
+> #### ✅ `pwd` — **Print Working Directory**
+>
+> Shows the **absolute path** of your current directory.
+>
+> ```bash
+> $ pwd
+> /home/arun/projects/fitlab
+> ```
+>
+> #### ✅ `cp` — **Copy Files and Directories**
+>
+> **Basic usage:**
+>
+> `cp [options] source destination`
+>
+> **Common options:**
+>
+> * `cp file.txt new.txt` → Copy file
+> * `cp -r folder/ backup/` → Recursively copy directories
+> * `cp -v` → Verbose mode (shows what is being copied)
+> * `cp -i` → Prompt before overwrite
+>
+> #### ✅ `mv` — **Move or Rename Files**
+>
+> **Usage:**
+>
+> `mv [options] source destination`
+>
+> **Common use cases:**
+>
+> * `mv file.txt backup/` → Move file
+> * `mv old.txt new.txt` → Rename file
+> * `mv -i` → Prompt before overwrite
+> * `mv -v` → Verbose output
+>
+> #### ✅ `rm` — **Remove Files or Directories**
+>
+> **Be careful with this!**
+>
+> **Common options:**
+>
+> * `rm file.txt` → Delete file
+> * `rm -i file.txt` → Ask before deleting
+> * `rm -r folder/` → Recursively delete folder
+> * `rm -rf folder/` → Force delete folder **(DANGEROUS)**
+>
+> #### ......................................................................................................................
+>
 > #### 🧩 Why named `touch`?
 >
 > The `touch` command originally meant:
@@ -4283,6 +4755,129 @@ Command utilities are preinstalled (or installable) CLI programs used for:
 >>
 >
 > So, it’s not named for creating files originally — that’s just a useful  **side effect** .
+>
+> ##### **Common usage:**
+>
+> * `touch file.txt` → Create empty file
+> * `touch file1 file2 file3` → Create multiple files
+> * `touch -c file.txt` → Don’t create the file if it doesn’t exist
+> * `touch -t 202405261230 file.txt` → Set specific timestamp (YYMMDDhhmm
+>
+> ......................................................................................................................
+>
+> #### 📁 `mkdir` — **Make directories**
+>
+> Creates a new directory (folder).
+>
+> ✅ Basic Usage:
+>
+> ```bash
+> mkdir new_folder
+> ```
+>
+> 🔧 Common Options: (acronym-- pavam oz its jusa a directory)
+>
+> | Option | Description                                                      |
+> | ------ | ---------------------------------------------------------------- |
+> | `-p` | Create**parent directories**if needed (no error if exists) |
+> | `-v` | Verbose — shows messages for each created directory             |
+> | `-m` | Set**permissions**(mode) during creation (e.g.,`-m 755`) |
+>
+> 🔍 Example:
+>
+> ```bash
+> mkdir -p -v newdir/subdir
+> ```
+>
+> #### ❌ `rmdir` — **Remove empty directories (acronym-- pavam oz its jusa a directory)**
+>
+> Deletes **only empty** directories.
+>
+> ✅ Basic Usage:
+>
+> ```bash
+> rmdir empty_folder
+> ```
+>
+> 🔧 Common Options:
+>
+> | Option | Description                                              |
+> | ------ | -------------------------------------------------------- |
+> | `-p` | Remove parent directories as well (if they become empty) |
+> | `-v` | Verbose — show each directory being removed             |
+>
+> 🔍 Example:
+>
+> ```bash
+> rmdir -p -v dir1/dir2/dir3  # Removes dir3, dir2, dir1 (if all empty)
+> ```
+>
+>> 🔔 Can't remove non-empty dirs. Use `rm -r` instead for those.
+>>
+>
+> #### 🧾 `stat` — **View file or directory metadata**
+>
+> Displays detailed **file status** (size, permissions, timestamps, etc.)
+>
+> ✅ Basic Usage:
+>
+> ```bash
+> stat filename
+> ```
+>
+> 🔧 Useful Options:
+>
+> | Option          | Description                         |
+> | --------------- | ----------------------------------- |
+> | `-c <format>` | Use a custom**output format** |
+> | `--printf`    | More flexible custom output         |
+> | `-t`          | Print in terse format (no labels)   |
+>
+> 🔍 Example:
+>
+> ```bash
+> stat file.txt
+> ```
+>
+> Shows:
+>
+> * File size
+> * Last access/change time
+> * Permissions
+> * Ownership
+> * Inode number
+>
+> 🧠 Custom format example:
+>
+> ```bash
+> stat -c "Size: %s bytes, Owner: %U, Modified: %y" file.txt
+> ```
+>
+> #### 📄 `file` — **Identify file type**
+>
+> Tells you **what type** of file it is by  **examining the contents** , not just extension.
+>
+> ✅ Basic Usage:
+>
+> ```bash
+> file myfile
+> ```
+>
+> ### 🔧 Common Options:
+>
+> | Option | Description                                                      |
+> | ------ | ---------------------------------------------------------------- |
+> | `-b` | Brief — omit filename in output                                 |
+> | `-i` | Show**MIME type**(e.g.,`text/plain`,`application/zip`) |
+> | `-z` | Try to look inside compressed files                              |
+> | `-f` | Read filenames from a file                                       |
+>
+> 🔍 Example:
+>
+> ```bash
+> file -i image.png        # → image/png; charset=binary
+> file -b script.sh        # → Bourne-Again shell script
+> ```
 
 #### 🧾 **Text Viewing and Editing**
 
@@ -4591,14 +5186,12 @@ Command utilities are preinstalled (or installable) CLI programs used for:
 >>   > | ---------- | ---- | ---- | ----- | ---- |
 >>   > | /dev/sda1  | 10G  | 5.6G | 4.4G  | 57%  |
 >>   >
->>   >
 >>
 >> Example:
 >>
 >> ```bash
 >> echo "You are in $(pwd)"
 >> ```
->>
 >>
 >
 > ##### 🧠 Common Options
@@ -4621,7 +5214,6 @@ Command utilities are preinstalled (or installable) CLI programs used for:
 > Line1
 > Line2
 > ```
->
 >
 >> # `-n` of echo
 >>
@@ -4696,7 +5288,6 @@ Command utilities are preinstalled (or installable) CLI programs used for:
 >> * So there's no need for an option to enable it.
 >> * `-n` is a flag to **turn off** the newline behavior when needed.
 >>
->>
 >
 > ##### 📂 Redirecting output
 >
@@ -4707,7 +5298,7 @@ Command utilities are preinstalled (or installable) CLI programs used for:
 > echo "Next entry" >> logfile.txt   # Appends
 > ```
 >
-> #####   🔁 Summary
+> ##### 🔁 Summary
 >
 > | Task          | Command Example           |
 > | ------------- | ------------------------- |
@@ -4716,7 +5307,6 @@ Command utilities are preinstalled (or installable) CLI programs used for:
 > | Newline/tab   | `echo -e "A\nB"`        |
 > | No newline    | `echo -n "Hello"`       |
 > | Save to file  | `echo "Hi" >> file.txt` |
->
 
 #### ✂️ **Text Processing**
 
@@ -4894,7 +5484,6 @@ Command utilities are preinstalled (or installable) CLI programs used for:
 >>
 >> * Everything above **PLUS**
 >> * GUI programs, background services, cron jobs, and system daemons
->>
 >>
 >
 > ###### 🧪 Common `ps` Commands (ready to use)
@@ -5275,7 +5864,6 @@ Command utilities are preinstalled (or installable) CLI programs used for:
 > | `-v` | Kernel version              |
 > | `-m` | Machine hardware (e.g. x86) |
 > | `-a` | All the above               |
->
 
 #### 🌐 **Networking Tools**
 
@@ -5683,7 +6271,6 @@ Command utilities are preinstalled (or installable) CLI programs used for:
 > | Use in scripts     | ❌ Messy                        | ✅ Cleaner with `+short` |
 > | Maintained         | ⚠️ Deprecated on some distros | ✅ Fully supported         |
 > | Preferred tool     | ❌ No (legacy)                  | ✅ Yes (modern)            |
->
 
 #### 🔐 **User and Permission Management**
 
@@ -5697,7 +6284,7 @@ Command utilities are preinstalled (or installable) CLI programs used for:
 | `chown`               | Change file ownership   |
 | `groups`              | Show group membership   |
 
-> #### 🔐 1. `id` — Show User Identity
+> #### 🔐 `id` — Show User Identity
 >
 > ✅ Purpose:
 >
@@ -5803,7 +6390,7 @@ Command utilities are preinstalled (or installable) CLI programs used for:
 >
 > ......................................................................................................................
 >
-> #### 🔐 1. `passwd` — Change User Passwords
+> #### 🔐 `passwd` — Change User Passwords
 >
 > ✅ Purpose:
 >
@@ -5880,7 +6467,6 @@ Command utilities are preinstalled (or installable) CLI programs used for:
 > sudo passwd -l olduser     # Disable unused accounts
 > groups newuser             # Ensure correct group access
 > ```
->
 
 #### 📦 **Package Management** *(Debian/Ubuntu-based)*
 
@@ -6112,7 +6698,6 @@ Command utilities are preinstalled (or installable) CLI programs used for:
 > ```
 >
 > This will fix broken installs by fetching dependencies.
->
 
 #### 🗃️ **Archiving & Compression**
 
@@ -6242,7 +6827,7 @@ Command utilities are preinstalled (or installable) CLI programs used for:
 >
 > This replaces `filename` with `filename.gz`.
 >
-> ###### 🔧 Common Options:
+> ###### 🔧 Common Options:  (acronym-- kvr-cover)
 >
 > | Option          | Description                                               |
 > | --------------- | --------------------------------------------------------- |
@@ -6260,7 +6845,7 @@ Command utilities are preinstalled (or installable) CLI programs used for:
 >
 > → Compresses `file.txt` to `file.txt.gz` and keeps the original.
 >
-> #### 📤  `gunzip` — Decompress `.gz` files
+> #### 📤  `gunzip` — Decompress `.gz` files (acronym-- kvf)
 >
 > ✅ Basic Usage:
 >
@@ -6331,7 +6916,7 @@ Command utilities are preinstalled (or installable) CLI programs used for:
 > | `-v` | Verbose                |
 > | `-f` | Force overwrite        |
 >
-> ##### 🧠 Real-world Use Example:
+> #### 🧠 Real-world Use Example:
 >
 > Combine with `tar`:
 >
@@ -6340,6 +6925,150 @@ Command utilities are preinstalled (or installable) CLI programs used for:
 > tar -cjvf backup.tar.bz2 folder/
 > ```
 >
+> #### 📦 `zip` — Compress files into a `.zip` archive
+>
+> ✅ Basic Syntax:
+>
+> ```bash
+> zip [options] archive_name.zip file(s)/folder(s)
+> ```
+>
+> ##### 🔧 Common Options for `zip`:
+>
+> | Option | Description                                                |
+> | ------ | ---------------------------------------------------------- |
+> | `-r` | **Recursive**— include directories and contents     |
+> | `-v` | **Verbose**— show progress during compression       |
+> | `-9` | Maximum compression level                                  |
+> | `-q` | Quiet — suppress output                                   |
+> | `-e` | Encrypt archive (prompts for password)                     |
+> | `-x` | Exclude files or folders                                   |
+> | `-m` | Move files into archive (delete originals after archiving) |
+>
+> ##### ✅ Examples:
+>
+> ###### Compress files:
+>
+> ```bash
+> zip myfiles.zip file1.txt file2.txt
+> ```
+>
+> ###### Compress a folder (recursively):
+>
+> ```bash
+> zip -r myfolder.zip myfolder/
+> ```
+>
+> ###### Compress and encrypt:
+>
+> ```bash
+> zip -e secret.zip file.txt
+> ```
+>
+> ###### Exclude a file:
+>
+> ```bash
+> zip -r project.zip myproject/ -x "*.log"
+> ```
+>
+> #### 📤 `unzip` — Extract `.zip` files
+>
+> ✅ Basic Syntax:
+>
+> ```bash
+> unzip [options] file.zip
+> ```
+>
+> ##### 🔧 Common Options for `unzip`:
+>
+> | Option            | Description                                     |
+> | ----------------- | ----------------------------------------------- |
+> | `-l`            | List contents (like `tar -t`)                 |
+> | `-v`            | Verbose output                                  |
+> | `-d`            | Specify target**directory**for extraction |
+> | `-o`            | Overwrite files without prompting               |
+> | `-n`            | Never overwrite existing files                  |
+> | `-q`            | Quiet mode                                      |
+> | `-P <password>` | Provide password for encrypted zip              |
+>
+> ##### ✅ Examples:
+>
+> ###### Extract a zip file:
+>
+> ```bash
+> unzip myfiles.zip
+> ```
+>
+> ###### Extract to specific directory:
+>
+> ```bash
+> unzip myfiles.zip -d /path/to/target/
+> ```
+>
+> ###### List contents without extracting:
+>
+> ```bash
+> unzip -l myfiles.zip
+> ```
+>
+> ###### Extract encrypted zip:
+>
+> ```bash
+> unzip -P yourpassword secret.zip
+> ```
+>
+> ......................................................................................................................
+>
+> #### 🧮 Tar vs Gzip vs Bzip2 vs Zip and `.tgz`
+>
+> ##### Tar vs Gzip vs Bzip2 vs Zip — Technical Comparison
+>
+> | Feature/Property                          | `tar`                      | `gzip`    | `bzip2`                | `zip`                       |
+> | ----------------------------------------- | ---------------------------- | ----------- | ------------------------ | ----------------------------- |
+> | 🔧**Type**                          | Archiver only                | Compressor  | Compressor               | Archiver + Compressor         |
+> | 📦**Combines files?**               | ✅ Yes (without compressing) | ❌ No       | ❌ No                    | ✅ Yes                        |
+> | 🧱**Compression**                   | ❌ None                      | ✅ Moderate | ✅ High                  | ✅ Moderate                   |
+> | ⚡**Speed (Compression)**           | ✅ Fast                      | ✅ Fast     | ❌ Slower                | ✅ Fast                       |
+> | 🔄**Speed (Decompression)**         | ✅ Fast                      | ✅ Fast     | ❌ Slower                | ✅ Fast                       |
+> | 📉**Compression Ratio**             | —                           | ~2.5:1      | ~3–4:1                  | ~2.5:1                        |
+> | 🖥️**Cross-platform**              | Linux/Unix mostly            | Linux/Unix  | Linux/Unix               | ✅ Windows, Linux,<br />macOS |
+> | 🛠️**Error recovery**              | ❌ Poor                      | ❌ Poor     | ✅ Better block recovery | ✅ Better than tar.gz         |
+> | 🔐**Password support (Encryption)** | ❌ No                        | ❌ No       | ❌ No                    | ✅ Yes                        |
+> | 📁**File extension**                | `.tar`                     | `.gz`     | `.bz2`                 | `.zip`                      |
+>
+> ##### 🔍 In Simple Terms:
+>
+> | Format      | What it does                               | Best for                         |
+> | ----------- | ------------------------------------------ | -------------------------------- |
+> | `tar`     | Just combines files (no compression)       | Bundling files on Linux          |
+> | `tar.gz`  | Combines + fast compression                | Quick backups                    |
+> | `tar.bz2` | Combines + better compression (slower)     | Saving space with better ratio   |
+> | `zip`     | Compress + archive in one (cross-platform) | Sharing with Windows/macOS users |
+>
+> ##### 📦 What is `.tgz`?
+>
+> `.tgz` is **just a shorter alternative name** for `.tar.gz`.
+>
+> * It stands for:
+>
+>   **T**ape archive + **GZ**ip compression → `.tgz`
+>
+> ##### 🧠 When to Use What?
+>
+> | Scenario                         | Recommended Tool          |
+> | -------------------------------- | ------------------------- |
+> | Fast backups on Linux            | `tar.gz`(`tar -czf`)  |
+> | Better compression for archiving | `tar.bz2`(`tar -cjf`) |
+> | Sharing files with Windows users | `zip`                   |
+> | Compress single file only        | `gzip file.txt`         |
+> | Need password protection         | `zip -e`                |
+>
+> ##### 🎯 Key Takeaways
+>
+> * `tar` = **just a container** — often paired with gzip or bzip2.
+> * `gzip` =  **fast** , widely supported, decent compression.
+> * `bzip2` =  **better compression** , but  **slower** .
+> * `zip` =  **all-in-one** , with **cross-platform and encryption** support.
 
 #### 🔧 **System Utilities & Misc**
 
@@ -6350,5 +7079,817 @@ Command utilities are preinstalled (or installable) CLI programs used for:
 | `history`                      | Show command history           |
 | `cron`/`crontab`             | Schedule repeated tasks        |
 | `shutdown`,`reboot`,`halt` | Power management               |
+
+> #### 📘  `man` — **Manual pages**
+>
+> Displays help documents (manual pages) for Linux commands.
+>
+> ✅ Usage:
+>
+> ```bash
+> man [command_name]
+> ```
+>
+> ###### 🔧 Common Options:
+>
+> | Option        | Description                                                                                  |
+> | ------------- | -------------------------------------------------------------------------------------------- |
+> | `-k`        | Search man pages by keyword (like help search)                                               |
+> | `-f`        | Show short description (like `whatis`) ("filename" or "function" (summary of the command)) |
+> | `-a`        | View all man pages matching the name                                                         |
+> | `-M <path>` | Specify custom man page directory                                                            |
+>
+> ###### 🧪 Examples:
+>
+> ```bash
+> man ls             # Shows full documentation for `ls`
+> man -k copy        # Search for commands related to "copy"
+> man -f echo        # Show a short one-line description
+> ```
+>
+>> Use `q` to quit the manual viewer.
+>>
+>
+> #### 🏷️ `alias` — **Create shortcut commands**
+>
+> Lets you define your own **shortcuts** for longer or complex commands.
+>
+> ✅ Usage:
+>
+> ```bash
+> alias name='command'
+> ```
+>
+> ###### 🔧 Common Usage:
+>
+> | Purpose                       | Example                             |
+> | ----------------------------- | ----------------------------------- |
+> | Create alias                  | `alias ll='ls -lah'`              |
+> | Temporary for current session | Run directly in terminal            |
+> | Permanent alias               | Add to `~/.bashrc`or `~/.zshrc` |
+> | View all aliases              | `alias`                           |
+> | Remove alias                  | `unalias ll`                      |
+>
+> ###### 🧪 Example:
+>
+> ```bash
+> alias gs='git status'
+> alias update='sudo apt update && sudo apt upgrade'
+> update        # RUNNING ALIAS
+> ```
+>
+> 💡 To make it  **permanent** , add it to:
+>
+> ```bash
+> nano ~/.bashrc      # or ~/.zshrc for Zsh users
+> ```
+>
+> Then run:
+>
+> ```bash
+> source ~/.bashrc
+> ```
+>
+> #### 🕘 `history` — **View past commands**
+>
+> Shows a list of previously entered commands (by number).
+>
+> ✅ Usage:
+>
+> ```bash
+> history
+> ```
+>
+> ### 🔧 Common Options:
+>
+> | Option      | Description                                   |
+> | ----------- | --------------------------------------------- |
+> | `-c`      | Clear entire command history                  |
+> | `-d N`    | Delete history entry at line `N`            |
+> | `!N`      | Run command at history number `N`           |
+> | `!!`      | Run the last command again                    |
+> | `!string` | Run the last command starting with `string` |
+>
+> 🧪 Examples:
+>
+> ```bash
+> history                 # Show previous commands
+> history -d 100          # Delete entry number 100
+> !!                      # Repeat last command
+> !ls                     # Run last command that started with "ls"
+> ```
+>
+>> The history is stored in the file `~/.bash_history` (for bash shell).
+>>
+>
+> #### ......................................................................................................................
+>
+> #### 🚀 Cronjob using `cron` and `crontab`
+>
+> Let's dive into **`cron`** and  **`crontab`** , two powerful tools in Linux used for **automating tasks** (aka "scheduling jobs").
+>
+> ##### 🕒 What is `cron`?
+>
+> * `cron` is a **time-based job scheduler** in Unix-like systems.
+> * It runs **background processes** (called  **cron jobs** ) at specified times or intervals.
+> * Think of it as  **Linux's version of Windows Task Scheduler** .
+>
+> ##### 🗂️ What is `crontab`?
+>
+> * `crontab` (short for " **cron table** ") is a **text file** containing a list of commands meant to be run on a schedule.
+> * Each user (even root) can have their own crontab file.
+>
+> ##### 📄 Syntax of a Crontab Line
+>
+> Each line represents one scheduled job:
+>
+> ```bash
+> * * * * * command_to_run
+> ┬ ┬ ┬ ┬ ┬
+> │ │ │ │ └── Day of week (0-7) (Sun = 0 or 7)
+> │ │ │ └──── Month (1 - 12)
+> │ │ └────── Day of month (1 - 31)
+> │ └──────── Hour (0 - 23)
+> └────────── Minute (0 - 59)
+> ```
+>
+> ##### ✅ Example Cron Jobs:
+>
+> ```bash
+> 0 5 * * * /home/user/backup.sh         # Every day at 5:00 AM
+> 30 14 * * 1-5 echo "Work reminder"     # Weekdays at 2:30 PM
+> */10 * * * * echo "Runs every 10 min"  # Every 10 minutes
+> ```
+>
+> ##### 🔧 `crontab` Command Options
+>
+> | Command               | What it does                                    |
+> | --------------------- | ----------------------------------------------- |
+> | `crontab -e`        | Edit your current user's crontab file           |
+> | `crontab -l`        | List your current crontab jobs                  |
+> | `crontab -r`        | Remove your crontab entirely                    |
+> | `crontab -i`        | Same as `-r`but**asks before deleting** |
+> | `crontab -u <user>` | View/edit crontab for a specific user (as root) |
+>
+> ##### 🔎 Where are these stored?
+>
+> * Crontabs are usually saved in:
+>   ```bash
+>   /var/spool/cron/crontabs/
+>   ```
+>
+>> The word **"spool"** in `/var/spool/cron/crontabs/` comes from a historical computing term:
+>>
+>> ##### 🧾 What Does **"Spool"** Mean?
+>>
+>> **SPOOL** stands for:
+>>
+>>> **S**imultaneous **P**eripheral **O**peration **O**n **L**ine
+>>>
+>>
+>> In simpler terms, "spooling" refers to:
+>>
+>> * Temporarily storing data **in a queue** before it's processed by another system component (like a printer, mailer, or scheduler).
+>>
+>> ###### 📦 Why `/var/spool/cron/crontabs/`?
+>>
+>> * In the case of  **cron** , the crontab files are **stored temporarily** in `/var/spool/cron/crontabs/`.
+>> * These files are **read by the cron daemon** at regular intervals or on reboot.
+>> * The **spool directory** is a traditional place where services (like `cron`, `at`, `mail`) keep jobs or data waiting to be processed.
+>>
+>> Think of it like a **task inbox** for the system service.
+>>
+>> 🗂️ Other Examples of Spool Usage
+>>
+>> | Path                 | Used By       | Purpose                        |
+>> | -------------------- | ------------- | ------------------------------ |
+>> | `/var/spool/mail/` | Mail daemon   | Stores incoming mail for users |
+>> | `/var/spool/at/`   | `at`jobs    | One-time scheduled tasks       |
+>> | `/var/spool/lpd/`  | Line printers | Print jobs waiting in queue    |
+>>
+>
+> ##### 🧪 Cron Job Output Handling
+>
+> * By default, cron sends output to your local mail.
+> * You can redirect output manually:
+>
+> ```bash
+> 0 3 * * * /path/script.sh >> /path/log.txt 2>&1
+> ```
+>
+> ##### ✅ Special Cron Strings
+>
+> You can also use **@ keywords** instead of numbers:
+>
+> | Keyword      | Meaning                 |
+> | ------------ | ----------------------- |
+> | `@reboot`  | Run once at system boot |
+> | `@daily`   | Every day at midnight   |
+> | `@hourly`  | Every hour              |
+> | `@weekly`  | Every week              |
+> | `@monthly` | Every month             |
+> | `@yearly`  | Every year              |
+>
+> Example:
+>
+> ```bash
+> @reboot /home/user/startup.sh
+> ```
+>
+> ##### 🔐 Permissions
+>
+> * Only users listed in `/etc/cron.allow` can use `cron`
+> * Or not listed in `/etc/cron.deny` if `cron.allow` doesn’t exist
+>
+> ##### ✅ Common Crontab Examples
+>
+> 1. 🔁 Run a script every day at 5:30 AM
+>
+> ```bash
+> 30 5 * * * /home/user/backup.sh
+> ```
+>
+> 2. 🕒 Run every hour on the hour
+>
+> ```bash
+> 0 * * * * /home/user/hourly_check.sh
+> ```
+>
+> 3 🗑️ Clear temp files every Sunday at 3:00 AM
+>
+> ```bash
+> 0 3 * * 0 rm -rf /home/user/temp/*
+> ```
+>
+> 4. 🖥️ Run a Python script on system boot
+>
+> ```bash
+> @reboot /usr/bin/python3 /home/user/startup_script.py
+> ```
+>
+> 5. ✉️ Send a mail at 8:00 AM on Mondays
+>
+> ```bash
+> 0 8 * * 1 mail -s "Weekly Report" someone@example.com < /home/user/report.txt
+> ```
+>
+> 6. 💬 Echo a message every 2 hours
+>
+> ```bash
+> 0 */2 * * * echo "Take a break!" >> /home/user/break_log.txt
+> ```
+>
+> 7. 📊 Save system stats to a log every 10 minutes
+>
+> ```bash
+> */10 * * * * top -b -n 1 >> /home/user/syslog.txt
+> ```
+>
+> ---
+>
+> Let's go through **practical examples** using the `crontab` command with the most useful options:
+>
+> ###### 📘 1. `crontab -e` → **Edit current user's crontab**
+>
+> Opens the crontab in a text editor (usually nano or vim):
+>
+> ```bash
+> crontab -e
+> ```
+>
+> 🔹 Example: Add this line to run a backup script every day at 2 AM:
+>
+> ```cron
+> 0 2 * * * /home/user/backup.sh >> /home/user/backup.log 2>&1
+> ```
+>
+> ###### 📜 2. `crontab -l` → **List current user's cron jobs**
+>
+> ```bash
+> crontab -l
+> ```
+>
+> 🔹 Output:
+>
+> ```
+> 0 2 * * * /home/user/backup.sh >> /home/user/backup.log 2>&1
+> @weekly /home/user/scripts/cleanup.sh
+> ```
+>
+> ###### ❌ 3. `crontab -r` → **Remove all current user's cron jobs (no warning!)**
+>
+> ```bash
+> crontab -r
+> ```
+>
+> 🚨 This will delete the entire crontab immediately. Use `-i` for safety.
+>
+> ###### ⚠️ 4. `crontab -i` → **Safely remove crontab (asks before deleting)**
+>
+> ```bash
+> crontab -i
+> ```
+>
+> 🔹 Output:
+>
+> ```
+> crontab: really delete the crontab? (y/n)
+> ```
+>
+> ✅ Choose `y` to confirm, or `n` to cancel.
+>
+> ###### 👥 5. `crontab -u <user>` → **View or edit another user's crontab (requires sudo/root)**
+>
+> 🔸 To view another user's crontab:
+>
+> ```bash
+> sudo crontab -u arun -l
+> ```
+>
+> 🔸 To edit another user's crontab:
+>
+> ```bash
+> sudo crontab -u arun -e
+> ```
+>
+>> Only root can use the `-u` flag.
+>>
+>
+> 8. 💡 Turn off Wi-Fi automatically at night
+>    ```
+>    0 23 * * * nmcli radio wifi off
+>    ```
+>
+> #### ......................................................................................................................
+>
+> #### 🛑  `shutdown` , `reboot` and `halt`
+>
+> Let’s break down the Linux commands:  **`shutdown`** ,  **`reboot`** , and **`halt`** — what they do, how they differ, and how to use them safely.
+>
+> ##### 🧱 1. `shutdown` – Graceful system power-off
+>
+> ###### 🔍 What it does:
+>
+> * Safely stops all running processes and services.
+> * Notifies logged-in users.
+> * Unmounts filesystems properly.
+> * Powers off or restarts the system at a  **scheduled time** .
+>
+> ###### 🔧 Syntax:
+>
+> ```bash
+> sudo shutdown [OPTION] [TIME] [MESSAGE]
+> ```
+>
+> ###### ✅ Common Examples:
+>
+> ```bash
+> sudo shutdown now            # Shutdown immediately
+> sudo shutdown -h now         # Halt and power off now
+> sudo shutdown -r now         # Reboot now
+> sudo shutdown +10            # Shutdown in 10 minutes
+> sudo shutdown -c             # Cancel scheduled shutdown
+> ```
+>
+> ###### ⏰ Optional TIME Formats:
+>
+> * `now` – immediately
+> * `+m` – in m minutes (e.g., `+5`)
+> * `HH:MM` – absolute time (e.g., `22:30`)
+>
+> ##### 🔁 2. `reboot` – Restart the system
+>
+> ###### 🔍 What it does:
+>
+> * Calls the `shutdown` process internally to reboot the system cleanly.
+> * Stops all processes and restarts the system.
+>
+> ###### 🔧 Syntax:
+>
+> ```bash
+> sudo reboot
+> ```
+>
+> ###### ✅ Optional:
+>
+> ```bash
+> sudo reboot now
+> sudo reboot --force
+> ```
+>
+> ##### 🛑 3. `halt` – Stops all CPUs (halt the machine)
+>
+> ###### 🔍 What it does:
+>
+> * Tells the CPU to  **stop executing** .
+> * Does **not** necessarily power off or reboot the machine.
+> * In modern systems, it typically **powers off** the hardware unless overridden.
+>
+> ###### 🔧 Syntax:
+>
+> ```bash
+> sudo halt
+> ```
+>
+> ###### ⚠️ When to use:
+>
+> Rarely used alone. It's more of a **low-level stop command** used by shutdown or power managers.
+>
+> ##### 🧠 Comparison Table
+>
+> | Command      | Action                   | Powers Off                | Reboots          | Use Case                          |
+> | ------------ | ------------------------ | ------------------------- | ---------------- | --------------------------------- |
+> | `shutdown` | Graceful shutdown/reboot | ✅ (with `-h`)          | ✅ (with `-r`) | Preferred for controlled shutdown |
+> | `reboot`   | Graceful reboot          | ❌                        | ✅               | Restarting system                 |
+> | `halt`     | Stop CPU execution       | ✅/❌ (depends on system) | ❌               | Very low-level, rarely needed     |
+>
+> ##### 🚨 Tips
+>
+> * Always **use `sudo`** for these commands.
+> * Prefer `shutdown` when users or services need  **safe termination** .
+> * `reboot` is quicker but still clean.
+> * Avoid `halt` unless you know what you're doing — it's more raw and direct.
+>
+> ##### 🧪 Example Scenarios
+>
+> * Shut down system in 1 hour:
+>   ```bash
+>   sudo shutdown +60 "System will shut down in 1 hour"
+>   ```
+> * Cancel that shutdown:
+>   ```bash
+>   sudo shutdown -c
+>   ```
+> * Reboot after updates:
+>   ```bash
+>   sudo reboot
+>   ```
+
+---
+
+# ✂️**Text Processing**
+
+| Command   | Use                                    |
+| --------- | -------------------------------------- |
+| `grep`  | Search text using patterns (regex)     |
+| `awk`   | Pattern scanning and text processing   |
+| `sed`   | Stream editor for text transformations |
+| `cut`   | Cut sections from lines of text        |
+| `sort`  | Sort lines in a file                   |
+| `uniq`  | Remove duplicate lines                 |
+| `wc`    | Word/line/char count                   |
+| `tr`    | Translate/replace characters           |
+| `paste` | Merge lines side-by-side               |
+
+### 🔍 1. `grep` — **Global Regular Expression Print**
+
+📛 Name Origin:
+
+> **`g/re/p`** comes from the **ed** editor command:
+>
+> `g/re/p` = “**globally search for a regular expression and print** the matching lines”
+
+#### 📘 What it does:
+
+Searches **text patterns** (using regular expressions) in files or output and prints matching lines.
+
+#### 🔧 Syntax:
+
+```bash
+grep [options] pattern [file...]
+```
+
+#### ✅ Common Options:
+
+| Option | Description                                    |
+| ------ | ---------------------------------------------- |
+| `-i` | Ignore case                                    |
+| `-v` | Invert match (show lines**not**matching) |
+| `-r` | Recursive search through directories           |
+| `-n` | Show line numbers                              |
+| `-l` | List only filenames with matches               |
+| `-c` | Count matches                                  |
+| `-e` | Specify multiple patterns                      |
+
+#### 💡 Examples:
+
+```bash
+grep "error" logfile.txt            # Find lines with "error"
+grep -i "user" file.txt             # Case-insensitive search
+grep -v "root" users.txt            # Show lines NOT containing "root"
+grep -rn "TODO" .                   # Search recursively with line numbers
+```
+
+### 🦾 2. `awk` — **Aho, Weinberger, and Kernighan**
+
+📛 Name Origin:
+
+> Named after its creators:
+>
+> **Alfred Aho** ,  **Peter Weinberger** , **Brian Kernighan**
+
+#### 📘 What it does:
+
+* Pattern scanning and **report generation**
+* Best for extracting  **columns** , filtering, and doing small calculations
+
+#### 🔧 Syntax:
+
+```bash
+awk 'pattern { action }' filename
+```
+
+#### ✅ Common Options:
+
+| Option        | Description                                 |
+| ------------- | ------------------------------------------- |
+| `-F`        | Set field separator (default is whitespace) |
+| `NR`        | Built-in var for current line number        |
+| `NF`        | Built-in var for number of fields in a line |
+| `$1`,`$2` | First, second field (column), etc.          |
+
+#### 💡 Examples:
+
+```bash
+awk '{ print $1 }' file.txt           # Print first column
+awk -F: '{ print $1 }' /etc/passwd    # Print usernames
+awk '$3 > 1000' users.txt             # Show lines where 3rd column > 1000
+```
+
+> ## 🦾 `awk` Basics
+>
+> `awk` is a tool used in Linux to  **read files line-by-line** , split each line into  **columns (called fields)** , and then **perform actions** on those fields.
+>
+> Think of it like Excel for the terminal — each row is a line, and each column is a field.
+>
+> 📁 Let's say you have a file like this (called `data.txt`):
+>
+> ```
+> john  25  engineer
+> maya  30  designer
+> ali   22  student
+> ```
+>
+> Each line has 3 **fields** (columns):
+>
+> * Name
+> * Age
+> * Profession
+>
+> #### 🧠 Key `awk` Concepts
+>
+> ##### ✅ `-F` → Field Separator
+>
+> By default, `awk` splits lines by **spaces** or  **tabs** .
+>
+> But if your data uses something else (like commas or colons), you can tell `awk` how to split using `-F`.
+>
+> ```bash
+> awk -F ':' '{ print $1 }' /etc/passwd
+> ```
+>
+> In the file `/etc/passwd`, fields are separated by `:`. So this command prints the **first field (column)** of every line.
+>
+> ##### ✅ `$1`, `$2`, `$3`, ... → Field Variables
+>
+> These are like column references.
+>
+> | Code   | Meaning                  |
+> | ------ | ------------------------ |
+> | `$1` | First field (column 1)   |
+> | `$2` | Second field (column 2)  |
+> | `$3` | Third field (column 3)   |
+> | `$0` | Entire line (all fields) |
+>
+> **Example:**
+>
+> ```bash
+> awk '{ print $1 }' data.txt
+> ```
+>
+> ➡️ This prints the **first column** (name) from each line.
+>
+> ```bash
+> awk '{ print $1, $3 }' data.txt
+> ```
+>
+> ➡️ This prints the name and profession.
+>
+> ##### **✅ `NR` → Number of Records (i.e., line number)**
+>
+> `NR` means **line number** (record number). It automatically counts how many lines `awk` has processed.
+>
+> ```bash
+> awk '{ print NR, $1 }' data.txt
+> ```
+>
+> ➡️ Output:
+>
+> ```
+> 1 john
+> 2 maya
+> 3 ali
+> ```
+>
+> ##### ✅ `NF` → Number of Fields
+>
+> `NF` means the **Number of Fields** in the current line. It tells how many columns there are in that line.
+>
+> ```bash
+> awk '{ print NF }' data.txt
+> ```
+>
+> ➡️ Output:
+>
+> ```
+> 3
+> 3
+> 3
+> ```
+>
+> If a line has 5 words, `NF` would be 5.
+>
+> ##### 🔁 Real Example:
+>
+> ```bash
+> awk '{ print "Name:", $1, "| Age:", $2, "| Job:", $3 }' data.txt
+> ```
+>
+> **Output:**
+>
+> ```
+> Name: john | Age: 25 | Job: engineer
+> Name: maya | Age: 30 | Job: designer
+> Name: ali  | Age: 22 | Job: student
+> ```
+
+### 🛠️ 3. `sed` — **Stream Editor**
+
+📛 Name Origin:
+
+> Short for **Stream Editor** — processes text **stream-by-stream**
+
+#### 📘 What it does:
+
+* Edits text **in place**
+* Can substitute, delete, insert, transform lines without opening a file in an editor
+
+#### 🔧 Syntax:
+
+```bash
+sed [options] 'command' file
+```
+
+#### ✅ Common Options & Commands:
+
+| Option / Cmd   | Description                    |
+| -------------- | ------------------------------ |
+| `-n`         | Suppress automatic printing    |
+| `-e`         | Use multiple sed scripts       |
+| `s/old/new/` | Substitute `old`with `new` |
+| `d`          | Delete lines                   |
+| `p`          | Print lines                    |
+| `i`/`a`    | Insert / Append lines          |
+
+#### 💡 Examples:
+
+```bash
+sed 's/apple/orange/' file.txt       # Replace first "apple" with "orange"
+sed 's/apple/orange/g' file.txt      # Replace ALL "apple"s
+sed '/^#/d' config.conf              # Delete all comment lines
+sed -n '/error/p' log.txt            # Print only lines with "error"
+```
+
+### ✂️ 4. `cut` – *Extract sections (columns) of each line*
+
+📛 **Why is it called `cut`?**
+
+Because it **"cuts out" specific parts** (fields or characters) from a line of text.
+
+#### 📘 **What it does:**
+
+* Extracts **columns (fields)** or specific **characters** from each line in a file or output.
+
+#### 🔧 **Syntax:**
+
+```bash
+cut [OPTION] [FILE]
+```
+
+#### ✅ **Common Options:**
+
+| Option | Meaning                                              |
+| ------ | ---------------------------------------------------- |
+| `-d` | Delimiter (what separates fields, e.g.`:`or `,`) |
+| `-f` | Field number(s) to extract                           |
+| `-c` | Character position(s) to extract                     |
+
+#### 💡 **Examples:**
+
+```bash
+cut -d ":" -f 1 /etc/passwd
+```
+
+➡️ Cuts out the **first field (username)** from lines where `:` is the separator.
+
+```bash
+cut -c 1-5 filename.txt
+```
+
+➡️ Cuts **first 5 characters** of each line.
+
+### 🔢 5. `sort` – *Sort lines of text alphabetically or numerically*
+
+📛 **Why is it called `sort`?**
+
+Because it **sorts** data — like a list, table, or lines in a file.
+
+#### 📘 **What it does:**
+
+* Sorts lines alphabetically, numerically, by field, or reverse order.
+
+#### 🔧 **Syntax:**
+
+```bash
+sort [OPTIONS] [FILE]
+```
+
+#### ✅ **Common Options:**
+
+| Option | Meaning                                   |
+| ------ | ----------------------------------------- |
+| `-r` | Reverse order                             |
+| `-n` | Numeric sort (instead of alphabetic)      |
+| `-k` | Sort by field number                      |
+| `-u` | Remove duplicate lines (same as `uniq`) |
+| `-t` | Set custom delimiter (default is space)   |
+
+#### 💡 **Examples:**
+
+```bash
+sort names.txt
+```
+
+➡️ Sorts lines alphabetically.
+
+```bash
+sort -n marks.txt
+```
+
+➡️ Sorts **numerically** (for numbers like marks).
+
+```bash
+sort -k2 -t "," data.csv
+```
+
+➡️ Sorts CSV data  **by the 2nd column** , using `,` as the delimiter.
+
+### 📌  6. `uniq` – *Remove or detect duplicate lines*
+
+📛 **Why is it called `uniq`?**
+
+Short for **"unique"** — it finds and/or filters  **unique or duplicate lines** .
+
+#### 📘 **What it does:**
+
+* Removes **repeated (consecutive) duplicate lines** from output.
+* Can also **count duplicates** or show only repeated lines.
+
+⚠️ **Important:** It only works on  **consecutive duplicates** , so it's often used  **with `sort`** .
+
+#### 🔧 **Syntax:**
+
+```bash
+uniq [OPTIONS] [FILE]
+```
+
+#### ✅ **Common Options:**
+
+| Option | Meaning                                |
+| ------ | -------------------------------------- |
+| `-c` | Count how many times each line appears |
+| `-d` | Only show**duplicate**lines      |
+| `-u` | Only show**unique**lines         |
+| `-i` | Ignore case when comparing             |
+
+#### 💡 **Examples:**
+
+```bash
+sort data.txt | uniq
+```
+
+➡️ Removes  **duplicate lines** , after sorting.
+
+```bash
+sort data.txt | uniq -c
+```
+
+➡️ Shows how many times each line appears.
+
+```bash
+uniq -d sorted.txt
+```
+
+➡️ Shows  **only the lines that are repeated** .
 
 ---
