@@ -5357,6 +5357,31 @@ Command utilities are preinstalled (or installable) CLI programs used for:
 > echo "Next entry" >> logfile.txt   # Appends
 > ```
 >
+> ##### Empty Arguement
+>
+> The command:
+>
+> ```bash
+> echo > file1
+> ```
+>
+> is a simple but powerful one-liner. Here's exactly what it does:
+>
+> 🔍 Breakdown
+>
+> ✅ `echo`
+>
+> * By default, `echo` outputs a blank line (i.e., an empty string) if **no arguments** are given.
+>
+> 📁 Result of `echo > file1`
+>
+> * If `file1`  **doesn’t exist** : it will be **created** as an empty file.
+> * If `file1`  **already exists** : it will be **emptied** (its contents erased).
+>
+> ⚠️ Warning
+>
+> This is a common way to  **clear a file** , so be cautious — **you won’t be prompted** before overwriting.
+>
 > ##### 🔁 Summary
 >
 > | Task          | Command Example           |
@@ -6333,15 +6358,15 @@ Command utilities are preinstalled (or installable) CLI programs used for:
 
 #### 🔐 **User and Permission Management**
 
-| Command                 | Use                     |
-| ----------------------- | ----------------------- |
-| `whoami`              | Current logged-in user  |
-| `id`                  | Show user and group IDs |
-| `adduser`/`useradd` | Add new user            |
-| `passwd`              | Change user password    |
-| `chmod`               | Change file permissions |
-| `chown`               | Change file ownership   |
-| `groups`              | Show group membership   |
+| Command                                                          | Use                                                    |
+| ---------------------------------------------------------------- | ------------------------------------------------------ |
+| `whoami`                                                       | Current logged-in user                                 |
+| `id`                                                           | Show user and group IDs                                |
+| `adduser`/`useradd`, `userdel`, `groupadd`, `groupdel` | Add new user, Delete user, Add new group, Delete group |
+| `passwd`                                                       | Change user password                                   |
+| `chmod`                                                        | Change file permissions                                |
+| `chown`                                                        | Change file ownership                                  |
+| `groups`                                                       | Show group membership                                  |
 
 > #### 🔐 `id` — Show User Identity
 >
@@ -6397,7 +6422,7 @@ Command utilities are preinstalled (or installable) CLI programs used for:
 > id -Gn arun      # Group names
 > ```
 >
-> #### 👤 2. `adduser` — Add a New User
+> #### 👤  `adduser` — Add a New User
 >
 > ✅ Purpose:
 >
@@ -6449,6 +6474,87 @@ Command utilities are preinstalled (or installable) CLI programs used for:
 >
 > ......................................................................................................................
 >
+> #### 👤 `userdel` — Delete a User
+>
+> Used to remove a **user account** from the system.
+>
+> 🔧 Syntax:
+>
+> ```bash
+> sudo userdel [options] username
+> ```
+>
+> ###### ✅ Common Options:
+>
+> | Option      | Description                                                                 |
+> | ----------- | --------------------------------------------------------------------------- |
+> | `-r`      | Remove the user's**home directory and mail spool**too                 |
+> | `--force` | Force removal (even if the user is logged in or has running processes) ⚠️ |
+> | `--help`  | Show help message                                                           |
+>
+> 📌 Example:
+>
+> ```bash
+> sudo userdel -r arun
+> ```
+>
+> Deletes user `arun`, along with `/home/arun`.
+>
+> #### 👥 `groupadd` — Create a New Group
+>
+> Used to create a  **new user group** .
+>
+> 🔧 Syntax:
+>
+> ```bash
+> sudo groupadd [options] groupname
+> ```
+>
+> ###### ✅ Common Options:
+>
+> | Option     | Description                                    |
+> | ---------- | ---------------------------------------------- |
+> | `-g GID` | Specify a group ID manually                    |
+> | `-f`     | Exit**silently if group already exists** |
+> | `-o`     | Allow duplicate GIDs (used with `-g`)        |
+> | `--help` | Show help message                              |
+>
+> 📌 Example:
+>
+> ```bash
+> sudo groupadd devs
+> ```
+>
+> Creates a new group called `devs`.
+>
+> #### ❌ `groupdel` — Delete a Group
+>
+> Used to delete a  **user group** .
+>
+> 🔧 Syntax:
+>
+> ```bash
+> sudo groupdel [options] groupname
+> ```
+>
+>> No major options for `groupdel`, it's pretty straightforward.
+>>
+>
+> 📌 Example:
+>
+> ```bash
+> sudo groupdel devs
+> ```
+>
+> Deletes the group `devs`.
+>
+> 🔐 Safety Notes
+>
+> * You cannot delete a **primary group** of any **existing user** using `groupdel`.
+> * Deleting a user with `userdel` **doesn't delete** their primary group by default.
+>
+> .....................................................................................................................
+>
 > #### 🔐 `passwd` — Change User Passwords
 >
 > ✅ Purpose:
@@ -6486,7 +6592,7 @@ Command utilities are preinstalled (or installable) CLI programs used for:
 > sudo passwd -d john    # Remove password (no password login)
 > ```
 >
-> #### 👥 2. `groups` — Show Group Memberships
+> #### 👥  `groups` — Show Group Memberships
 >
 > ✅ Purpose:
 >
@@ -7728,6 +7834,10 @@ Command utilities are preinstalled (or installable) CLI programs used for:
 | `tr`    | Translate/replace characters           |
 | `paste` | Merge lines side-by-side               |
 
+ACRONYM-- GAS CUT SORT - since sorting, hence be UNIQUE, WhAt?(wc + tr), ok now PASTE
+
+............................................................................................................................................................................................................................................
+
 ### 🔍 1. `grep` — **Global Regular Expression Print**
 
 📛 Name Origin:
@@ -7766,6 +7876,8 @@ grep -i "user" file.txt             # Case-insensitive search
 grep -v "root" users.txt            # Show lines NOT containing "root"
 grep -rn "TODO" .                   # Search recursively with line numbers
 ```
+
+............................................................................................................................................................................................................................................
 
 ### 🦾 2. `awk` — **Aho, Weinberger, and Kernighan**
 
@@ -7910,6 +8022,8 @@ awk '$3 > 1000' users.txt             # Show lines where 3rd column > 1000
 > Name: ali  | Age: 22 | Job: student
 > ```
 
+............................................................................................................................................................................................................................................
+
 ### 🛠️ 3. `sed` — **Stream Editor**
 
 📛 Name Origin:
@@ -7948,6 +8062,8 @@ sed 's/apple/orange/g' file.txt      # Replace ALL "apple"s
 sed '/^#/d' config.conf              # Delete all comment lines
 sed -n '/error/p' log.txt            # Print only lines with "error"
 ```
+
+............................................................................................................................................................................................................................................
 
 ### ✂️ 4. `cut` – *Extract sections (columns) of each line*
 
@@ -8015,6 +8131,8 @@ echo "a,b,c,d" | cut -d ',' -f 2 --complement
 
 ➡️ Output: `a,c,d`
 
+............................................................................................................................................................................................................................................
+
 ### 🔢 5. `sort` – *Sort lines of text alphabetically or numerically*
 
 📛 **Why is it called `sort`?**
@@ -8060,6 +8178,8 @@ sort -k2 -t "," data.csv
 ```
 
 ➡️ Sorts CSV data  **by the 2nd column** , using `,` as the delimiter.
+
+............................................................................................................................................................................................................................................
 
 ### 📌  6. `uniq` – *Remove or detect duplicate lines*
 
@@ -8108,6 +8228,319 @@ uniq -d sorted.txt
 ```
 
 ➡️ Shows  **only the lines that are repeated** .
+
+............................................................................................................................................................................................................................................
+
+### 🔸 7. `wc` – Word Count
+
+Let's break down the `wc` command — it stands for  **"word count"** , but it does more than just count words.
+
+🧠 What is `wc`?
+
+`wc` is a **text-processing command-line utility** in Linux/UNIX used to  **count** :
+
+* **Lines**
+* **Words**
+* **Characters**
+* **Bytes**
+* **Maximum line length**
+
+##### 🔧 Syntax:
+
+```bash
+wc [options] [file...]
+```
+
+If no file is specified, it reads from standard input.
+
+##### ✅ Common Options:
+
+| Option | Description                                                            |
+| ------ | ---------------------------------------------------------------------- |
+| `-l` | Count**lines**                                                   |
+| `-w` | Count**words**                                                   |
+| `-c` | Count**bytes** ("bytes counted" (originally: "character count")) |
+| `-m` | Count**characters**(multibyte-aware)                             |
+| `-L` | **Max line length**(in characters)                               |
+
+##### 🔍 Examples:
+
+📄 Count lines, words, and bytes in a file:
+
+```bash
+wc file.txt
+```
+
+Output:
+
+```
+  20  150 1024 file.txt
+```
+
+> `20` lines, `150` words, `1024` bytes
+
+##### 🔠 Count characters only:
+
+```bash
+wc -m file.txt
+```
+
+##### 🧮 Count lines only:
+
+```bash
+wc -l file.txt
+```
+
+##### ⌨️ Use with piped input:
+
+```bash
+echo "Hello Linux World" | wc -w
+```
+
+Output: `3` (3 words)
+
+##### 📏 Maximum line length:
+
+```bash
+wc -L file.txt
+```
+
+##### 📘 Summary Table
+
+| Task             | Command                  |
+| ---------------- | ------------------------ |
+| Count lines      | `wc -l file.txt`       |
+| Count words      | `wc -w file.txt`       |
+| Count bytes      | `wc -c file.txt`       |
+| Count characters | `wc -m file.txt`       |
+| Max line length  | `wc -L file.txt`       |
+| Count from stdin | `echo "hello" \| wc -w` |
+
+##### 🧠 Bonus Tip: Combine with other tools
+
+```bash
+grep "error" logfile.txt | wc -l
+```
+
+➡️ Counts the number of lines with the word "error".
+
+............................................................................................................................................................................................................................................
+
+### 🔁 8. `tr` – Translate
+
+The `tr` command in Linux is a **character translation, substitution, and deletion** tool. It’s short for **"translate"** and is part of core Unix/Linux utilities.
+
+#### 🧠 What is `tr`?
+
+`tr` stands for  **translate** . It reads from **stdin** and writes to **stdout** — and is used to:
+
+* Replace characters
+* Delete characters
+* Compress repeated characters
+
+It **doesn't** work on files directly — it needs to be used with piping or redirection.
+
+#### 🔧 Syntax:
+
+```bash
+tr [options] SET1 [SET2]
+```
+
+#### ✅ Common Use Cases:
+
+###### 1. 🔤  **Convert lowercase to uppercase** :
+
+```bash
+echo "hello" | tr 'a-z' 'A-Z'
+# Output: HELLO
+```
+
+###### 2. 🔄  **Replace characters** :
+
+```bash
+echo "banana" | tr 'a' 'o'
+# Output: bonono
+```
+
+Replaces every `'a'` with `'o'`.
+
+###### 3. ❌ **Delete characters** (`-d`):
+
+```bash
+echo "hello123" | tr -d '0-9'
+# Output: hello
+```
+
+Deletes all digits from the string.
+
+###### 4. 🧹 **Remove duplicate characters** (`-s`, squeeze):
+
+```bash
+echo "aaabbbccc" | tr -s 'a-c'
+# Output: abc
+```
+
+Squeezes repeated `'a'`-`'c'` into a single character.
+
+###### 5. 🧼  **Remove all whitespace** :
+
+```bash
+echo "s p a c e s" | tr -d ' '
+# Output: spaces
+```
+
+#### 🔠 Character Classes (`[:class:]`)
+
+You can use character classes like this:
+
+```bash
+tr '[:lower:]' '[:upper:]'
+```
+
+→ Converts lowercase to uppercase, just like `'a-z'` to `'A-Z'`.
+
+Common classes:
+
+* `[:lower:]` – lowercase letters
+* `[:upper:]` – uppercase letters
+* `[:digit:]` – numbers
+* `[:alpha:]` – alphabet letters
+* `[:space:]` – whitespace (tabs, spaces, etc.)
+
+#### ❗ `tr` works only on characters (not strings or words)
+
+```bash
+echo "hello world" | tr "hello" "HELLO"
+```
+
+* It matches  **individual characters** , not entire words.
+* `'h' → 'H'`, `'e' → 'E'`, etc.
+
+#### ⚠️ Important:
+
+* `tr` only works with **standard input/output**
+* You cannot do this: `tr file1.txt` — use redirection or pipe
+
+```bash
+tr 'a-z' 'A-Z' < file.txt
+```
+
+............................................................................................................................................................................................................................................
+
+### 🔁 8. `paste` – To paste contents
+
+Let's explore the `paste` command in Linux — it's super handy when working with **columns of data** from multiple files or lines.
+
+#### 🧠 What is `paste`?
+
+`paste` is a **command-line utility** that **merges lines** of files **horizontally** (i.e., side by side), using a **delimiter** (default is a tab).
+
+> It’s the opposite of `cut`, which extracts columns.
+>
+> `paste` *joins* them.
+
+#### 🔧 Syntax
+
+```bash
+paste [OPTION]... [FILE]...
+```
+
+#### ✅ Basic Example
+
+Say we have two files:
+
+**names.txt**
+
+```
+Alice
+Bob
+Charlie
+```
+
+**scores.txt**
+
+```
+85
+92
+78
+```
+
+```bash
+paste names.txt scores.txt
+```
+
+**Output:**
+
+```
+Alice   85
+Bob     92
+Charlie 78
+```
+
+(Default delimiter is  **tab** )
+
+#### 🧩 Common Options
+
+| Option       | Description                                                             |
+| ------------ | ----------------------------------------------------------------------- |
+| `-d DELIM` | Use custom delimiter (instead of tab)                                   |
+| `-s`       | Paste**serially** , one file at a time (combine lines vertically) |
+| `--help`   | Show help                                                               |
+
+🔸 Example: Use a comma delimiter
+
+```bash
+paste -d ',' names.txt scores.txt
+```
+
+**Output:**
+
+```
+Alice,85
+Bob,92
+Charlie,78
+```
+
+🔸 Example: Use multiple delimiters
+
+```bash
+paste -d ',:' names.txt scores.txt
+```
+
+It will alternate: first delimiter is `,`, second is `:`, then repeats.
+
+#### 🔹 Serial paste (combine one file's lines into one row)
+
+```bash
+paste -s names.txt
+```
+
+**Output:**
+
+```
+Alice   Bob     Charlie
+```
+
+#### 🔄 Combine multiple files
+
+```bash
+paste file1.txt file2.txt file3.txt
+```
+
+Each line from all files is joined side by side.
+
+#### ⚠️ Notes
+
+* If files have different number of lines, `paste` fills the missing fields with blanks.
+* If you use `-` instead of a filename, `paste` will read from  **stdin** .
+
+Example:
+
+```bash
+paste names.txt -
+```
+
+Then type manually or pipe another file.
 
 ---
 
@@ -9469,27 +9902,2101 @@ kill 1234 2345 3456
 > * ✅ Use **`killall`** for exact process names.
 > * ✅ Use **`pkill`** for flexible, pattern-based killing.
 > * ✅ Use **`xkill`** for frozen windows in the GUI.
->
 
 #### ⚠️ Caution:
 
 * Don’t `kill -9` unless absolutely necessary — it skips cleanup.
 * Killing system processes can crash your session or OS.
 
+............................................................................................................................................................................................................................................
 
+## 💻 Command - `dd`
 
+The `dd` command is one of the most powerful (and dangerous) utilities in Linux — often referred to as the **"disk destroyer"** if used incorrectly. But it's also **extremely useful** for low-level data copying and backup.
 
+#### 🧰 What is `dd`?
 
+`dd` is a command-line tool for **copying and converting raw data** at the byte level.
 
+> You can use it to:
 
+* Create bootable USBs
+* Clone disks or partitions
+* Backup the MBR
+* Wipe disks
+* Convert between formats (e.g., ASCII ↔ EBCDIC)
 
+#### 🧠 Why is it called `dd`?
 
+* It's a play on the  **IBM JCL command `DD` (Data Definition)** .
+* Unlike normal Unix tools (`cp`, `mv`), `dd` uses `if=`, `of=`, etc. for compatibility with that syntax.
 
+#### 🧾 Syntax:
 
+```bash
+dd if=<input> of=<output> [options]
+```
 
+| Parameter | Meaning                 |
+| --------- | ----------------------- |
+| `if=`   | Input file (or device)  |
+| `of=`   | Output file (or device) |
 
+#### 🔧 Common Options:
 
+| Option              | Description                                               |
+| ------------------- | --------------------------------------------------------- |
+| `if=`             | Input file or device (`/dev/sda`,`file.iso`, etc.)    |
+| `of=`             | Output file or device (`/dev/sdb`,`backup.img`, etc.) |
+| `bs=`             | Block size (e.g.,`bs=4M`) — affects speed              |
+| `count=`          | Number of blocks to copy                                  |
+| `status=progress` | Show progress (newer versions of `dd`)                  |
+| `conv=`           | Specify conversions (e.g.,`notrunc`,`sync`)           |
 
+> #### ❓ 1. **Can’t size be automatically found out in `dd`?**
+>
+> ✅ *Yes and No:*
+>
+> * `dd`  **can read until the end of the file or device** , so  **you don’t have to specify the size or count** .
+> * But you do usually set the **block size** (`bs=`), not the total size.
+>
+> 🧠 Example:
+>
+> ```bash
+> sudo dd if=ubuntu.iso of=/dev/sdX bs=4M
+> ```
+>
+> → It will continue until the entire ISO is copied — no need to specify `count`.
+>
+> So:
+>
+> * `count` = optional (used when you want to limit how much is copied)
+> * It automatically stops at EOF (End of File) for regular files
+>
+> #### ❓ 2. **Why explicitly give `status=progress`?**
+>
+> ✅ Because by default, `dd` is  **silent** .
+>
+> * It won’t show anything unless:
+>   * There's an error, **or**
+>   * You add `status=progress` (or use `pv` as a wrapper)
+>
+> ```bash
+> sudo dd if=ubuntu.iso of=/dev/sdX bs=4M status=progress
+> ```
+>
+> This shows:
+>
+> * Number of bytes copied
+> * Speed
+> * Time taken
+>
+> 🔧 Without `status=progress`:
+>
+> ```bash
+> sudo dd if=ubuntu.iso of=/dev/sdX bs=4M
+> # ... nothing appears until it finishes
+> ```
+>
+> Which can be nerve-wracking 😬 if you're copying a multi-GB file and nothing shows up for 10 minutes.
+>
+> #### 🧱 What is `bs=` in `dd`?
+>
+> `bs` stands for  **block size** , i.e., the number of bytes that `dd` reads/writes at a time.
+>
+> ###### ⚙️ Does `dd` need `bs=`?
+>
+> ❌ No, it doesn't *require* it — but:
+>
+> * If you  **don’t provide `bs=`** , it **defaults to `512` bytes** (1 sector size).
+> * That means it copies just 512 bytes at a time — which is **very slow** for large files or disks.
+>
+> ###### ✅ Why you should provide `bs=`
+>
+> ✅ 1.  **Performance** :
+>
+> * Larger `bs` values mean **fewer read/write operations** =  **faster copy** .
+>
+> ```bash
+> # Slow — default block size
+> dd if=bigfile of=copy
+>
+> # Fast — large block size
+> dd if=bigfile of=copy bs=4M status=progress
+> ```
+>
+> ✅ `bs=4M` (4 megabytes) is a common "sweet spot" for disk/ISO writing.
+>
+> ✅ 2.  **Tuning for use case** :
+>
+> | `bs`Value   | Use Case                         |
+> | ------------- | -------------------------------- |
+> | `512`       | Byte-perfect cloning (MBR, boot) |
+> | `4K`        | SSD/HDD sector alignment         |
+> | `1M`/`4M` | Large file/disk/ISO copying      |
+> | `128K`      | General use if unsure            |
+>
+> ###### 🔍 Why `dd` doesn’t auto-adjust `bs`?
+>
+> Because:
+>
+> * `dd` is an old, low-level Unix utility.
+> * It’s meant to behave  **deterministically** , so the user **must specify** behavior explicitly.
+> * Auto-detecting `bs` could break predictable scripting.
 
+#### ✅ Examples:
+
+1. 🔥 Create a bootable USB from ISO:
+
+```bash
+sudo dd if=ubuntu.iso of=/dev/sdX bs=4M status=progress
+```
+
+Replace `/dev/sdX` with your USB device (not a partition like `/dev/sdX1`).
+
+> What happens?
+>
+> * You're copying a **bootable ISO image** (which already contains a bootloader and OS files).
+> * `dd` just writes that raw image **as-is** onto the USB stick.
+> * Since the ISO already includes a bootloader (like GRUB or ISOLINUX), your USB becomes bootable.
+>
+> ➡️ Remember it’s not `dd` that makes it bootable — it’s the **ISO file** you give it. `dd` It **just copies raw bytes** — it's a dumb but powerful byte-level tool.
+
+2. 📦 Backup a hard drive:
+
+```bash
+sudo dd if=/dev/sda of=~/sda-backup.img bs=64K status=progress
+```
+
+> What happens?
+>
+> * You're telling `dd` to read all bytes from the disk `/dev/sda` and write them into a file `backup.img`.
+> * It copies  **everything** : boot sector, partitions, filesystem, even empty space.
+
+    3. 🔄 Restore an image to a disk:
+
+```bash
+sudo dd if=~/sda-backup.img of=/dev/sda bs=64K status=progress
+```
+
+> What happens ?
+>
+> * It writes the saved bytes back to disk — byte-for-byte.
+> * This recreates the original disk state exactly.
+
+5. 🧹 Wipe a disk (overwrite with zeros):
+
+```bash
+sudo dd if=/dev/zero of=/dev/sdX bs=1M status=progress
+```
+
+> ⚠️ Be very careful — this will destroy all data on the disk!
+
+> Wha happens ?
+>
+> * You're overwriting the entire disk with  **zeros** .
+> * `dd` reads from `/dev/zero` (a special device that gives infinite zeros).
+> * This destroys all previous data — gone forever.
+
+6. 🔐 Wipe a disk with random data:
+
+```bash
+sudo dd if=/dev/urandom of=/dev/sdX bs=1M status=progress
+```
+
+6. 🕹️ Copy part of a file:
+
+```bash
+dd if=input.txt of=output.txt bs=1 count=100
+```
+
+→ Copies first 100 bytes.
+
+#### ⚠️ Important Warnings
+
+* `dd` doesn’t ask for confirmation — one mistake and you can wipe your entire system.
+* Always double-check your `if=` and `of=` paths before running.
+* Consider using `lsblk` to check your device names.
+
+............................................................................................................................................................................................................................................
+
+## 💻 Command - `merge`
+
+This is a **standalone command-line tool** used to **combine changes from multiple versions** of a file.
+
+#### 🔧 Syntax:
+
+```bash
+merge [options] file1 file2 file3
+```
+
+| File      | Description                             |
+| --------- | --------------------------------------- |
+| `file1` | Your version (often called "mine")      |
+| `file2` | Base version (common ancestor)          |
+| `file3` | Other version (e.g., from someone else) |
+
+#### ✅ What does it do?
+
+* Tries to automatically **merge changes** made in `file1` and `file3`, using `file2` as the base.
+* If changes conflict, it **inserts conflict markers** like:
+  ```text
+  <<<<<<< file1
+  your changes
+  =======
+  other changes
+  >>>>>>> file3
+  ```
+
+#### 🧠 Example:
+
+```bash
+merge my.txt base.txt their.txt
+```
+
+This will try to merge `my.txt` and `their.txt` using `base.txt` as the reference.
+
+> Note: This is different from Git's `merge`, but the idea is the same — resolving changes.
+
+#### 🔀  `git merge`
+
+This is the more **commonly used "merge"** in real-world Linux development work.
+
+👉 What it does:
+
+* Combines changes from **another Git branch** into your current branch.
+
+Example:
+
+```bash
+git checkout main
+git merge feature-branch
+```
+
+Git will:
+
+* Try to **merge commits** from `feature-branch` into `main`
+* If no conflicts, it does so automatically
+* If there are conflicts, it asks you to **resolve them manually** (usually inside a code editor)
+
+#### 🧰 Common `merge` Options:
+
+| Option        | Description                                                                |
+| ------------- | -------------------------------------------------------------------------- |
+| `-A`        | Output**all changes** , with conflict markers if needed              |
+| `-E`        | Use `ed`script conflict markers (`ed`is a text editor)                 |
+| `-L label`  | Set custom**labels**for conflict markers (used with `<<<<<<<`etc.) |
+| `-p`        | Output merge result to**stdout**(default)                            |
+| `-q`        | **Quiet mode**— suppress warnings                                   |
+| `--version` | Show version of `merge`                                                  |
+| `--help`    | Show help information                                                      |
+
+............................................................................................................................................................................................................................................
+
+## 💻 Command - `env`
+
+`env` stands for  **environment** . It’s used to **view, modify, or run commands with a custom environment** in the shell.
+
+#### 🔧 Syntax
+
+```bash
+env [OPTION]... [NAME=VALUE]... [COMMAND [ARG]...]
+```
+
+#### ✅ Common Uses of `env`
+
+###### 1. 📜 **Print current environment variables**
+
+```bash
+env
+```
+
+This lists all current environment variables, like:
+
+```bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
+HOME=/home/arun
+USER=arun
+```
+
+These variables are used by the shell and programs to determine how to behave.
+
+###### 2. 🚀 **Run a command with temporary environment variables**
+
+```bash
+env VAR=value command
+```
+
+For example:
+
+```bash
+env DEBUG=true node app.js
+```
+
+This sets `DEBUG=true` **only for the `node app.js` command** — it doesn't affect your global environment.
+
+###### 3. ⚠️ **Run a command with an empty environment**
+
+```bash
+env -i command
+```
+
+`-i` stands for "ignore environment"
+
+```bash
+env -i bash
+```
+
+Starts a new shell with  **no environment variables** .
+
+###### 4. 🛠 **Use in Shebang (`#!`) Lines**
+
+Some scripts use `env` to locate the interpreter:
+
+```bash
+#!/usr/bin/env python3
+```
+
+✅ Why? It ensures that Python is run from your current environment’s `PATH` — more portable across systems.
+
+#### 🧰 Common Options
+
+| Option        | Description                            |
+| ------------- | -------------------------------------- |
+| `-i`        | Ignore inherited environment variables |
+| `-u VAR`    | Unset a variable                       |
+| `--help`    | Show help message                      |
+| `--version` | Show version info                      |
+
+📌 Example with unset:
+
+```bash
+env -u HOME bash
+```
+
+Starts a bash shell without the `HOME` variable.
+
+............................................................................................................................................................................................................................................
+
+## 💻Command - `tee`
+
+The `tee` command is a **super useful tool** in Linux that helps you  **view and save output at the same time** . Here's a clear breakdown:
+
+#### 🧠 What is `tee`?
+
+`tee` **reads from standard input (stdin)** and **writes to standard output (stdout)** **and** to one or more **files** simultaneously.
+
+> 📌 It's like a **T-pipe** in plumbing — splitting the flow of data into two directions.
+
+#### 🔧 Syntax
+
+```bash
+command | tee [options] [file(s)]
+```
+
+#### ✅ What it Does
+
+| Task                | How `tee`Helps                     |
+| ------------------- | ------------------------------------ |
+| View command output | Prints to terminal (stdout)          |
+| Save output to file | Writes same output to file(s)        |
+| Do both at once     | You can watch it**and**save it |
+
+#### 📌 Basic Example
+
+```bash
+ls -l | tee filelist.txt
+```
+
+* Shows the directory listing on screen ✅
+* Saves it to `filelist.txt` ✅
+
+#### 🔁 Append Instead of Overwrite
+
+By default, `tee` **overwrites** the file.
+
+To **append** instead:
+
+```bash
+ls -l | tee -a filelist.txt
+```
+
+#### 📂 Write to Multiple Files
+
+```bash
+echo "Log Entry" | tee log1.txt log2.txt log3.txt
+```
+
+Saves to all three files and prints to screen.
+
+#### 🔐 Example with `sudo`
+
+If you need elevated permissions to write:
+
+```bash
+echo "alias cls='clear'" | sudo tee -a /etc/bash.bashrc
+```
+
+> You can't do `sudo echo` reliably due to redirection permissions. So we use `tee`.
+
+#### 🔁 Common Options
+
+| Option        | Description                                  |
+| ------------- | -------------------------------------------- |
+| `-a`        | Append to the file(s) instead of overwriting |
+| `--help`    | Show help message                            |
+| `--version` | Show version info                            |
+
+#### 🔧 Use Case Examples
+
+1. **Log output while running a script** :
+
+```bash
+   ./deploy.sh | tee deploy.log
+```
+
+1. **Append system info to log** :
+
+```bash
+   uname -a | tee -a system.log
+```
+
+1. **Capture and inspect errors** :
+
+```bash
+   some-command 2>&1 | tee error.log
+```
+
+............................................................................................................................................................................................................................................
+
+## 💻 Command - `nohup`
+
+Let’s explore the `nohup` command — it’s especially useful when running long-running processes in Linux.
+
+#### 🧠 What is `nohup`?
+
+`nohup` stands for  **"no hang up"** .
+
+It allows you to  **run a command immune to hangups** , meaning:
+
+* It  **keeps running even if you log out** , close the terminal, or get disconnected.
+* It **redirects the output to a file** by default (usually `nohup.out`), so your process doesn't crash due to missing terminal.
+
+#### 🔧 Syntax
+
+```bash
+nohup command [arguments] &
+```
+
+> The `&` at the end runs the command in the  **background** .
+
+#### ✅ Why use `nohup`?
+
+Without `nohup`, if you close the terminal or get logged out, the command or script  **gets terminated** .
+
+### Use cases:
+
+* Running **long scripts** or **server processes**
+* Executing jobs over **SSH** that must **continue after logout**
+
+#### 📄 Example
+
+```bash
+nohup python3 myscript.py &
+```
+
+* ✅ Script runs in background.
+* ✅ Even if you log out or close the terminal, it  **keeps running** .
+* ✅ Output is saved to `nohup.out`.
+
+#### 🔁 Redirecting Output
+
+###### By default:
+
+* **stdout** → `nohup.out`
+* **stderr** → also goes to `nohup.out`
+
+###### Custom output:
+
+```bash
+nohup ./myscript.sh > output.log 2>&1 &
+```
+
+* `> output.log` → standard output
+* `2>&1` → standard error goes to the same file
+
+#### 🛠️ Monitor the Process
+
+```bash
+ps aux | grep myscript
+```
+
+Or get the process ID directly:
+
+```bash
+echo $!
+```
+
+#### 🛑 Kill the Process (if needed)
+
+```bash
+kill -9 <pid>
+```
+
+#### 📝 Summary Table
+
+| Feature              | Description                                     |
+| -------------------- | ----------------------------------------------- |
+| Name                 | `nohup`=**no hang up**                  |
+| Purpose              | Run commands that**survive logout**       |
+| Default output       | `nohup.out`                                   |
+| Background execution | Add `&`at the end                             |
+| Output redirection   | Use `> logfile 2>&1`                          |
+| Useful with SSH      | Yes — keeps process running if SSH disconnects |
+
+............................................................................................................................................................................................................................................
+
+## 💻 Command - `vmstat`
+
+`vmstat` is a **very useful command-line tool** for monitoring **system performance** in Linux/Unix.
+
+#### 🧠 What is `vmstat`?
+
+`vmstat` stands for  **Virtual Memory Statistics** .
+
+It reports **real-time information** about system performance, including:
+
+* CPU usage
+* Memory usage (physical and virtual)
+* Paging/swapping
+* Processes
+* I/O (input/output)
+* System activity
+
+#### 🔧 Syntax
+
+```bash
+vmstat [options] [delay] [count]
+```
+
+* `delay`: interval (in seconds) between updates
+* `count`: number of updates to display
+
+#### ✅ Example Usage
+
+➤ View current snapshot (since last boot):
+
+```bash
+vmstat
+```
+
+➤ Monitor system every 2 seconds (continuous):
+
+```bash
+vmstat 2
+```
+
+➤ Monitor system every 1 sec, 5 times:
+
+```bash
+vmstat 1 5
+```
+
+#### 📊 Output Columns Explained
+
+Here's what the output looks like:
+
+```
+procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----
+ r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs  us  sy  id  wa
+ 1  0      0 500000  20000 300000    0    0     1     2  120  300  10   5  80   5
+```
+
+🔹 `procs`
+
+| Field | Meaning                                   |
+| ----- | ----------------------------------------- |
+| `r` | Running/ready processes (waiting for CPU) |
+| `b` | Blocked processes (waiting for I/O)       |
+
+🔹 `memory`
+
+| Field     | Meaning                              |
+| --------- | ------------------------------------ |
+| `swpd`  | Amount of virtual memory used (swap) |
+| `free`  | Free physical memory                 |
+| `buff`  | Memory used for buffers              |
+| `cache` | Memory used for file cache           |
+
+🔹 `swap`
+
+| Field  | Meaning                     |
+| ------ | --------------------------- |
+| `si` | Swapped in from disk (KB/s) |
+| `so` | Swapped out to disk (KB/s)  |
+
+🔹 `io`
+
+| Field  | Meaning                          |
+| ------ | -------------------------------- |
+| `bi` | Blocks received from disk (read) |
+| `bo` | Blocks sent to disk (write)      |
+
+🔹 `system`
+
+| Field  | Meaning                            |
+| ------ | ---------------------------------- |
+| `in` | Number of interrupts per second    |
+| `cs` | Number of context switches per sec |
+
+🔹 `cpu`
+
+| Field  | Meaning                      |
+| ------ | ---------------------------- |
+| `us` | User CPU time (%)            |
+| `sy` | System (kernel) CPU time (%) |
+| `id` | Idle CPU time (%)            |
+| `wa` | Waiting on I/O (%)           |
+
+> High `wa` means slow disks or I/O bottlenecks.
+
+#### 📌 Common Flags
+
+| Option | Description                      |
+| ------ | -------------------------------- |
+| `-s` | Show event counters (since boot) |
+| `-m` | Show memory stats in megabytes   |
+| `-d` | Show disk statistics             |
+| `-a` | Show active/inactive memory      |
+
+Example:
+
+```bash
+vmstat -s
+```
+
+Shows a full snapshot in summary format.
+
+> #### Some Important Concepts
+>
+> ##### 🧠 1. **Virtual Memory**
+>
+> **Definition:**
+>
+> Virtual memory is an abstraction that gives processes the  **illusion of having their own large, private memory space** , even if physical RAM is limited.
+>
+> 📌 Key Points:
+>
+> * It's managed by the  **OS and hardware (MMU)** .
+> * It uses **disk space** (like swap) to extend RAM.
+> * Allows:
+>   * Memory protection between processes
+>   * Efficient memory usage
+>   * Running larger programs than actual RAM
+>
+>> **Example:**
+>>
+>> You have 4 GB RAM, but your program needs 6 GB → OS moves parts to **disk (swap)** temporarily using virtual memory.
+>>
+>
+> ##### 📄 2. **Paging**
+>
+> **Definition:**
+>
+> Paging is how virtual memory is implemented — by dividing memory into fixed-size blocks:
+>
+> * **Pages** (in virtual memory)
+> * **Frames** (in physical memory)
+>
+> 📌 What Happens:
+>
+> * When your program accesses data not in RAM, the OS **fetches the page** from disk (swap) into RAM.
+>
+>   This is called a  **page fault** .
+>
+>> Think of it like loading small parts of a large book into memory when needed.
+>>
+>
+> ##### 🔁 3. **Swapping**
+>
+> **Definition:**
+>
+> Swapping is the process of **moving entire processes or memory pages** between RAM and disk (swap space) to free up memory.
+>
+> * If RAM is full, the OS **swaps inactive memory** to disk.
+> * If that memory is needed again, it’s  **swapped back in** .
+>
+> 🔥 Cost:
+>
+> * Disk is much slower than RAM.
+> * Excessive swapping =  **“thrashing”** , which slows down the system.
+>
+>> `vmstat` shows swap activity using `si` (swap in) and `so` (swap out).
+>>
+>
+> ##### 📊 4. **Event Counters**
+>
+> **Definition:**
+>
+> These are **cumulative counters** maintained by the kernel for system events like:
+>
+> * Number of **page faults**
+> * Number of **swaps**
+> * Number of **interrupts**
+> * Number of **context switches**
+>
+> How to see it:
+>
+> ```bash
+> vmstat -s
+> ```
+>
+>> Shows total system stats since boot — great for diagnosing performance trends.
+>>
+>
+> ##### 🧠 5. **Buffers**
+>
+> **Definition:**
+>
+> Buffers are temporary memory areas used by the kernel to **store raw block data** from I/O devices (like disk or USB), **before** processing or writing.
+>
+> Difference:
+>
+> | Type             | Description                                     |
+> | ---------------- | ----------------------------------------------- |
+> | **Buffer** | Stores**raw blocks**from disk temporarily |
+> | **Cache**  | Stores**file contents**(processed data)   |
+>
+>> Buffers help reduce I/O wait time by storing data before sending it to the CPU or disk.
+>>
+>
+> ##### 🧠 Visual Analogy:
+>
+> Imagine you're baking a cake:
+>
+> * **Virtual memory** = recipe says you need 10 ingredients, but you have room for 5 at a time → others stored nearby (swap).
+> * **Paging** = you bring in one ingredient at a time.
+> * **Swapping** = you put the unused items back in the pantry (disk) to make space.
+> * **Buffers** = the kitchen counter holding flour before use.
+> * **Event counters** = a notepad where you track how many cakes you've made.
+>
+> ✅ Summary Table
+>
+> | Term                     | What It Means                                              |
+> | ------------------------ | ---------------------------------------------------------- |
+> | **Virtual Memory** | Abstraction layer to extend RAM using disk                 |
+> | **Paging**         | Divides memory into pages/frames, loads only what's needed |
+> | **Swapping**       | Moves memory between RAM and disk when RAM is full         |
+> | **Event Counters** | OS statistics like page faults, swaps, interrupts          |
+> | **Buffers**        | Temporary storage for raw disk data before processing      |
+
+#### 🛠️ Real-World Use Cases
+
+* Monitor **CPU usage** in real-time
+* Track **memory or swap usage**
+* Detect **I/O bottlenecks**
+* Troubleshoot **slow systems**
+* Use in **scripts for performance logs**
+
+............................................................................................................................................................................................................................................
+
+## 💻 Command - `which and whereis`
+
+ Let's break down the **`which`** and **`where`** (or `whereis`) commands — they're often confused, but serve slightly different purposes in Linux.
+
+#### 🧭 1. `which`
+
+##### 🔹 **Purpose:**
+
+`which` shows the **full path** of the executable that **would be run** if you type a command.
+
+##### 📌 Syntax:
+
+```bash
+which <command>
+```
+
+##### 📄 Example:
+
+```bash
+which python
+```
+
+**Output:**
+
+```
+/usr/bin/python
+```
+
+It tells you: “When you run `python`, the shell actually runs this file.”
+
+##### 📌 Common Flags:
+
+| Flag          | Meaning                                                                        |
+| ------------- | ------------------------------------------------------------------------------ |
+| `-a`        | Show**all instances**of the command in `$PATH`, not just the first one |
+| `--help`    | Display help message                                                           |
+| `--version` | Display version info (if available)                                            |
+
+##### ✅ Use Case:
+
+* Check **where a command is coming from** (useful when multiple versions are installed)
+* Debug **PATH** issues
+
+#### 🧭 2. `whereis`
+
+##### 🔹 **Purpose:**
+
+`whereis` locates:
+
+* **binary**
+* **source**
+* **manual pages** of a command
+
+##### 📌 Syntax:
+
+```bash
+whereis <command>
+```
+
+##### 📄 Example:
+
+```bash
+whereis ls
+```
+
+**Output:**
+
+```
+ls: /bin/ls /usr/share/man/man1/ls.1.gz
+```
+
+It shows:
+
+* `/bin/ls` → the binary
+* `/usr/share/man/...` → the man page location
+
+##### 📌 Common Flags:
+
+| Flag   | Meaning                                        |
+| ------ | ---------------------------------------------- |
+| `-b` | Search**only for binaries**              |
+| `-s` | Search**only for source files**          |
+| `-m` | Search**only for manual sections**       |
+| `-u` | Show commands**that have unusual files** |
+| `-B` | Followed by path(s) to search for binaries     |
+| `-M` | Path(s) to search for man pages                |
+| `-S` | Path(s) to search for source files             |
+| `-f` | Terminates `-B`,`-M`, or `-S`path lists  |
+
+> Advanced flags (`-B`, `-M`, `-S`) are used to **customize** search locations.
+
+##### ✅ Use Case:
+
+* Find **binaries + docs**
+* Use when `which` returns nothing (e.g., command aliases, built-ins)
+
+#### 🧠 Comparison Table
+
+| Feature       | `which`              | `whereis`                        |
+| ------------- | ---------------------- | ---------------------------------- |
+| Shows binary? | ✅ Yes                 | ✅ Yes                             |
+| Shows docs?   | ❌ No                  | ✅ Yes (manual pages)              |
+| Shows source? | ❌ No                  | ✅ Yes (if available)              |
+| Looks where?  | Only in `$PATH`      | Searches predefined system folders |
+| Simpler?      | ✅ Yes                 | 🔄 More comprehensive              |
+| Built-in?     | Often external command | External command                   |
+
+#### 🔁 Bonus Tip: `command -v`
+
+This is a **built-in shell** alternative to `which`.
+
+```bash
+command -v python
+```
+
+More portable and recommended in scripts.
+
+🧪 Examples:
+
+```bash
+which ls
+```
+
+→ `/bin/ls` (shows the first match)
+
+```bash
+which -a ls
+```
+
+→
+
+```
+/bin/ls  
+/usr/bin/ls  
+```
+
+............................................................................................................................................................................................................................................
+
+## 💻 Command - `pushd` and `popd` and `dirs`
+
+Great! `pushd` and `popd` are powerful but often overlooked shell built-in commands in Linux (and Unix-like systems) that help you **navigate directories more efficiently** using a  **directory stack** .
+
+#### 🧠 What Are `pushd` and `popd`?
+
+| Command   | Purpose                                                                     |
+| --------- | --------------------------------------------------------------------------- |
+| `pushd` | **Push**a directory onto a stack and go there                         |
+| `popd`  | **Pop**the top directory off the stack and return to the previous one |
+
+They work together to help you **"bookmark" directories** as you move around.
+
+#### 📦 How It Works: Directory Stack
+
+Think of the directory stack like a  **pile of books** :
+
+* You **push** a book onto the top with `pushd`
+* You **pop** the top book off with `popd`
+* The shell always **uses the topmost directory** as your current working directory
+
+You can see this stack using:
+
+```bash
+dirs
+```
+
+#### 🔧 Syntax
+
+`pushd`:
+
+```bash
+pushd [directory]
+```
+
+`popd`:
+
+```bash
+popd
+```
+
+#### 📌 Example
+
+```bash
+pwd
+# /home/user
+
+pushd /etc
+# Goes to /etc and adds /home/user to the stack
+
+pwd
+# /etc
+
+popd
+# Returns to /home/user
+
+pwd
+# /home/user
+```
+
+#### 📚 Another Example with Multiple Directories
+
+```bash
+pushd /var/log
+pushd /usr/bin
+pushd /tmp
+
+dirs
+# /tmp /usr/bin /var/log /home/user
+
+popd
+# Returns to /usr/bin
+
+popd
+# Returns to /var/log
+
+popd
+# Returns to /home/user
+```
+
+#### 🔁 Bonus: `dirs`
+
+* Lists the current **directory stack**
+
+```bash
+dirs -v
+```
+
+This will number the stack for reference, like:
+
+```
+0  /tmp
+1  /usr/bin
+2  /var/log
+3  /home/user
+```
+
+#### 🔁 `pushd` Flags
+
+```bash
+pushd [+N | -N] [directory]
+```
+
+📌 Flags and Usage:
+
+| Flag   | Meaning                                                                                                          |
+| ------ | ---------------------------------------------------------------------------------------------------------------- |
+| `+N` | Rotate the directory stack so that the directory at position `N`is at the top (count from left, starting at 0) |
+| `-N` | Same as `+N`, but count from right                                                                             |
+
+> These options are mainly for  **rotating the stack** , not pushing new directories.
+
+🧪 Example:
+
+Suppose your directory stack looks like:
+
+```bash
+dirs -v
+ 0  /tmp
+ 1  /usr/bin
+ 2  /home/user
+```
+
+```bash
+pushd +1
+```
+
+Now `/usr/bin` is on top, and you `cd` into it.
+
+#### 🔁 `popd` Flags
+
+```bash
+popd [+N | -N]
+```
+
+📌 Flags and Usage:
+
+| Flag   | Meaning                                               |
+| ------ | ----------------------------------------------------- |
+| `+N` | Remove the directory at position `N`(from the left) |
+| `-N` | Remove from the right side                            |
+
+> Default behavior (`popd`) removes the **top** of the stack.
+
+🧪 Example:
+
+```bash
+dirs -v
+ 0  /tmp
+ 1  /usr/bin
+ 2  /home/user
+```
+
+```bash
+popd +1
+```
+
+Removes `/usr/bin` from the stack.
+
+#### ✅ Use Cases
+
+* Navigating deep folder structures without losing your original location
+* Temporarily jumping to config/log/code dirs while scripting
+* Simplifies directory traversal in shell scripts
+
+#### 📝 Summary Table
+
+| Command       | What It Does                          |
+| ------------- | ------------------------------------- |
+| `pushd DIR` | Push DIR onto stack and `cd`into it |
+| `popd`      | Pop top dir off stack and `cd`back  |
+| `dirs`      | Show current directory stack          |
+
+............................................................................................................................................................................................................................................
+
+## 💻 Command - `tree`
+
+The `tree` command is used in Unix/Linux systems (also available in Windows with some shells or via installation) to display the **directory structure** of a path in a  **tree-like format** .
+
+#### 🔧 Basic Syntax:
+
+```bash
+tree [options] [directory]
+```
+
+If no directory is given, it defaults to the current directory.
+
+#### 📁 Example Output:
+
+```bash
+$ tree
+.
+├── index.js
+├── package.json
+├── routes
+│   └── userRoutes.js
+└── controllers
+    └── userController.js
+```
+
+#### 🛠️ Most Useful Options:
+
+| Option          | Description                                                  |
+| --------------- | ------------------------------------------------------------ |
+| `-L <level>`  | Limits the depth of the directory traversal.                 |
+| `-d`          | Lists directories only.                                      |
+| `-a`          | Includes hidden files (like `.gitignore`).                 |
+| `-f`          | Prints full path prefix for each file.                       |
+| `-i`          | Prints without indentation lines (just indents with spaces). |
+| `-s`          | Shows the size of each file in bytes.                        |
+| `-h`          | Displays sizes in human-readable format (used with `-s`).  |
+| `-p`          | Shows permissions like `ls -l`.                            |
+| `-u`          | Shows the owner of the file.                                 |
+| `-g`          | Shows the group of the file.                                 |
+| `--dirsfirst` | Lists directories before files.                              |
+| `-C`          | Enables colorized output (usually on by default).            |
+
+#### 📌 Common Examples:
+
+* **Display full tree including hidden files:**
+  ```bash
+  tree -a
+  ```
+* **Show only directories:**
+  ```bash
+  tree -d
+  ```
+* **Limit depth to 2 levels:**
+  ```bash
+  tree -L 2
+  ```
+* **Show file sizes in human-readable format:**
+  ```bash
+  tree -sh
+  ```
+* **Print full paths:**
+  ```bash
+  tree -f
+  ```
+* **List directories before files, only 2 levels deep:**
+  ```bash
+  tree --dirsfirst -L 2
+  ```
+
+#### 📦 Install Tree (if not installed):
+
+* **Ubuntu/Debian:**
+  ```bash
+  sudo apt-get install tree
+  ```
+* **Fedora:**
+  ```bash
+  sudo dnf install tree
+  ```
+* **MacOS (with Homebrew):**
+  ```bash
+  brew install tree
+  ```
+
+............................................................................................................................................................................................................................................
+
+## 💻 Command - `tac`
+
+ The `tac` command is the **reverse of `cat`** — it's very simple but useful in scripting and text processing.
+
+#### 🐱‍👓 What is `tac`?
+
+`tac` stands for " **cat** " spelled  **backward** .
+
+#### 🔹 Purpose:
+
+It **reads a file and displays its contents in reverse order** —  **by lines** .
+
+> In other words, the  **last line becomes the first** , the second-last becomes the second, and so on.
+
+#### ✅ Basic Syntax:
+
+```bash
+tac [OPTION]... [FILE]...
+```
+
+#### 📄 Example:
+
+**File `example.txt`:**
+
+```
+Line 1
+Line 2
+Line 3
+```
+
+**Command:**
+
+```bash
+tac example.txt
+```
+
+**Output:**
+
+```
+Line 3
+Line 2
+Line 1
+```
+
+#### ⚙️ Options of `tac`
+
+| Option           | Description                                                               |
+| ---------------- | ------------------------------------------------------------------------- |
+| `-b`           | **Attach the separator** **before**each line (default: after) |
+| `-r`           | Interpret the**separator as a regular expression**                  |
+| `-s SEPARATOR` | Use a custom**separator**instead of newline (`\n`)                |
+
+🔹 `-s` (Custom Separator)
+
+If a file has values separated by `,`, you can use:
+
+```bash
+echo "one,two,three" | tac -s ','
+```
+
+**Output:**
+
+```
+three,two,one
+```
+
+🔹 `-b` (Separator Before)
+
+Used with `-s` to **place the separator before** instead of after.
+
+```bash
+echo "one,two,three" | tac -s ',' -b
+```
+
+**Output:**
+
+```
+,three,two,one
+```
+
+🔹 `-r` (Regex Separator)
+
+This is useful if you want to split using a  **regular expression** .
+
+```bash
+echo "one::two::three" | tac -s '::' -r
+```
+
+**Output:**
+
+```
+three::two::one
+```
+
+............................................................................................................................................................................................................................................
+
+## 💻 Command - `iptables`
+
+Great! `iptables` is a powerful tool in Linux used for **setting up, maintaining, and inspecting the packet filtering rules** in the Linux kernel firewall.
+
+#### 🛡️ What is `iptables`?
+
+* `iptables` is the **userspace command-line utility** to configure the  **Linux kernel firewall** .
+* It allows you to  **filter network traffic** ,  **forward packets** ,  **block IPs** ,  **set up NAT** , and more.
+* Works on the **netfilter framework** in the Linux kernel.
+
+#### 🧱 Structure of iptables
+
+`iptables` works with 3 core components:
+
+##### 🔹 1. **Tables**
+
+* Group of rules for specific purposes.
+
+| Table        | Purpose                                                                 |
+| ------------ | ----------------------------------------------------------------------- |
+| `filter`   | Default table — used for**packet filtering**(ACCEPT, DROP, etc.) |
+| `nat`      | Used for**Network Address Translation**(e.g., port forwarding)    |
+| `mangle`   | Used to**modify packet headers**                                  |
+| `raw`      | Used for**exceptions to connection tracking**                     |
+| `security` | Used for**MAC-level**filtering (SELinux)                          |
+
+##### 🔹 2. **Chains**
+
+Each table has built-in  **chains** , which are  **sets of rules applied at different stages** .
+
+| Chain           | Purpose                               |
+| --------------- | ------------------------------------- |
+| `INPUT`       | Incoming traffic to the system        |
+| `OUTPUT`      | Outgoing traffic from the system      |
+| `FORWARD`     | Traffic being routed through system   |
+| `PREROUTING`  | Before routing decision (used in NAT) |
+| `POSTROUTING` | After routing decision                |
+
+##### 🔹 3. **Rules**
+
+Each **chain** has  **rules** , and each rule has:
+
+* **Match conditions** (e.g., source IP, port, protocol)
+* **Target/action** (e.g., `ACCEPT`, `DROP`, `REJECT`, `LOG`)
+
+##### ⚙️ Syntax
+
+```bash
+iptables [OPTION] [CHAIN] [RULE_SPECIFICATION] [JUMP_TARGET]
+```
+
+#### ✅ Common iptables Commands
+
+| Command                                           | Description                                |
+| ------------------------------------------------- | ------------------------------------------ |
+| `iptables -L`                                   | List all rules in all chains               |
+| `iptables -L -v`                                | Verbose listing                            |
+| `iptables -F`                                   | Flush (delete) all rules                   |
+| `iptables -A INPUT -p tcp --dport 80 -j ACCEPT` | Allow HTTP traffic on port 80              |
+| `iptables -D INPUT 3`                           | Delete 3rd rule in INPUT chain             |
+| `iptables -I INPUT 1 -s 192.168.1.1 -j DROP`    | Insert rule at top to drop packets from IP |
+| `iptables -R INPUT 2 -p icmp -j ACCEPT`         | Replace rule #2 in INPUT chain             |
+
+#### 🔧 Common Options
+
+| Option      | Description                            |
+| ----------- | -------------------------------------- |
+| `-A`      | Append a rule                          |
+| `-I`      | Insert a rule                          |
+| `-D`      | Delete a rule                          |
+| `-R`      | Replace a rule                         |
+| `-F`      | Flush all rules                        |
+| `-L`      | List rules                             |
+| `-N`      | Create a new chain                     |
+| `-X`      | Delete a user-defined chain            |
+| `-P`      | Set default policy                     |
+| `-p`      | Protocol (tcp, udp, icmp)              |
+| `--dport` | Destination port                       |
+| `--sport` | Source port                            |
+| `-s`      | Source IP                              |
+| `-d`      | Destination IP                         |
+| `-j`      | Jump (action: ACCEPT, DROP, LOG, etc.) |
+| `-v`      | Verbose output                         |
+| `-n`      | Numeric output (no DNS lookup)         |
+
+#### 🎯 Common Jump Targets (Actions)
+
+| Target     | Description                            |
+| ---------- | -------------------------------------- |
+| `ACCEPT` | Allow the packet                       |
+| `DROP`   | Silently drop the packet               |
+| `REJECT` | Drop the packet and send an error back |
+| `LOG`    | Log the packet info                    |
+| `DNAT`   | Destination NAT                        |
+| `SNAT`   | Source NAT                             |
+
+#### 🧪 Examples
+
+🔹 Allow SSH (port 22)
+
+```bash
+iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+```
+
+🔹 Block an IP
+
+```bash
+iptables -A INPUT -s 192.168.1.10 -j DROP
+```
+
+🔹 List with line numbers
+
+```bash
+iptables -L --line-numbers -v
+```
+
+🔹 Flush all rules
+
+```bash
+iptables -F
+```
+
+#### ⚠️ Important Notes
+
+* Changes are **not persistent** after reboot unless saved.
+* Save rules with:
+  ```bash
+  sudo iptables-save > /etc/iptables/rules.v4
+  ```
+* Newer systems may use **`nftables`** instead of `iptables`.
+
+---
+
+---
+
+# 🔑 Absolute path  vs Relative path
+
+Understanding **absolute vs relative paths** is essential in Linux and any file system.
+
+#### 📂 What is a Path?
+
+A **path** is the **location** of a file or directory in the filesystem.
+
+There are two types:
+
+| Type                    | Example                           |
+| ----------------------- | --------------------------------- |
+| **Absolute path** | `/home/user/Documents/file.txt` |
+| **Relative path** | `../Documents/file.txt`         |
+
+#### 🧭 1. Absolute Path
+
+📌 Definition:
+
+An **absolute path** starts from the **root directory `/`** and includes the **complete path** to a file or folder.
+
+✅ Always the same regardless of where you are.
+
+🔹 Example:
+
+```bash
+cd /home/arun/Pictures
+```
+
+* Starts from `/` (root)
+* Full route to `Pictures` folder
+
+#### 🔄 2. Relative Path
+
+📌 Definition:
+
+A **relative path** starts from your **current working directory** (`pwd`) and describes how to reach the file  **relative to your position** .
+
+✅ Changes depending on where you are.
+
+🔹 Example:
+
+If you're in:
+
+```bash
+/home/arun/
+```
+
+Then:
+
+```bash
+cd Documents
+```
+
+is the same as:
+
+```bash
+cd /home/arun/Documents
+```
+
+##### 🧠 Special Relative Symbols:
+
+| Symbol | Meaning                   |
+| ------ | ------------------------- |
+| `.`  | Current directory         |
+| `..` | Parent directory          |
+| `~/` | Home directory (shortcut) |
+
+🔹 Examples:
+
+```bash
+cd ./Downloads     # Same as "cd Downloads"
+cd ../Pictures     # Go up and enter Pictures
+cd ~/Videos        # Go to Videos in home folder
+```
+
+#### 🆚 Summary Table
+
+| Feature            | Absolute Path            | Relative Path               |
+| ------------------ | ------------------------ | --------------------------- |
+| Starts from        | `/`(root)              | Current directory           |
+| Begins with `/`? | ✅ Yes                   | ❌ No                       |
+| Context-sensitive? | ❌ No, always the same   | ✅ Yes, depends on `pwd`  |
+| Portability        | More reliable in scripts | Shorter, good for quick nav |
+| Example            | `/etc/hosts`           | `../etc/hosts`            |
+
+---
+
+# ⭐ Hard Link vs Soft Link
+
+Understanding **hard links vs soft (symbolic) links** is important when working with files in Linux or Unix-like systems — especially for file referencing, backups, and scripting.
+
+### 🧮 What Are Links?
+
+In Linux, a **link** is a  **pointer or reference to a file** . There are two types:
+
+| Type                | Alias             | Description                      |
+| ------------------- | ----------------- | -------------------------------- |
+| **Hard link** | —                | Another name for the same file   |
+| **Soft link** | **Symlink** | A shortcut/reference to the file |
+
+##### 🔗 1. Hard Link
+
+📌 Definition:
+
+A **hard link** is an **exact copy** of the original file’s  **inode** . It points directly to the same data on disk.
+
+✅ Properties:
+
+* **Same inode number**
+* **Same file content**
+* Deleting the **original** file doesn't delete the data
+* Changes made via either link reflect on both
+* Only works for **files** (not directories, by default)
+* Must be on the **same filesystem**
+
+🔹 Example:
+
+```bash
+ln file1.txt file2.txt
+```
+
+Creates a hard link `file2.txt` pointing to the same inode as `file1.txt`.
+
+##### 🔗 2. Soft Link (Symbolic Link)
+
+📌 Definition:
+
+A **soft link** is like a **shortcut** — it points to the **path** of the original file, not the data.
+
+✅ Properties:
+
+* **Different inode**
+* Can point to **files or directories**
+* Works **across filesystems**
+* If the original file is deleted, the symlink becomes **broken**
+* Identified with `l` (link) in `ls -l`
+
+🔹 Example:
+
+```bash
+ln -s file1.txt link1.txt
+```
+
+Creates a symbolic (soft) link named `link1.txt` pointing to `file1.txt`.
+
+### 🔁 What Happens When You Delete the Original File?
+
+##### 🔹 1. **Hard Link**
+
+✅ **The data is NOT lost.**
+
+* **Hard links share the same inode (data on disk)** .
+* If the original file is deleted, the **data remains** as long as  **any hard link exists** .
+* The hard-linked file works just like before — no effect.
+
+**Example:**
+
+```bash
+ln original.txt hard.txt
+rm original.txt
+cat hard.txt  # ✅ Still shows content
+```
+
+> **Why?** Because the data is only deleted when the **last link to the inode** is removed.
+
+##### 🔹 2. **Soft Link (Symbolic Link)**
+
+❌ **The link breaks.**
+
+* A soft link points to the  **path of the original file** , not the data.
+* If the original file is deleted, the symlink points to **nothing** — it's broken.
+* Accessing the symlink will give a **"No such file"** error.
+
+**Example:**
+
+```bash
+ln -s original.txt soft.txt
+rm original.txt
+cat soft.txt  # ❌ Error: No such file or directory
+```
+
+### 🆚 Hard Link vs Soft Link: Comparison
+
+| Feature                     | Hard Link           | Soft Link (Symlink)          |
+| --------------------------- | ------------------- | ---------------------------- |
+| Inode                       | Same as original    | Different inode              |
+| File content                | Points to data      | Points to file**path** |
+| Cross-filesystem            | ❌ Not allowed      | ✅ Allowed                   |
+| Broken if original deleted? | ❌ No               | ✅ Yes (becomes broken)      |
+| Used for directories?       | ❌ Not by default   | ✅ Yes                       |
+| Command                     | `ln file newlink` | `ln -s file newlink`       |
+| Shown as link in `ls`     | ❌ No               | ✅ Yes (`l`type)           |
+
+### 🧪 Example:
+
+```bash
+echo "hello" > original.txt
+
+ln original.txt hardlink.txt
+ln -s original.txt softlink.txt
+
+ls -li
+```
+
+Output will show:
+
+* Same inode for `original.txt` and `hardlink.txt`
+* Different inode for `softlink.txt`
+* An arrow like `softlink.txt -> original.txt`
+
+### 🔍 How to Identify:
+
+```bash
+ls -li             # Show inodes
+ls -l              # Show symbolic links
+file softlink.txt  # Describe file type
+```
+
+### 🧠 Visual Summary:
+
+```
+Hard Link:
+[ inode 1234 ] → Data
+      ↑      ↑
+ original   hardlink
+
+Soft Link:
+[ inode 5678 ] → "original.txt" (path string)
+      ↓
+[ inode 1234 ] → Data
+```
+
+---
+
+# 🔥 SSH (Secure Shell)
+
+Let’s dive into **SSH (Secure Shell)** — a foundational tool for remote Linux administration, file transfer, automation, and more.
+
+### 🔐 What is SSH?
+
+📌 **SSH (Secure Shell)** is a **network protocol** used to:
+
+* **Securely connect** to a remote computer over an insecure network
+* **Login** to shell/terminal remotely
+* **Transfer files securely**
+* **Run commands remotely**
+* Use tools like  **scp** ,  **sftp** ,  **rsync** ,  **Git** ,  **Ansible** , etc.
+
+It **encrypts** all data (login credentials, commands, output) to prevent eavesdropping.
+
+##### 🧠 SSH in Simple Terms
+
+If you're on your Linux machine and you want to access another system remotely:
+
+```bash
+ssh user@remote_ip
+```
+
+Example:
+
+```bash
+ssh arun@192.168.1.20
+```
+
+### ✅ Requirements
+
+| On Local Machine (Client) | On Remote Machine (Server)               |
+| ------------------------- | ---------------------------------------- |
+| `ssh`command installed  | `sshd`service (OpenSSH server) running |
+| IP address or hostname    | Must be reachable from your network      |
+| Username & Password       | Or SSH key-based access                  |
+
+### 🔧 Installing SSH
+
+On  **client** :
+
+Most Linux distros already include it.
+
+```bash
+sudo apt install openssh-client
+```
+
+On  **server** :
+
+```bash
+sudo apt install openssh-server
+sudo systemctl enable ssh
+sudo systemctl start ssh
+```
+
+To check status:
+
+```bash
+sudo systemctl status ssh
+```
+
+> #### 🔄 **sshd vs openssh-server**
+>
+> | Term                         | What it is                 | Description                                                                                                                                        |
+> | ---------------------------- | -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+> | **`sshd`**           | **Daemon (service)** | The actual running program that listens for and handles incoming<br /> SSH connections on the server. It stands for**Secure Shell Daemon** . |
+> | **`openssh-server`** | **Package**          | A software**package**that contains `sshd`and other components required to run an SSH server on a Linux system.                             |
+>
+> 🧠 Think of it this way:
+>
+> * `openssh-server` is  **what you install** .
+> * `sshd` is **what actually runs** after installation.
+>
+> ##### 🔍 More Details
+>
+> ##### 🔹 `openssh-server`
+>
+> * A **Debian/Ubuntu package** (or similarly named in other distros).
+> * Installing it does:
+>   * Installs `sshd`
+>   * Configures systemd unit: `ssh.service` or `sshd.service`
+>   * Sets up config file: `/etc/ssh/sshd_config`
+>
+> Command:
+>
+> ```bash
+> sudo apt install openssh-server
+> ```
+>
+> This installs:
+>
+> * `sshd` (the daemon)
+> * Startup scripts
+> * Man pages
+> * Related tools
+>
+> ##### 🔹 `sshd`
+>
+> * The **binary/service** that actually handles SSH connections.
+> * Listens on **port 22 by default**
+> * Controlled via:
+>   ```bash
+>   sudo systemctl start ssh
+>   sudo systemctl status ssh
+>   ```
+> * Configuration file:
+>   ```bash
+>   /etc/ssh/sshd_config
+>   ```
+>
+> ##### 🧪 To Check if `sshd` is Running:
+>
+> ```bash
+> ps aux | grep sshd
+> ```
+>
+> or
+>
+> ```bash
+> sudo systemctl status ssh
+> ```
+
+### 🔑 Basic SSH Command
+
+```bash
+ssh username@hostname_or_ip
+```
+
+Example:
+
+```bash
+ssh arun@192.168.0.100
+```
+
+It will prompt:
+
+* First time: Ask to verify host authenticity
+* Then: Ask for the user password or would need keys, etc depending on the ssh authentication methods of the remote server
+
+  > The server admin controls which method is allowed via these settings in `sshd_config`
+  >
+  > ✅ Common SSH authentication methods:
+  >
+  > | Method                         | Description                                  |
+  > | ------------------------------ | -------------------------------------------- |
+  > | **Password**             | Asks for username & password                 |
+  > | **Public Key**           | Matches your private key with its public key |
+  > | **Keyboard-Interactive** | Can include 2FA or OTPs                      |
+  > | **GSSAPI/Kerberos**      | For enterprise login setups (less common)    |
+  >
+  >
+  >
+
+### 🔑 Public and Private key for SSH
+
+Understanding **public and private keys in SSH** is *essential* for secure, passwordless remote logins and is widely used in DevOps, Git, Linux server administration, etc.
+
+##### 🔐 What Are SSH Keys?
+
+**SSH keys** are a **pair of cryptographic keys** used for secure authentication:
+
+| Key Type                | Purpose                                                                          |
+| ----------------------- | -------------------------------------------------------------------------------- |
+| 🔒**Private Key** | Stays on your**local machine** , secret, never shared.                     |
+| 🔓**Public Key**  | Shared with the**remote server** ; used to match against your private key. |
+
+Together they enable  **key-based authentication** , which is more secure than passwords.
+
+##### 🧠 How It Works (In Simple Terms)
+
+1. You generate an SSH key pair:
+
+   🔐 Private key stays on **your machine**
+
+   🔓 Public key is **sent to the server**
+2. When you connect:
+
+   * The server **encrypts a challenge** using the public key
+   * Only your **private key can decrypt** it
+   * If decrypted correctly, you’re logged in — no password needed
+
+📌 THIS IS DONE SO THAT THE SERVER CAN KNOW THAT THE REQUEST IS COMING FROM YOU ONLY
+
+##### ⚙️ How to Generate SSH Keys
+
+```bash
+ssh-keygen
+```
+
+You’ll be prompted:
+
+* Where to save the key (`~/.ssh/id_rsa`)
+* Optionally, enter a passphrase for extra protection
+
+##### 🎯 Result:
+
+* `~/.ssh/id_rsa` → **Private Key**
+* `~/.ssh/id_rsa.pub` → **Public Key**
+
+##### 📤 Copy Public Key to Server
+
+Use:
+
+```bash
+ssh-copy-id user@remote_ip
+```
+
+Or manually:
+
+```bash
+cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys  # on remote server
+```
+
+Then:
+
+```bash
+ssh user@remote_ip
+# No password required (if setup correctly)
+```
+
+> #### 🔑 If you have **multiple SSH keys** on your system, you need to make sure the correct one is being used when you run:
+>
+> ```bash
+> ssh-copy-id user@remote_ip
+> ```
+>
+> Let’s break this down clearly:
+>
+> 🔍 By Default: `ssh-copy-id` Behavior
+>
+> When you run:
+>
+> ```bash
+> ssh-copy-id user@remote_ip
+> ```
+>
+> It **by default** copies the contents of your  **default public key file** :
+>
+> ```bash
+> ~/.ssh/id_rsa.pub
+> ```
+>
+> to the remote server’s:
+>
+> ```bash
+> ~/.ssh/authorized_keys
+> ```
+>
+> #### 🧩 Problem: What if you have multiple keys?
+>
+> You may have these files:
+>
+> ```bash
+> ~/.ssh/id_rsa.pub         ← default RSA key
+> ~/.ssh/id_ed25519.pub     ← Ed25519 key
+> ~/.ssh/work_key.pub       ← a custom key
+> ```
+>
+> In such cases, **ssh-copy-id will use only the default key (`id_rsa.pub`)** unless told otherwise.
+>
+> ##### ✅ Solution: Specify the key manually
+>
+> You can explicitly tell `ssh-copy-id` which key to use:
+>
+> ```bash
+> ssh-copy-id -i ~/.ssh/work_key.pub user@remote_ip
+> ```
+>
+> This ensures you’re copying the correct public key to the remote server.
+>
+> This command:
+>
+> * Copies the **public key** (`work_key.pub`) to the remote server’s `~/.ssh/authorized_keys`
+> * Assumes that the **corresponding private key** (`~/.ssh/work_key`) is present on your local machine
+>
+> 🔁 What Happens During SSH Login?
+>
+> When you later connect using:
+>
+> ```bash
+> ssh user@remote_ip
+> ```
+>
+> * SSH tries to **match the public key on the server** (`authorized_keys`) with the **private key(s) available locally**
+> * If you didn’t tell SSH which private key to use, it will try all available private keys in `~/.ssh/`
+>
+> So:
+>
+> * If you copied `work_key.pub` to the server
+> * But your system uses `id_rsa` (default private key), it **won’t match** and **authentication will fail**
+>
+> ##### ✅ How to Fix That?
+>
+> Option 1: Use `-i` on login
+>
+> ```bash
+> ssh -i ~/.ssh/work_key user@remote_ip
+> ```
+>
+> Option 2: Add it to `~/.ssh/config`:
+>
+> ```ini
+> Host myserver
+>     HostName remote_ip
+>     User user
+>     IdentityFile ~/.ssh/work_key
+> ```
+>
+> Now just:
+>
+> ```bash
+> ssh myserver
+> ```
+>
+> ✅ and the correct private key will be used automatically.
+
+##### 🔐 Example Use Case: GitHub
+
+To use Git over SSH:
+
+* Add your **public key** to GitHub → Settings → SSH keys
+* GitHub will authenticate you using your **private key**
+
+##### 🔥 Why Use SSH Keys?
+
+✅ **More secure** than passwords
+
+✅ Avoids brute-force attacks
+
+✅ Needed for GitHub, CI/CD, remote administration
+
+✅ Can add passphrase for double protection
+
+### 🧰 SSH Features
+
+🔹 Run a command remotely:
+
+```bash
+ssh user@remote_ip 'ls -l /var/www'
+```
+
+🔹 Port forwarding (for secure tunneling):
+
+```bash
+ssh -L 8080:localhost:80 user@remote_ip
+```
+
+🔹 SSH key-based login (passwordless):
+
+1. On client:
+   ```bash
+   ssh-keygen
+   ```
+2. Copy the public key to the remote server:
+   ```bash
+   ssh-copy-id user@remote_ip
+   ```
+
+Then you can connect without a password:
+
+```bash
+ssh user@remote_ip
+```
+
+### 📁 File Transfer with SSH
+
+🔹 Using `scp` (Secure Copy):
+
+```bash
+scp file.txt user@remote:/home/user/
+scp user@remote:/etc/hosts ./myhosts
+```
+
+🔹 Using `sftp` (Secure FTP):
+
+```bash
+sftp user@remote
+```
+
+### 🔐 SSH Options
+
+| Option         | Description                                    |
+| -------------- | ---------------------------------------------- |
+| `-p PORT`    | Use specific port (default: 22)                |
+| `-i keyfile` | Use specific private key file                  |
+| `-v`         | Verbose output (for debugging)                 |
+| `-X`         | Enable X11 GUI forwarding (e.g., open apps)    |
+| `-t`         | Force pseudo-terminal allocation (for scripts) |
+| `-N`         | Don’t run command, just open connection       |
+| `-f`         | Run in background                              |
+
+### 🔒 SSH Security Best Practices
+
+| Practice                 | Benefit                     |
+| ------------------------ | --------------------------- |
+| Disable password login   | Use keys only               |
+| Change default port (22) | Reduce basic attack surface |
+| Use firewall             | Allow only trusted IPs      |
+| Disable root SSH login   | Use non-root users          |
+
+### 🔄 Quick SSH Example Flow
+
+1. **Client:**
+   ```bash
+   ssh-keygen
+   ssh-copy-id arun@192.168.1.100
+   ssh arun@192.168.1.100
+   ```
+2. **Remote Server:**
+   * Accepts connection
+   * Authenticates using public key
+   * Gives you remote shell access
+
+### 🆚 SSH vs Telnet
+
+| Feature    | SSH    | Telnet        |
+| ---------- | ------ | ------------- |
+| Encryption | ✅ Yes | ❌ No         |
+| Port       | 22     | 23            |
+| Secure     | ✅ Yes | ❌ Not secure |
+
+### 🧪 Want to Practice?
+
+Try running:
+
+```bash
+ssh localhost
+```
+
+(Enable SSH on your system first.)
+
+Or use two VMs and connect from one to another using SSH.
 
 ---
