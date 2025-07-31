@@ -117,3 +117,21 @@ report-2025-07-17.txt
 * `$(date +%Y%m%d_%H%M%S)` → for unique timestamps → `20250717_194300`
 
 ---
+
+# 🧮 "Print even numbers from **1 to 20** using a `while` loop"
+
+```bash
+#!/bin/bash
+
+# Print even numbers from 1 to 20 using a while loop
+num=1
+echo "Printing even numbers from 1 to 20 using a while loop"
+
+while [[ $num -le 20 ]]; do
+    if (( num % 2 == 0 )); then
+        echo $num
+    fi
+    ((num++))
+done
+
+```

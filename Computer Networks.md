@@ -2867,6 +2867,8 @@ The **Transport Layer** is the **4th layer** of the OSI Model. It plays a **crit
 
 Its **main job is to ensure that data sent from one device's application reaches the intended application on the other device correctly and reliably.**
 
+* **IT DELIVERS THE MESSAGE FROM THE SYSTEM WHICH IT GOT FROM NETWORK LAYER TO THE ACTUAL APPLICATION OR VICE VERSA**
+
 ### 📦 What Does the Transport Layer Do?
 
 | Feature                               | Description                                                                              |
@@ -2914,6 +2916,8 @@ That’s exactly what the Transport Layer does — with data.
 * Transport Layer **uses port numbers** to send data to the correct app.
 
 🧠  **Analogy** : Think of an apartment building (IP address) — port numbers are **apartment numbers** inside it.
+
+![1753184929081](image/ComputerNetworks/1753184929081.png)
 
 ### 🧠 Why Can’t We Skip the Transport Layer?
 
@@ -3991,9 +3995,43 @@ The IP address goes back through the resolver to your computer, which stores it 
 > * **TLD Server** : HR clerk – “John Smith in Marketing? Ask the Marketing admin (Authoritative server).”
 > * **Authoritative Server** : Marketing admin – “Oh, John sits at desk #C103 (IP address).”
 >
-> #### 🌍 TLD Servers for Countries
+> #### 🤔 How is Authoritative Server chosen for a domain?
 >
-> Yes, you're  **absolutely right** !
+> When a company **buys a domain** (like `facebook.com`), they configure their domain registrar (e.g., GoDaddy, Namecheap, Cloudflare, etc.) with:
+>
+> * One or more **Authoritative DNS servers**
+> * Those servers are added into the TLD zone files (like `.com`).
+>
+> So, **Facebook controls its own Authoritative DNS** via its own nameservers like:
+>
+> ```
+> ns1.facebook.com
+> ns2.facebook.com
+> ```
+>
+> That's how `.com` TLD servers know where to redirect.
+>
+> ##### ❓ If you register your domain name (e.g., `yourwebsite.com`) with  **GoDaddy** , here's what happens:
+>
+> 🌐 Is GoDaddy the Authoritative DNS Server?
+>
+> Not *exactly* —  **GoDaddy is your domain registrar** , not automatically the authoritative DNS server.
+>
+> However:
+>
+> * **If you use GoDaddy's DNS hosting** (which many people do by default),  **then GoDaddy *does* provide authoritative DNS servers for your domain** .
+> * You can  **choose to change your DNS hosting provider** , e.g., to  **Cloudflare, AWS Route 53, Namecheap** , or your own DNS server. Then  **that provider becomes your authoritative DNS server** .
+>
+> #### 🔁 Summary in One Line
+>
+>> **Root** → knows `.com`, `.in`, etc.
+>>
+>> **TLD (.com)** → knows who owns `facebook.com`
+>>
+>> **Authoritative DNS (ns1.facebook.com)** → knows the actual IP
+>>
+>
+> #### 🌍 TLD Servers for Countries
 >
 > Each country has its own  **country-code TLD (ccTLD)** :
 >
@@ -4003,10 +4041,6 @@ The IP address goes back through the resolver to your computer, which stores it 
 > | UK        | `.uk` | `gov.uk`        |
 > | Australia | `.au` | `abc.net.au`    |
 > | Japan     | `.jp` | `rakuten.co.jp` |
->
-> 
->
->
 
 ### 📦 DNS Records Types (in Authoritative Servers)
 
@@ -4034,3 +4068,1736 @@ As a MERN developer, you interact with DNS when:
 * You set up **CNAME records** for subdomains (`admin.fitlab.shop`)
 * You use **Cloudflare, Route53, or GoDaddy** for DNS management
 * You rely on DNS when consuming third-party APIs (`api.stripe.com`, etc.)
+
+> ### 🌐 So, Who Maintains the Final Record of a Domain Name?
+>
+> The final say and global coordination of domain names is managed by:  👉 **ICANN** (Internet Corporation for Assigned Names and Numbers)
+>
+> **ICANN** is a non-profit organization responsible for:
+>
+> * Coordinating IP addresses
+> * Managing the DNS root
+> * Overseeing the domain name registration process
+> * Accrediting domain name registrars (like GoDaddy, Namecheap)
+>
+> 🧠 Think of ICANN as:
+>
+>> The "land registry office" of the internet. It doesn’t sell the land (domains) directly but ensures that no two people own the same land (domain name), and it maintains the official record.
+>>
+>
+> ##### 🏢 Role of Domain Registrars
+>
+> Domain registrars are companies authorized by ICANN to sell domain names. When you register a domain name:
+>
+> * You go to a registrar (e.g., GoDaddy)
+> * It checks if the name is available by querying the global registry
+> * If available, it registers it in your name and updates the TLD registry
+> * The TLD registry is managed by companies appointed by ICANN (e.g., Verisign manages .com).
+>
+> ##### ⚡ DNS hierarchy works based on a well-defined structure that ICANN oversees. Here's how it all fits together:
+>
+> 🌐 DNS Hierarchy as Defined by ICANN
+>
+> The Domain Name System (DNS) has a hierarchical structure, and ICANN plays a central role in coordinating it. Let’s go step-by-step:
+>
+> 1. **Root DNS Servers (the top of the hierarchy)**
+>
+> There are 13 logical root DNS servers (named A–M), but actually over 1,000 physical instances globally (using anycast).
+>
+> These contain information about where to find TLD name servers (like .com, .org, .in, etc.)
+>
+> Managed by various organizations, like:
+>
+> * Verisign (A-root)
+> * ICANN (L-root)
+> * NASA, U.S. Army, universities, etc.
+>
+> 🔗 ICANN coordinates this part through its IANA (Internet Assigned Numbers Authority) department.
+>
+> 2. **TLD DNS Servers (Top-Level Domains)**
+>
+> These are servers responsible for each TLD such as .com, .net, .in, .org, .gov, etc.
+>
+> Example: For www.example.com, the .com TLD servers help find the DNS servers that know about example.com.
+>
+> 🛠 ICANN approves and manages TLDs and their registry operators (like Verisign for .com, PIR for .org, NIXI for .in, etc.)
+>
+> ##### 🔐 Can Two People Have the Same Domain Name?
+>
+> No, because:  Every domain name is globally unique .When registered, it is added to a centralized database (run by the TLD registry operator) and replicated across DNS systems.  Once taken, it's locked until it expires or is transferred
+>
+> ##### 🚀 Analogy:
+>
+> Imagine you're registering a vehicle:
+>
+> ICANN = Government vehicle registry authority
+>
+> Registrar = Local dealership where you apply
+>
+> TLD Registry = The DMV for .com cars
+>
+> DNS resolver = GPS that finds the car (domain) when you want to visit it
+>
+> ##### ✅ Does a Company Need to Pay ICANN to Become a Registrar?
+>
+> Yes.
+>
+> To become an ICANN-accredited domain registrar, a company must:
+>
+> 1. Apply for accreditation
+> 2. Pay an application fee (~$3,500 USD, non-refundable)
+> 3. Pay an annual fee (~$4,000 minimum + $0.18 per domain name/year)
+> 4. Meet technical, legal, and financial requirements
+>
+> So yes — money is involved, and only serious, legitimate businesses can become registrars.
+>
+> ##### 🏛️ Is ICANN a Monopoly?
+>
+> Technically, ICANN holds a centralized authority over:
+>
+> * Top-level domain (TLD) allocation (e.g., .com, .org, .tech)
+> * DNS root zone management
+> * IP address space (along with IANA and RIRs)
+>
+> So, while it's not a monopoly in the traditional "for-profit" corporate sense, it is a centralized coordinator with global influence over how the internet works.
+>
+> However: ICANN is a non-profit and operates under multi-stakeholder governance
+>
+> It includes input from:
+>
+> * Governments (via GAC)
+> * Businesses
+> * Technical experts
+> * Civil society
+> * Internet users
+>
+> No single government or company controls it, not even the U.S. (as was the case before 2016).
+>
+> ###### 🛑 Can ICANN Do “Anything It Wants”?
+>
+> Not entirely. ICANN is bound by:
+>
+> Public transparency rules, Stakeholder review and appeal processes, International contracts and technical standards
+>
+> Oversight from organizations like:
+>
+> Internet Engineering Task Force (IETF), Internet Architecture Board (IAB), Regional Internet Registries (like APNIC, ARIN)
+>
+>> 🧠 Real Concerns Do Exist Though
+>>
+>> You're not wrong to be cautious. ICANN has faced criticism in the past for:
+>>
+>> Lack of transparency
+>>
+>> Favoring large corporations in domain disputes
+>>
+>> High prices for new generic TLDs (like .app, .xyz)
+>>
+>> But because it's not for-profit, and it works under community-based oversight, it doesn't operate like a monopoly corporation like Google or Facebook.
+>>
+
+---
+
+# ----NAT and STUN
+
+👉 (For More Details see WebRTC)
+
+### 🌐 What is **NAT** (Network Address Translation)?
+
+🧠 **Definition:**
+
+**NAT** is a technique used by routers to **translate private (local) IP addresses into a public IP address** so devices can communicate over the internet.
+
+**🏠 Real-World Analogy:**
+
+Think of NAT like a receptionist at a company:
+
+* **Inside phones** (private IPs) don’t have direct external lines.
+* The **receptionist** (router) handles all incoming/outgoing calls (public IP).
+* She keeps track of **who made which request** and routes replies correctly.
+
+##### **🔍 Why NAT exists:**
+
+* IPv4 addresses are limited (only about 4.3 billion).
+* Most home/office networks use **private IPs** like `192.168.x.x`, `10.x.x.x`, or `172.16.x.x`.
+* These are not directly accessible from the public internet.
+
+So the router does the following:
+
+1. **Outgoing:** Translates internal IPs to a **public IP** and sends requests.
+2. **Incoming:** When replies come back, it remembers who asked and routes them properly.
+
+##### 🔁 **What NAT really does:**
+
+> **NAT (Network Address Translation)** converts **private IP addresses** (used inside your home or office) to a **public IP address** so devices can communicate with the internet.
+
+**✅ So the flow is:**
+
+* Your device (e.g. `192.168.1.10`) sends a request to the internet.
+* The **router** (with a public IP like `203.0.113.5`) **translates** your internal IP and port to something like:
+  ```
+  192.168.1.10:1234 ➝ 203.0.113.5:54231
+
+  ```
+
+-- The website on the internet responds to `203.0.113.5:54231`, and the router **remembers** which internal IP/port to send the response back to.
+
+**🔐 Why?**
+
+Because:
+
+* **Private IPs** (like `192.168.x.x`, `10.x.x.x`) **cannot be routed on the public internet.**
+* Only **public IPs** (like `203.x.x.x`) are recognized globally.
+
+📦 Example:
+
+| Internal Device | Private IP  | NAT Translation | Public IP (used on Internet) |
+| --------------- | ----------- | --------------- | ---------------------------- |
+| Your laptop     | 192.168.0.5 | Port 52000      | 122.123.14.22:52000          |
+| Your phone      | 192.168.0.6 | Port 52001      | 122.123.14.22:52001          |
+
+**They both appear to the internet as coming from the same IP (`122.123.14.22`) but different  **ports** .
+
+**❗The Problem: NAT Breaks Peer-to-Peer**
+
+If you’re on a NATed network,  **another peer can’t just connect to your internal IP** , because it’s not publicly visible.
+
+Hence e use STUN/TURN server to get **ICE Candidates**
+
+### 🔹 What is STUN?
+
+**STUN** stands for  **Session Traversal Utilities for NAT** . It's a protocol that helps a device behind a **NAT (Network Address Translation)** discover its **public IP address** and **port** as seen by the outside world.
+
+STUN is essential in **WebRTC** for peer-to-peer communication, especially when both clients are behind NATs and need to know their public-facing IPs to establish a connection.
+
+##### **🔹 Why "Discover" a Public IP If It's Already Public?**
+
+When you're behind a **NAT** (Network Address Translation),  **you don't actually know what your public IP and port are** , even though they **do exist** from the perspective of the outside world.
+
+Let’s break this down with an analogy and technical explanation.
+
+**🔸 How NAT Works (Quick Recap)**
+
+Most home/office networks have **private IP addresses** (e.g., `192.168.x.x`, `10.x.x.x`) which **aren’t routable** on the public internet. The NAT device (usually your router):
+
+* Keeps a mapping between internal (private) IP:port and public IP:port.
+* Rewrites IP/port headers when packets go out.
+* Multiple internal devices share one public IP using port translation.
+
+##### **🔸 The Problem**
+
+Your computer **knows** its private IP (`192.168.0.5`) but **not** the public IP and port the NAT assigns when sending traffic to the internet. And:
+
+* NAT behavior is **not standardized** — it might use predictable or random port mapping.
+* You cannot rely on local inspection to know what public IP:port the NAT assigned.
+
+##### **🔸 Enter STUN: "Tell Me How You See Me"**
+
+A STUN server is a simple server on the public internet. Your device sends it a request like:
+
+> "Hey STUN server, what IP and port do **you** see me coming from?"
+
+The STUN server replies with:
+
+> "You're reaching me from `203.0.113.45:58324`"
+
+Now your device knows its **public-facing address** — not what it thinks it is locally.
+
+##### **🔸 How this helps and Why This Matters for applications like WebRTC**
+
+WebRTC needs both peers to **know and share their public IP:port pairs** to try establishing a  **direct peer-to-peer connection** . Without STUN:
+
+* You would share your private IP (`192.168.x.x`) with a peer — which is **useless** over the internet.
+
+With STUN, both parties learn and share their **real public-facing endpoints** (called  **ICE candidates** ) so that a direct connection might be possible.
+
+**✅ TL;DR**
+
+Even though a public IP exists  **externally** , your device doesn’t know what it is because:
+
+* It's behind a NAT.
+* The NAT may change your IP/port mapping.
+* Your system only sees its  **local/private IP** .
+
+So **STUN helps "discover"** the real public IP and port  **from the outside’s point of view** , which is **critical** for peer-to-peer communication like WebRTC.
+
+**Also, No, STUN doesn't replace the job of NAT — it *relies* on it.**
+
+Let me explain why:
+
+##### **🔹 NAT vs STUN — What Each One Does**
+
+| Aspect                  | NAT (Network Address Translation)                     | STUN (Session Traversal Utilities for NAT)              |
+| ----------------------- | ----------------------------------------------------- | ------------------------------------------------------- |
+| **Purpose**       | Translates private IP/port to public IP/port          | Helps discover what public IP/port the NAT assigned     |
+| **Where it runs** | On your router or firewall                            | On a public server on the internet                      |
+| **Who uses it**   | Every device behind a router                          | WebRTC clients, VoIP apps, etc.                         |
+| **Function**      | Enables multiple private devices to share 1 public IP | Reports back your public-facing IP/port as seen outside |
+
+**🔸 Why STUN *Needs* NAT**
+
+* NAT is the **one doing the translation** of your local address to something routable on the internet.
+* STUN **cannot work without NAT** because there's nothing to “discover” unless your address is being rewritten.
+
+> Think of it like this:
+>
+> **NAT is the mask** that changes your identity.
+>
+> **STUN is the mirror** that shows you what you look like with the mask on.
+
+**🔹 So What Is Actually Happening?**
+
+1. Your device sends a message to a STUN server.
+2. NAT rewrites your private IP:port into public IP:port.
+3. The STUN server sees the public IP:port and tells you, “Here's how you appear to the outside world.”
+4. Your app now knows what to tell another peer for direct connection attempts.
+
+**✅ Final Thought**
+
+So no,  **STUN doesn’t replace NAT** , even temporarily. It just **uses NAT's translation** and helps your device  **discover what that translation was** .
+
+-- Without NAT, STUN has no job. Without STUN, your app can't know how to work with NAT.
+
+---
+
+# ----TCP (Transmission Control Protocol)
+
+TCP is one of the  **core protocols of the Internet Protocol Suite** , and it's used **everywhere** — from web browsing to email to file transfers.
+
+✅ What Is TCP?
+
+**TCP (Transmission Control Protocol)** is a  **connection-oriented** ,  **reliable** , and **stream-based** protocol that ensures **accurate and ordered delivery** of data over a network.
+
+It works **on top of IP** (Internet Protocol), forming the widely-used  **TCP/IP model** .
+
+### 🧱 Key Characteristics of TCP:
+
+| Feature                       | Description                                                                              |
+| ----------------------------- | ---------------------------------------------------------------------------------------- |
+| **Connection-oriented** | A connection is established before data transfer begins (via**3-way handshake** ). |
+| **Reliable**            | Ensures**no data loss** , duplication, or corruption.                              |
+| **Ordered**             | Delivers data**in the correct sequence** .                                         |
+| **Error-checking**      | Uses**checksums**and **acknowledgments (ACKs)** .                            |
+| **Flow Control**        | Prevents overwhelming the receiver.                                                      |
+| **Congestion Control**  | Adjusts data transmission based on network traffic.                                      |
+| **Full-duplex**         | Supports**bi-directional**data flow simultaneously.                                |
+
+### 🚦 How TCP Works — Step-by-Step
+
+##### 1. **Connection Establishment — 3-Way Handshake**
+
+Before sending any data, TCP establishes a connection:
+
+```
+Client                         Server
+  | -------- SYN ------------> |
+  | <------- SYN-ACK -------- |
+  | --------- ACK ----------> |
+```
+
+* **SYN** : Client requests a connection.
+* **SYN-ACK** : Server acknowledges and responds.
+* **ACK** : Client confirms. Connection established!
+
+> **SYN** stands for  **Synchronize** .
+>
+> In TCP, the **SYN flag** is used during the **initial step of the 3-way handshake** to initiate a connection between a client and a server.
+>
+> ##### 🔁 SYN in the TCP 3-Way Handshake:
+>
+> 1. **SYN** – Client sends a **SYN** packet to the server to initiate a connection and synchronize sequence numbers.
+> 2. **SYN-ACK** – Server responds with a **SYN** (synchronize) and **ACK** (acknowledgment).
+> 3. **ACK** – Client sends back an acknowledgment (ACK), completing the handshake.
+>
+> This process ensures **synchronized communication** before data transfer starts.
+
+##### 2. **Data Transfer (Segmented and Reliable)**
+
+* Data is split into **segments** with sequence numbers.
+* Receiver sends **ACKs** (acknowledgments) for received data.
+* If ACK not received within timeout, **retransmission** occurs.
+
+##### 3. **Flow Control (Using Window Size)**
+
+* TCP uses a  **sliding window protocol** .
+* The  **receiver advertises window size** , i.e., how much data it can receive at once.
+* The sender **limits the amount of unacknowledged data** in transit.
+
+##### 4. **Congestion Control**
+
+TCP adjusts data transmission rate using algorithms like:
+
+* **Slow Start**
+* **Congestion Avoidance**
+* **Fast Retransmit & Fast Recovery**
+
+This prevents network overload and packet loss.
+
+##### 5. **Connection Termination — 4-Way Handshake**
+
+```
+Client                         Server
+  | -------- FIN -----------> |
+  | <-------- ACK ----------- |
+  | <-------- FIN ----------- |
+  | -------- ACK -----------> |
+```
+
+* Both sides signal when they are done sending data.
+* Ensures **graceful shutdown** of the connection.
+
+### 🛠️ Ports and TCP
+
+TCP uses **port numbers** to identify specific services on a device:
+
+* Port 80 → HTTP
+* Port 443 → HTTPS
+* Port 25 → SMTP (email)
+* Port 21 → FTP
+
+Each TCP segment includes:
+
+* Source Port
+* Destination Port
+* Sequence Number
+* ACK Number
+* Flags (SYN, ACK, FIN, etc.)
+* Checksum
+
+![1753210835441](image/ComputerNetworks/1753210835441.png)
+
+> #### 🔢 1. Sequence Number (in TCP)
+>
+> ###### ❓ What is it?
+>
+> A **Sequence Number** in TCP is a number assigned to each byte of data in a TCP connection. It **keeps track of which data has been sent and received** and in  **what order** .
+>
+> ###### 📦 Purpose:
+>
+> * Ensures  **data is delivered in order** .
+> * Helps detect  **missing or duplicate packets** .
+> * Supports **retransmission** if a packet is lost.
+>
+> ###### 🧠 Analogy:
+>
+> Imagine sending a **book through the post** page by page. You number every page — 1, 2, 3, … 100 — before putting each in an envelope. This way, the receiver can:
+>
+> * Know the correct order.
+> * Realize if page 25 is missing.
+> * Ask you to resend only that page.
+>
+> ###### 📘 Example:
+>
+> * You (client) are sending 1000 bytes of data to a server.
+> * Initial Sequence Number (ISN) is 5000 (randomly chosen).
+> * First packet has sequence number **5000** and contains 500 bytes.
+> * Next packet will have sequence number  **5500** , and so on.
+>
+> The server **ACKs** the next expected byte:
+>
+> * So after getting 500 bytes starting at 5000, it will reply with `ACK = 5500`.
+>
+> #### ✅ 2. ACK Number (Acknowledgment Number)
+>
+> ###### ❓ What is it?
+>
+> The **ACK (Acknowledgment) Number** is the number that tells the sender:
+>
+>> “I have received everything **up to (but not including)** this byte number. Please start sending from here next.”
+>>
+>
+> ###### 🧠 Analogy:
+>
+> You're reading a book your friend is sending you, one page at a time. After receiving pages 1 to 100, you send a message:
+>
+>> “ACK = 101” → meaning: “I got up to page 100; now send from page 101.”
+>>
+>
+> ###### 📘 Example:
+>
+> 1. Client sends 500 bytes starting at **Sequence Number = 1000**
+> 2. Server receives all 500 bytes correctly.
+> 3. Server sends back: `ACK = 1500`
+>
+>    (meaning: “I got bytes 1000–1499. Send from 1500 next.”)
+>
+>> ✅ **ACK number = Next byte expected**
+>>
+>
+> This helps ensure  **ordered, complete delivery** , and **helps retransmit lost packets.**
+>
+> #### ✅ 3. Checksum (in TCP, IP, etc.)
+>
+> ###### ❓ What is it?
+>
+> A **Checksum** is a value used to verify the **integrity of the data** — to ensure it hasn't been corrupted in transit.
+>
+> ###### ⚙️ How it works:
+>
+> 1. Sender runs a **checksum algorithm** over the data (e.g., a form of mathematical addition).
+> 2. The result is added to the packet.
+> 3. Receiver does the **same calculation** and compares the recevied data with the checksum received.
+>    * If they match: data is fine.
+>    * If not: data is **corrupted** and may be  **retransmitted** .
+>
+> ###### 🧠 Analogy:
+>
+> Imagine writing a letter and adding a total word count at the end: “This letter has 157 words.” The receiver can count the words to verify the message is complete and unchanged.
+>
+> ###### 🧪 Example:
+>
+> * TCP adds a 16-bit checksum for its header and data.
+> * Suppose you send the text: "HELLO"
+> * Each character gets converted to binary.
+> * All values are added using a special rule (1's complement).
+> * The final value (checksum) is stored in the header.
+> * Receiver recomputes and checks.
+>
+> #### 🚩 4. TCP Flags
+>
+> ###### ❓ What are Flags?
+>
+> **TCP Flags** are 1-bit markers in the TCP header that control the connection state or describe the nature of the packet.
+>
+> ###### 🎌 Main TCP Flags (with explanation):
+>
+> | Flag          | Full Form      | Meaning                                     |
+> | ------------- | -------------- | ------------------------------------------- |
+> | **SYN** | Synchronize    | Used to initiate a connection               |
+> | **ACK** | Acknowledgment | Used to acknowledge received data           |
+> | **FIN** | Finish         | Used to terminate a connection              |
+> | **RST** | Reset          | Immediately abort the connection            |
+> | **PSH** | Push           | Deliver data to the application immediately |
+> | **URG** | Urgent         | Marks data as urgent (rarely used)          |
+>
+> ##### 📶 Common Flag Combinations:
+>
+> ###### 1. **SYN**
+>
+> * First step of 3-way handshake
+> * Meaning: “I want to start a connection.”
+>
+> ###### 2. **SYN + ACK**
+>
+> * Second step of handshake
+> * Server replies: “Okay, I acknowledge your request and I want to connect too.”
+>
+> ###### 3. **ACK**
+>
+> * Used almost everywhere to confirm receipt
+>
+> ###### 4. **FIN + ACK**
+>
+> * Closing connection: “I’m done sending data.”
+>
+> ###### 5. **RST**
+>
+> * When a connection is invalid or crashes: “Terminate now!”
+>
+> ###### 🧱 Diagram: 3-Way Handshake
+>
+> ```text
+> Client                    Server
+>   | ---- SYN ---------->  |   (Seq = 1000)
+>   | <--- SYN + ACK ------ |   (Ack = 1001, Seq = 2000)
+>   | ---- ACK -----------> |   (Ack = 2001)
+> Connection Established ✅
+> ```
+
+![1753195996478](image/ComputerNetworks/1753195996478.png)
+
+### 📦 Example in Real Life
+
+Imagine you're sending a **letter (data)** over a  **reliable courier (TCP)** :
+
+1. You call the courier to  **schedule pickup (SYN, SYN-ACK, ACK)** .
+2. You send multiple pages,  **numbered** .
+3. The recipient **confirms receipt** of each page.
+4. If a page gets lost, you **resend** it.
+5. When done, both of you agree the conversation is over.
+
+## 🧭 Timers in TCP
+
+Timers in TCP play a crucial role in ensuring  **reliable and efficient data transmission** . Let’s explore each TCP timer in detail — what it does, when it is triggered, and why it's important.
+
+#### 🕒 What Are Timers in TCP?
+
+TCP is a  **reliable transport protocol** , and it uses **timers** to:
+
+* Detect **lost packets**
+* Avoid **congestion**
+* Recover from **network delays**
+* Manage **connection states**
+
+#### 🧭 Main TCP Timers
+
+| Timer Name                                 | Purpose                                        | Trigger                        |
+| ------------------------------------------ | ---------------------------------------------- | ------------------------------ |
+| 1.**Retransmission Timer (RTO)**     | Detects lost segments                          | When a segment is sent         |
+| 2.**Persist Timer**                  | Avoids deadlock when window size = 0           | When receiver's window is zero |
+| 3.**Keepalive Timer**                | Checks if peer is still alive                  | During idle connections        |
+| 4.**Time-Wait Timer**                | Ensures old duplicate packets don’t interfere | After connection termination   |
+| 5.**Delayed ACK Timer**              | Waits before sending ACK (to piggyback)        | When receiving data            |
+| 6.**Connection Establishment Timer** | Times out if SYN+ACK is not received           | During 3-way handshake         |
+
+##### 🔁 1. Retransmission Timer (RTO)
+
+* **Goal** : Retransmit if an ACK isn’t received in time.
+* TCP calculates **RTO** based on  **RTT (Round-Trip Time)** .
+* If no ACK arrives for a segment:
+  * TCP waits `RTO` time.
+  * Retransmits the segment.
+  * Doubles the `RTO` (exponential backoff).
+
+📌 Important for  **reliability** .
+
+##### 🕳️ 2. Persist Timer
+
+* **Problem** : Receiver advertises **window size = 0** (temporarily can’t accept data).
+* If sender waits forever →  **deadlock** .
+* **Solution** : Sender uses a persist timer to:
+* Periodically send **window probes** (small packets).
+* Wait for window size to open again.
+
+📌 Prevents **deadlock** in communication.
+
+##### 🧍 3. Keepalive Timer
+
+* Used  **only in some systems** , not part of core TCP standard.
+* Purpose: **Check if peer is still alive** when connection is idle for too long.
+* If no activity:
+  * TCP sends keepalive probes.
+  * If no reply after several tries → connection closed.
+
+📌 Helps in **detecting dead peers** (especially in long idle sessions).
+
+![1753210713210](image/ComputerNetworks/1753210713210.png)
+
+#### 🧠 Real-World Analogy
+
+Imagine you’re sending parcels to a friend:
+
+* If no reply in time → resend it ( **Retransmission** ).
+* If they say "no more space at home" → you check in periodically ( **Persist** ).
+* If friend goes silent → you call them to check ( **Keepalive** ).
+* After closing a conversation → you wait to be sure it’s not reopened mistakenly ( **Time-Wait** ).
+* You don’t reply instantly to every message → wait a bit to combine replies ( **Delayed ACK** ).
+* If call isn’t answered in time → you hang up ( **SYN Timer** ).
+
+### 📡 TCP is **full-duplex** and it operates **only between two endpoints (hosts)** during a connection.
+
+##### ✅ **1. TCP is Full-Duplex**
+
+**What does full-duplex mean?**
+
+It means that **both ends (client and server)** can  **send and receive data at the same time** , over the same connection.
+
+**🧠 Analogy:**
+
+Imagine a phone call — both people can talk and listen simultaneously. That’s full-duplex.
+
+TCP works similarly, unlike a walkie-talkie (which is half-duplex — only one party speaks at a time).
+
+**Example in MERN:**
+
+If your React frontend sends a request to your Node.js backend using HTTP (which runs over TCP), TCP allows:
+
+* The **frontend to send** a request,
+* And the **backend to start sending a response** even before the frontend has completely stopped transmitting (as long as protocol and app logic allow it).
+
+##### ✅ **2. TCP is Connection-Oriented and Between Two Hosts**
+
+* A **TCP connection** is strictly between **two endpoints** — the sender and the receiver.
+* Each side is identified by  **IP + port** :
+  * Client: IP₁:port₁
+  * Server: IP₂:port₂
+
+**This means:**
+
+* It’s always a **point-to-point** connection (not multicast or broadcast).
+* Multiple devices can’t share the same TCP connection, but multiple **parallel** TCP connections can be opened between various client-server pairs.
+
+### 📚 Summary
+
+| Property      | TCP                              |
+| ------------- | -------------------------------- |
+| Protocol Type | Connection-oriented              |
+| Reliability   | Guaranteed (retransmission)      |
+| Order of Data | Preserved                        |
+| Speed         | Slower than UDP (but reliable)   |
+| Use Cases     | HTTP/HTTPS, FTP, SMTP, SSH, etc. |
+
+---
+
+# ----UDP Protocol
+
+✅ UDP (User Datagram Protocol) — Explained in Detail
+
+UDP is a **transport layer protocol** like TCP, but it works very differently.
+
+### ⚡ What is UDP?
+
+UDP is a  **connectionless** ,  **lightweight** , and **fast** protocol. It sends data **without establishing a connection** and  **without guaranteeing delivery** , order, or error checking.
+
+### 🔍 Key Characteristics of UDP
+
+| Feature                         | Description                                               |
+| ------------------------------- | --------------------------------------------------------- |
+| **Connectionless**        | No handshake (no SYN, SYN-ACK, ACK like TCP)              |
+| **Unreliable**            | No guarantee of delivery, order, or duplication handling  |
+| **Fast and Lightweight**  | Minimal overhead (header is just 8 bytes)                 |
+| **No Congestion Control** | It doesn’t slow down if the network is overloaded        |
+| **No Acknowledgements**   | Sender doesn’t wait to know if the receiver got the data |
+
+### 🧱 UDP Packet Structure
+
+UDP header is simple — only 8 bytes (compared to TCP’s ~20 bytes minimum):
+
+| Field            | Size    | Description                         |
+| ---------------- | ------- | ----------------------------------- |
+| Source Port      | 2 bytes | Port of sender                      |
+| Destination Port | 2 bytes | Port of receiver                    |
+| Length           | 2 bytes | Total length of UDP header + data   |
+| Checksum         | 2 bytes | For basic error checking (optional) |
+
+![1753211472806](image/ComputerNetworks/1753211472806.png)
+
+### 🔄 UDP vs TCP
+
+| Feature     | TCP                                   | UDP                           |
+| ----------- | ------------------------------------- | ----------------------------- |
+| Connection  | Connection-oriented (3-way handshake) | Connectionless (no handshake) |
+| Reliability | Reliable (ack, retransmission, order) | Unreliable (no guarantees)    |
+| Speed       | Slower due to overhead                | Faster due to low overhead    |
+| Use Cases   | Web, email, file transfers            | Video streaming, DNS, VoIP    |
+
+### 🎯 Real-Life Examples Using UDP
+
+| Application                     | Why it Uses UDP                                         |
+| ------------------------------- | ------------------------------------------------------- |
+| **Video/Voice Streaming** | Loss of a few packets is acceptable; speed matters more |
+| **Online Gaming**         | Real-time updates preferred over reliability            |
+| **DNS**                   | Needs fast queries; TCP would be too heavy              |
+| **Live Broadcasts**       | Delay is worse than small data loss                     |
+
+### 🧠 Analogy
+
+Imagine you're **shouting messages** across a river:
+
+* You **don’t wait** to see if the other person heard it.
+* You just send the message and move on.
+* If they didn’t catch it, it’s gone — but the process is fast.
+
+That’s how UDP works.
+
+### ⚠️ When *not* to use UDP?
+
+* If data **must not be lost** (e.g., bank transactions)
+* If **order of messages matters**
+* If **error correction** is required
+
+In such cases, TCP is the right choice.
+
+---
+
+# ----Routing
+
+Routing is the process of selecting a path for traffic in a network or between networks. It plays a critical role in directing data packets from a source to a destination across interconnected networks like the internet.
+
+### 🧭 What Is  **Routing** ?
+
+Routing determines **how data is forwarded** from one network to another using a router. Routers examine the destination IP address in each packet and consult their **routing table** to determine the best next hop.
+
+### 🔀 Two Broad Categories of Routing:
+
+##### 1. **Static Routing**
+
+* **Manually configured** by a network administrator.
+* Good for  **small or simple networks** .
+* Does **not change** automatically if network topology changes.
+
+✅ Advantages:
+
+* Predictable
+* Low overhead
+
+❌ Disadvantages:
+
+* Doesn’t scale
+* Manual reconfiguration on changes
+
+##### 2. **Dynamic Routing**
+
+* **Routers exchange information** with each other using routing protocols.
+* Automatically adapts to  **topology changes** , link failures, or new routes.
+
+✅ Advantages:
+
+* Scalable
+* Automatically adapts
+
+❌ Disadvantages:
+
+* More complex
+* Consumes CPU, memory, and bandwidth
+
+### 🧠 Types of Routing (Based on Scope):
+
+##### 1. **Interior Routing (IGP - Interior Gateway Protocol)**
+
+* Routing  **within a single organization (autonomous system)** .
+* Examples:
+  * RIP
+  * OSPF
+  * EIGRP
+  * IS-IS
+
+##### 2. **Exterior Routing (EGP - Exterior Gateway Protocol)**
+
+* Routing **between different autonomous systems** (e.g., ISPs).
+* Example:
+  * **BGP (Border Gateway Protocol)**
+
+### 🧱 Types of Dynamic Routing Protocols (Based on Algorithm)
+
+##### 1. **Distance Vector Protocols**
+
+* Routers exchange information about **distance (hops)** to destinations.
+* Each router shares its **entire routing table** with neighbors.
+
+🔧 Examples:
+
+* RIP (Routing Information Protocol)
+* IGRP (Cisco proprietary)
+
+📉 Cons:
+
+* Slower convergence
+* Limited metrics (only hop count)
+
+### 2. **Link-State Protocols**
+
+* Routers **flood information** about their links (interfaces and status) to the entire network.
+* Each router builds a **complete map of the network topology** and computes the best path using algorithms like Dijkstra’s.
+
+🔧 Examples:
+
+* OSPF (Open Shortest Path First)
+* IS-IS
+
+✅ Pros:
+
+* Fast convergence
+* Rich metrics (bandwidth, delay)
+
+### 3. **Hybrid Protocols**
+
+* Combine features of distance vector and link state.
+* Maintain **neighbor relationships** and use more complex metrics.
+
+🔧 Example:
+
+* EIGRP (Enhanced Interior Gateway Routing Protocol, Cisco proprietary)
+
+![1753270967935](image/Linux/1753270967935.png)
+
+### 🌍 Key Routing Protocols Summary
+
+| Protocol | Type | Algorithm       | Use Case            | Metric            |
+| -------- | ---- | --------------- | ------------------- | ----------------- |
+| RIP      | IGP  | Distance Vector | Small LANs          | Hop Count         |
+| OSPF     | IGP  | Link-State      | Enterprise networks | Bandwidth         |
+| EIGRP    | IGP  | Hybrid          | Cisco networks      | Bandwidth + delay |
+| IS-IS    | IGP  | Link-State      | ISP cores           | Delay             |
+| BGP      | EGP  | Path Vector     | Internet routing    | Policies, AS-path |
+
+### 🧮 Metrics Used by Routing Protocols
+
+| Metric      | Meaning                   |
+| ----------- | ------------------------- |
+| Hop count   | Number of routers crossed |
+| Bandwidth   | Link speed                |
+| Delay       | Latency across the path   |
+| Load        | Current traffic           |
+| Reliability | Link stability            |
+| MTU         | Maximum Transmission Unit |
+
+### 📊 Routing Table Entry Format (Simplified)
+
+Each router maintains a **routing table** with entries like:
+
+```
+Destination     Next Hop     Interface     Metric
+192.168.1.0     10.0.0.2     eth0          2
+```
+
+---
+
+# ----Control Plane and Data Plane
+
+### ✅ **What is the Control Plane?**
+
+The **Control Plane** is one of the two primary components of a network device's architecture, the other being the **Data Plane** (sometimes called the Forwarding Plane). Let's break it down in simple, real-world terms, with analogies and relevance to MERN stack/devops as well.
+
+The **Control Plane** is responsible for:
+
+* **Making decisions about where traffic should be sent.**
+* Building and maintaining the **routing tables** using **routing protocols** like RIP, OSPF, BGP, etc.
+* Communicating with other routers to exchange network topology information.
+* Managing the overall logic and policies of the network.
+
+👉  **It controls how packets *should* flow** , not the actual data packets themselves.
+
+### 🧠 Analogy: Control Plane vs Data Plane
+
+Imagine a  **post office** :
+
+* The **Control Plane** is like the *manager and sorting desk* deciding the best route to deliver letters.
+* The **Data Plane** is the *postman* who actually carries and delivers the letters based on those decisions.
+
+### 💡 Real-World Example (with context of the internet)
+
+Let’s say you're using a MERN app and your server is hosted on AWS. When a request is made to your server:
+
+* Routers along the way **consult their control plane** to find the best route.
+* Once the best route is determined,  **data flows via the data plane** .
+
+The **Control Plane updates itself regularly** to:
+
+* Avoid failed paths
+* Handle changes in network structure (new routers, down links)
+* Use faster routes
+
+### 📋 What does the Control Plane include?
+
+1. **Routing Protocols** : RIP, OSPF, BGP, EIGRP
+2. **Neighbor discovery** : Helps detect nearby routers
+3. **Link-state database** : Tracks the network topology
+4. **Policy Control** : Like access control lists, QoS rules, etc.
+
+### 🔄 Control Plane vs Data Plane
+
+| Aspect          | Control Plane                      | Data Plane                      |
+| --------------- | ---------------------------------- | ------------------------------- |
+| Role            | Decision maker (routing, policies) | Packet forwarding (actual data) |
+| Protocols       | RIP, OSPF, BGP, ICMP               | IP, TCP, UDP                    |
+| Speed           | Slower (brain work)                | Faster (muscle work)            |
+| Type of Traffic | Routing updates                    | User data                       |
+
+![1753272627742](image/Linux/1753272627742.png)
+
+### 📦 In context of MERN/DevOps
+
+As a MERN developer or DevOps engineer, you might not **directly interact** with the control plane, but understanding it helps when:
+
+* Deploying apps to  **cloud providers (AWS, GCP)** .
+* Setting up  **custom routing/VPC peering** .
+* Working with  **firewalls, routers, load balancers** .
+* Diagnosing  **network issues (ping, traceroute, packet drops)** .
+
+### 🔐 Why can’t we avoid it?
+
+Without the  **Control Plane** :
+
+* Routers wouldn’t know where to send packets.
+* Network paths wouldn't adapt to topology changes or failures.
+* The internet would break the moment something changes.
+
+Think of it as  **Google Maps** :
+
+* Control Plane = Updates your map with current traffic.
+* Data Plane = Actually drives your car.
+
+---
+
+# ----IP Address
+
+🌐 What is an IP Address?
+
+An **IP (Internet Protocol) address** is a **unique identifier** for a device on a network. It acts like the **postal address** of your computer in a digital world, allowing devices to **send and receive data** across networks like the internet.
+
+### 📌 IPv4 (Internet Protocol version 4)
+
+🔹 Format:
+
+* IPv4 is a **32-bit** address.
+* It’s written in  **decimal** , divided into **4 octets** (8 bits each), separated by dots.
+
+✅ Example:
+
+```
+192.168.1.1
+```
+
+🔹 Behind the scenes (binary):
+
+```
+192      .    168      .      1       .     1
+11000000 . 10101000 . 00000001 . 00000001
+```
+
+##### 🧩 Total Address Space
+
+IPv4 supports:
+
+```
+2^32 = 4,294,967,296 addresses
+```
+
+That’s around 4.3 billion unique IPs. But due to reservations, not all are usable publicly.
+
+![1753724360814](image/ComputerNetworks/1753724360814.png)
+
+### 🔍 Components of an IPv4 Address
+
+IPv4 addresses are split into:
+
+1. **Network Portion** – Identifies the  **network** .
+2. **Host Portion** – Identifies a **specific device** (host) on that network.
+
+The **division** between network and host is determined by the  **subnet mask** .
+
+### 🧠 Example with Subnet:
+
+Let’s say:
+
+* IP Address: `192.168.1.10`
+* Subnet Mask: `255.255.255.0`
+
+That means:
+
+* Network portion: `192.168.1`
+* Host portion: `10`
+* So all devices in `192.168.1.x` are in the same local network.
+
+### 🧱 IPv4 Address Classes (Old, still useful for basics)
+
+| Class | Starting Bits | Range                        | Number of Hosts | Use Case              |
+| ----- | ------------- | ---------------------------- | --------------- | --------------------- |
+| A     | 0xxxxxxx      | 1.0.0.0 – 126.0.0.0         | 16 million      | Very large networks   |
+| B     | 10xxxxxx      | 128.0.0.0 – 191.255.0.0     | 65,534          | Medium networks       |
+| C     | 110xxxxx      | 192.0.0.0 – 223.255.255.0   | 254             | Small networks        |
+| D     | 1110xxxx      | 224.0.0.0 – 239.255.255.255 | N/A             | Multicasting          |
+| E     | 1111xxxx      | 240.0.0.0 – 255.255.255.255 | N/A             | Research/Experimental |
+
+> Today, **CIDR (Classless Inter-Domain Routing)** is used instead of these rigid classes.
+
+### 🛡️ Private vs Public IPv4 Addresses
+
+🔐 Private IPs:
+
+Reserved for local use inside private networks. **Not routable** on the internet.
+
+| Range          | Use Case            |
+| -------------- | ------------------- |
+| 10.0.0.0/8     | Large networks      |
+| 172.16.0.0/12  | Medium networks     |
+| 192.168.0.0/16 | Small/home networks |
+
+➡ These are used in your home Wi-Fi, LANs, etc.
+
+➡ Devices with private IPs use **NAT (Network Address Translation)** to access the internet.
+
+### ⚙️ Subnetting
+
+Subnetting helps:
+
+* Break a large network into smaller ones.
+* Improve performance and security.
+
+Example:
+
+```
+IP: 192.168.1.50
+Subnet mask: 255.255.255.0
+CIDR: /24
+```
+
+You can create **256 subnets** or control how many hosts per subnet you allow.
+
+### 📤 Packet Delivery with IPv4
+
+When you send a packet:
+
+1. Your device checks the  **destination IP** .
+2. Compares it with its own IP + subnet mask.
+3. If same network → send directly.
+4. Else → send to the  **default gateway/router** .
+
+### 🧮 IPv4 Header (Important)
+
+| Field            | Size    | Description                         |
+| ---------------- | ------- | ----------------------------------- |
+| Version          | 4 bits  | IP version (always 4 for IPv4)      |
+| IHL              | 4 bits  | Header length                       |
+| Type of Service  | 8 bits  | QoS preferences                     |
+| Total Length     | 16 bits | Entire packet size                  |
+| Identification   | 16 bits | For fragmentation                   |
+| Flags + Offset   | 16 bits | Fragmentation details               |
+| TTL              | 8 bits  | Time-to-live (how many hops left)   |
+| Protocol         | 8 bits  | Next-level protocol (TCP=6, UDP=17) |
+| Header Checksum  | 16 bits | Header error checking               |
+| Source Address   | 32 bits | IP of sender                        |
+| Destination Addr | 32 bits | IP of receiver                      |
+
+### 🔄 Limitations of IPv4
+
+1. **Address Exhaustion** – We’re out of public IPv4s, hence the push to IPv6.
+2. **No inherent security** – Needs add-ons like IPSec.
+3. **No QoS or mobility features** – Limited intelligence for routing modern apps.
+
+![1753724274339](image/ComputerNetworks/1753724274339.png)
+
+![1753724397252](image/ComputerNetworks/1753724397252.png)
+
+### 🧭 Summary
+
+| Term           | Meaning                                         |
+| -------------- | ----------------------------------------------- |
+| IPv4 Address   | 32-bit identifier for devices                   |
+| Format         | Dotted decimal (e.g., 192.168.0.1)              |
+| Private Ranges | 10.x, 172.16.x, 192.168.x                       |
+| Public IP      | Unique globally routable IPs                    |
+| Subnet Mask    | Determines network vs host parts                |
+| NAT            | Allows private IPs to communicate with internet |
+| Header         | Contains TTL, checksum, protocol, etc.          |
+
+---
+
+# Subnet, Subnet Mask and CIDR
+
+What is a Subnet?
+
+A **subnet** (short for  *sub-network* ) is a smaller network created from a larger IP network. Subnetting divides an IP address space into multiple logical networks. This helps with efficient IP address allocation and improves routing performance and security.
+
+### 📦 Analogy: Office Building
+
+Think of a company’s office building:
+
+* The entire **building** = One IP network (e.g., `192.168.0.0/24`)
+* Each **floor** = A **subnet** (e.g., 1st floor = `192.168.0.0/26`, 2nd floor = `192.168.0.64/26`)
+* People on each floor can easily talk to each other.
+* To talk to someone on another floor, you use the **building's directory system** (router).
+
+### 🔢 IP Address Breakdown (IPv4)
+
+An IPv4 address has  **32 bits** , usually written in dotted-decimal like `192.168.1.10`.
+
+Example:
+
+```
+192.168.1.10 = 11000000.10101000.00000001.00001010 (binary)
+```
+
+An IP address consists of:
+
+* **Network portion** : Identifies the network
+* **Host portion** : Identifies a specific device (host) within that network
+
+The **subnet mask** decides where the boundary lies.
+
+### 🧠 What is a Subnet Mask?
+
+It defines which part of an IP address is the **network part** and which part is the  **host part** .
+
+Example:
+
+* IP: `192.168.1.10`
+* Subnet Mask: `255.255.255.0` → means first 24 bits are network bits.
+
+### 🔧 CIDR Notation
+
+Instead of writing the full subnet mask, we use  **CIDR (Classless Inter-Domain Routing)** :
+
+* `192.168.1.10/24` → 24 bits = network part, 8 bits = host part
+
+### ✂️ Subnetting in Action
+
+Let’s say we have a network `192.168.1.0/24` with 256 IPs.
+
+We want to create  **4 subnets** . We need 2 extra bits (because 2² = 4):
+
+* Subnet mask becomes: `255.255.255.192` → `/26`
+* Each subnet will have: `64 IP addresses`
+
+| Subnet # | Network Address  | IP Range             | Broadcast Address |
+| -------- | ---------------- | -------------------- | ----------------- |
+| 1        | 192.168.1.0/26   | 192.168.1.1 - .62    | 192.168.1.63      |
+| 2        | 192.168.1.64/26  | 192.168.1.65 - .126  | 192.168.1.127     |
+| 3        | 192.168.1.128/26 | 192.168.1.129 - .190 | 192.168.1.191     |
+| 4        | 192.168.1.192/26 | 192.168.1.193 - .254 | 192.168.1.255     |
+
+> Let’s break this down clearly:
+>
+> ##### 🔢 Starting Point:
+>
+> You had a **/24** network →
+>
+> `192.168.1.0/24` = 256 IPs (`2^8`)
+>
+> ##### 🎯 Goal:
+>
+> Create **4 subnets**
+>
+> To do that, you need to borrow **2 bits** from the host portion:
+>
+> `2^2 = 4` subnets
+>
+> So, the new subnet mask is `/26`, which means:
+>
+> * Subnet mask: `255.255.255.192` ie 255.255.255.xxyyyyyy . Here xx can be 01, 10, 11, 00  ie 4 Subnets
+> * Each subnet has `2^(32-26) = 64` IPs (but only 62 usable, because 2 are reserved for **network** and  **broadcast** -----EXPLAINED LATER)
+>
+> ##### 📊 What we *could* do:
+>
+> You could break this network further (up to 64 subnets if you went all the way to `/30`), but in this case, you chose **only 2 bits** (making 4 subnets) and used all of them.
+>
+> | Subnet | Network                                    | IP Range                       | Broadcast     |
+> | ------ | ------------------------------------------ | ------------------------------ | ------------- |
+> | 1      | 192.168.1.0/26 ie 192.168.1.00yyyyyy/26   | 192.168.1.1 – 192.168.1.62    | 192.168.1.63  |
+> | 2      | 192.168.1.64/26 ie 192.168.1.01yyyyyy/26  | 192.168.1.65 – 192.168.1.126  | 192.168.1.127 |
+> | 3      | 192.168.1.128/26 ie 192.168.1.10yyyyyy/26 | 192.168.1.129 – 192.168.1.190 | 192.168.1.191 |
+> | 4      | 192.168.1.192/26 ie 192.168.1.11yyyyyy/26 | 192.168.1.193 – 192.168.1.254 | 192.168.1.255 |
+>
+> ✅ In Brief:
+>
+> * You could have **chosen** to create fewer than 4 subnets (e.g., 2), by borrowing only 1 bit.
+> * You could also have created **more** (e.g., 8 subnets using 3 bits).
+> * But in the given case, you  **borrowed 2 bits → created 4 subnets → and used all 4** .
+>
+> #### 📌 Explanation In Detail
+>
+> 🔹 First, remember:
+>
+> You are starting with a  **`/24` network** , which means:
+>
+> * IP range: `192.168.1.0 – 192.168.1.255`
+> * Total IPs: **256**
+> * Subnet mask: **255.255.255.0**
+> * Number of  **host bits** : 8 (since 32 total bits - 24 network bits = 8 host bits)
+>
+> ##### 🔸 Why did we "take 2 extra bits"?
+>
+> To divide this `/24` network into  **4 subnets** , you need to *borrow* **bits from the host part** and give them to the subnet part.
+>
+> * 2 bits can create `2² = 4` combinations → so you can get **4 subnets**
+> * You’re still inside the original 8 host bits, but now:
+>   * **2 bits** are used for subnetting
+>   * Remaining **6 bits** are for hosts in each subnet
+>
+> That gives:
+>
+> * Subnet mask: `255.255.255.192` → `/26`
+> * Each subnet has `2⁶ = 64` IPs (including 1 network and 1 broadcast address → 62 usable)
+>
+> ##### 🔸 Why not just use the existing 8 bits?
+>
+> Because those 8 bits (in `/24`) are  **host bits by default** .
+>
+> If you want to divide the network into subnets,  **you must sacrifice some host bits** .
+>
+> So the **"2 extra bits"** aren’t additional — they’re borrowed from the **8 host bits** you already had.
+>
+> ##### ✅ Analogy:
+>
+> Think of a `/24` block as a street with  **256 houses** .
+>
+> You want to split it into 4 small colonies.
+>
+> To do this, you decide:
+>
+> * I’ll use **2 digits of the house number** to say which colony (subnet) it belongs to
+> * The remaining digits tell the house number inside that colony
+>
+> You're **not adding** anything — you're just **repurposing 2 digits** from house numbers for colony IDs.
+>
+> ✅ Summary:
+>
+> * You're not "taking extra bits" on top of the 8 — you're **borrowing** 2 bits **from the host part**
+> * You still have only 8 bits total for subnet + host
+> * Those 2 bits divide the space into **4 logical subnets**
+> * The remaining 6 bits give each subnet 64 IPs
+>
+> #### 👉 Example 2
+>
+> ##### `192.168.1.0/24`
+>
+> 📦  **CIDR Notation** : `/24`
+>
+> This means:
+>
+> * **24 bits for the network portion**
+> * **8 bits left for the host portion** (because IPv4 = 32 bits total)
+>
+> **🧮 Subnet and Host Details:**
+>
+> * **Subnet mask** : `255.255.255.0`
+>
+>   Binary: `11111111.11111111.11111111.00000000`
+> * **Network portion** = first **24 bits** → `192.168.1`
+> * **Host portion** = last **8 bits** → used for host addresses
+>
+> 📊 So:
+>
+> | Metric                            | Value                                                         |
+> | --------------------------------- | ------------------------------------------------------------- |
+> | **Number of subnets**       | 1 (this is**just one subnet** )                         |
+> | **Number of host bits**     | 8 bits                                                        |
+> | **Host addresses possible** | 2⁸ =**256 total**                                      |
+> | **Usable host IPs**         | **256 - 2 = 254**usable IPs                             |
+> | **Why -2?**                 | One for**network address** , one for**broadcast** |
+>
+> **🔍 Breakdown:**
+>
+> * **Network address** : `192.168.1.0`
+>
+>   (Not assignable to any device — it identifies the subnet itself)
+> * **Broadcast address** : `192.168.1.255`
+>
+>   (Used to send messages to **all** devices on this subnet)
+> * **Usable range** :
+>
+>   `192.168.1.1` to `192.168.1.254`
+>
+> So, in your example:
+>
+>> ✅ There is  **1 subnet** , and it allows for  **254 usable host IPs** .
+>>
+>
+> #### 👉 Example 3
+>
+> ##### **`192.168.1.0/25`**
+>
+> **📘 CIDR `/25` Means:**
+>
+> * IPv4 = 32 bits total
+> * `/25` →  **25 bits for network** , **7 bits for host**
+>
+> **🧮 Calculations:**
+>
+> | Metric                                  | Value                                                                        |
+> | --------------------------------------- | ---------------------------------------------------------------------------- |
+> | **Subnet mask**                   | `255.255.255.128`                                                          |
+> | **Network bits**                  | 25                                                                           |
+> | **Host bits**                     | 7                                                                            |
+> | **Total IPs per subnet**          | 2⁷ =**128 IPs**                                                       |
+> | **Usable hosts**                  | 128 - 2 =**126**                                                       |
+> | **Number of subnets**(within /24) | 21 =**2**(because you're borrowing 1 bit from host portion of `/24`) |
+>
+> **🔍 Subnets inside `192.168.1.0/24`:**
+>
+> You're dividing a `/24` into **2** `/25` subnets:
+>
+> 🔹 **First Subnet:**
+>
+> * **Network address** : `192.168.1.0`
+> * **Broadcast address** : `192.168.1.127`
+> * **Usable host range** : `192.168.1.1` → `192.168.1.126`
+>
+> 🔹 **Second Subnet:**
+>
+> * **Network address** : `192.168.1.128`
+> * **Broadcast address** : `192.168.1.255`
+> * **Usable host range** : `192.168.1.129` → `192.168.1.254`
+>
+> 🧠 Analogy:
+>
+> Think of `192.168.1.0/24` as **one full pizza with 256 slices** (0–255).
+>
+> If you subnet it as `/25`, you're slicing that pizza into  **two equal halves** :
+>
+> * First half: slices 0–127
+> * Second half: slices 128–255
+>
+> Each half (subnet) gets:
+>
+> * 1 slice for "network name" (start of the half)
+> * 1 slice for "broadcast" (end of the half)
+> * Remaining 126 slices for actual users/devices
+>
+
+### 📡 Why Subnetting?
+
+1. **Efficient IP usage** : Avoid wasting IPs
+2. **Improves performance** : Reduces broadcast traffic
+3. **Better security** : Segregate network sections
+4. **Scalability** : Easy to grow in organized chunks
+
+### 💻 In Context of a MERN Stack App (Deployment)
+
+Imagine you're deploying your MERN app on a VPC (Virtual Private Cloud):
+
+* **Backend server** : In Subnet A (192.168.1.0/24)
+* **Database server** : In Subnet B (192.168.2.0/24)
+* **Frontend/React** : Served from another subnet or via CDN
+
+Communication is tightly controlled between subnets, often via  **routing tables and firewalls** . Subnetting keeps services secure and isolated.
+
+### 🚀 Every IP Subnt Reserves 2 Special Addresses
+
+Every **IP subnet** (range of IPs) reserves  **2 special addresses** :
+
+1. **Network Address** (first IP)
+2. **Broadcast Address** (last IP)
+
+##### 🔸 1. Network Address
+
+* This is the **first IP** in the subnet.
+* It  **identifies the subnet itself** , not a device.
+* Used by routers and systems to  **refer to the whole subnet** .
+
+🧠 Think of it like:
+
+> “This is *Subnetwork A* as a whole.”
+
+##### 🔸 2. Broadcast Address
+
+* This is the **last IP** in the subnet.
+* It's used to send a message to **all devices** in the subnet.
+
+🧠 Think of it like:
+
+> “Hey everyone in Subnetwork A — here's a message for all of you!”
+
+##### ✅ Example with Subnet `/26`:
+
+You have the subnet:
+
+`192.168.1.0/26` → 64 IPs total → range: `192.168.1.0` to `192.168.1.63`
+
+| Type                        | IP Address                        |
+| --------------------------- | --------------------------------- |
+| **Network address**   | `192.168.1.0`                   |
+| **Usable host IPs**   | `192.168.1.1`→`192.168.1.62` |
+| **Broadcast address** | `192.168.1.63`                  |
+
+So, even though the subnet has  **64 total IPs** , only  **62 are usable for devices** .
+
+> #### ❓ Why first and last subnet in `192.168.1.0/26` is `192.168.1.0` and `192.168.1.63`
+>
+> 🔹 What does `/26` mean?
+>
+> * An IPv4 address has 32 bits.
+> * `/26` means:
+>   * First **26 bits** = **network part**
+>   * Remaining **6 bits** = **host part**
+>
+> 🔹 So how many host IPs in a /26 subnet?
+>
+> * With  **6 bits for host** , you get:
+>
+>   `2^6 = 64` total IPs
+>
+> These 64 IPs start from the base IP of the subnet (here: `192.168.1.0`) and go up sequentially.
+>
+> 🔹 Range of IPs in `192.168.1.0/26`
+>
+> Let’s convert `.0` to binary:
+>
+> ```
+> 192.168.1.0 → binary = 11000000.10101000.00000001.00000000
+>                                   ^ Host portion is last 6 bits
+> ```
+>
+> If you increment those **6 host bits** from `000000` to `111111` (0 to 63 in decimal), the range becomes:
+>
+> * **First IP (network)** : `192.168.1.0`
+> * **Last IP (broadcast)** : `192.168.1.63`
+>
+> ✅ Correct broadcast address: **`192.168.1.63`**
+>
+> ##### 🔻 Why last subnet as  `192.168.1.192` ie `192.168.1.11yyyyyy` wrong?
+>
+> Let’s break down `192.168.1.192` in binary:
+>
+> ```
+> 192 = 11000000 → BUT in the *last* octet, 192 = 11000000
+> ```
+>
+> So `192.168.1.192` is part of a  **different subnet** :
+>
+> * It actually belongs to `192.168.1.192/26` (which ranges from `192.168.1.192` to `192.168.1.255`)
+>
+> ✅ Summary
+>
+> | Subnet               | Range of IPs                         | Broadcast         |
+> | -------------------- | ------------------------------------ | ----------------- |
+> | `192.168.1.0/26`   | `192.168.1.0`–`192.168.1.63`    | `192.168.1.63`  |
+> | `192.168.1.64/26`  | `192.168.1.64`–`192.168.1.127`  | `192.168.1.127` |
+> | `192.168.1.128/26` | `192.168.1.128`–`192.168.1.191` | `192.168.1.191` |
+> | `192.168.1.192/26` | `192.168.1.192`–`192.168.1.255` | `192.168.1.255` |
+
+##### 🎯 Why are they reserved?
+
+* The **network address** is used internally by routing logic to identify the subnet.
+* The **broadcast address** is needed for communication to all hosts — e.g., DHCP discover messages.
+
+Without reserving these two, communication wouldn't work properly.
+
+---
+
+# ----CIDR
+
+✅ Why were **IPv4 Address Classes** created originally?
+
+When the internet was young, we needed a way to **divide** the 4.3 billion IPv4 addresses into different  **sizes of networks** . That’s where **IP classes** came in:
+
+| Class | Default Subnet Mask | Host Capacity     | Use Case        |
+| ----- | ------------------- | ----------------- | --------------- |
+| A     | 255.0.0.0           | ~16 million hosts | Huge networks   |
+| B     | 255.255.0.0         | ~65,000 hosts     | Medium networks |
+| C     | 255.255.255.0       | 254 hosts         | Small networks  |
+
+These **"classful" networks** were simple — you looked at the **first few bits** of an IP to tell which class it belonged to, and therefore how big the network was.
+
+### ❌ What was the problem with IP address classes?
+
+1.**Wastage of IPs** :
+
+* A company that needed only 1000 hosts couldn’t fit in a Class C (only 254 hosts), so they had to take a whole **Class B** — wasting  **~64,000 IPs** .
+
+2.**Inflexibility** :
+
+* You were **stuck with fixed sizes** — Class A, B, or C. No in-between sizes like 3000 or 100 hosts.
+
+3.**Exhaustion** :
+
+* Because of this rigid allocation, **IPv4 addresses were running out** much faster than needed.
+
+🧠 Solution: **CIDR (Classless Inter-Domain Routing)**
+
+> 📅 Introduced in 1993 to  **replace classful addressing** .
+
+### 💡 What is CIDR?
+
+CIDR is a way to **allocate IP addresses more efficiently** using  **variable-length subnet masks (VLSM)** .
+
+Instead of being stuck with A, B, or C, CIDR lets you specify how many bits are for the  **network part** , using a `/` notation:
+
+```
+Example: 192.168.1.0/26
+```
+
+This means:
+
+* First **26 bits** are network bits
+* Remaining **6 bits** are host bits
+* So you get `2^6 = 64` IPs in that subnet
+
+### ✅ Benefits of CIDR:
+
+1. **Precise allocation** (give only as many IPs as needed)
+2. **Prevents IP wastage**
+3. **Enables route aggregation** (supernetting → fewer routing table entries)
+4. **Flexible subnetting** for both large and small networks
+
+### 🆚 Comparison: Classes vs CIDR
+
+| Feature             | IP Classes                  | CIDR                    |
+| ------------------- | --------------------------- | ----------------------- |
+| Fixed sizes         | Yes (A, B, C)               | No (you define with /n) |
+| Wastes IP addresses | Often                       | Much less               |
+| Format              | Based on IP’s first bits   | IP + slash (e.g., /24)  |
+| Subnetting ease     | Limited (must follow class) | Highly flexible         |
+| Introduced in       | 1980s                       | 1993                    |
+
+### 🧱 Analogy:
+
+* **Classful IPs** : Like buying shirts in just S, M, L sizes — not everyone fits perfectly.
+* **CIDR** : Like tailoring your shirt to fit  **exactly** .
+
+### Summary
+
+* **IPv4 Classes** were a **first-generation system** for dividing IP space.
+* **CIDR** replaced it to allow  **flexibility and avoid waste** .
+* CIDR lets us define **custom network sizes** using `/` notation and subnet masks.
+
+---
+
+# IP Address and its Uniqueness
+
+✅ Is every IP address **unique** globally?
+
+### 🔹 **Public IP addresses** – YES ✅
+
+* These  **are unique globally** .
+* They are assigned by **IANA** (Internet Assigned Numbers Authority) and **RIRs** (Regional Internet Registries).
+* When your device connects to the internet directly (e.g., a server or your router's WAN interface), it uses a  **public IP address** , and **no one else in the world** should have that same address at the same time.
+
+### 🔸 **Private IP addresses** – NO ❌
+
+* These are  **not globally unique** .
+* They are used **inside local networks** (like homes, schools, offices).
+* Multiple networks across the planet can use the  **same private IP ranges** , like:
+  * `10.0.0.0 – 10.255.255.255`
+  * `172.16.0.0 – 172.31.255.255`
+  * `192.168.0.0 – 192.168.255.255`
+
+➡️ These are **reused** again and again in  **different private networks** , and are **not routable** on the internet directly.
+
+### 🌐 Example:
+
+You could have:
+
+* Your home laptop: `192.168.1.5`
+* A friend's laptop: `192.168.1.5`
+* A company’s printer: `192.168.1.5`
+
+All three are fine because they are on  **different private networks** .
+
+### ⚠️ But what about conflicts?
+
+* **Public IPs** must be unique – or there would be confusion in routing over the internet.
+* **Private IPs** must be unique  **within the same local network** , or you get an  **IP conflict error** .
+
+### 🔁 Bonus: What allows private IPs to work online?
+
+> **NAT (Network Address Translation)**
+
+Your router **translates** all your internal private IP addresses (e.g., `192.168.1.x`) to a **single public IP** when going online.
+
+### ✅ Summary
+
+| IP Type    | Globally Unique? | Usable on Internet? | Example                 |
+| ---------- | ---------------- | ------------------- | ----------------------- |
+| Public IP  | ✅ Yes           | ✅ Yes              | `8.8.8.8`(Google DNS) |
+| Private IP | ❌ No            | ❌ No               | `192.168.1.1`         |
+
+---
+
+# ----ICMP
+
+**ICMP (Internet Control Message Protocol)** is a supporting protocol in the IP suite. It's mainly used for **sending error messages** and **operational information** indicating success or failure when communicating with another IP address.
+
+### 🔧 Purpose of ICMP:
+
+ICMP does **not** transmit data between systems. Instead, it’s used by network devices— **routers, hosts, etc.** —to:
+
+* Report errors in communication.
+* Provide diagnostic functions (like **ping** and  **traceroute** ).
+
+### 📦 ICMP Works With IP
+
+* It’s part of the **IP layer (Layer 3)** but is considered **Layer 3.5** sometimes because it supports network operations.
+* ICMP packets are encapsulated inside  **IP packets** .
+
+### 📩 Common ICMP Message Types:
+
+| ICMP Type                             | Description                                          |
+| ------------------------------------- | ---------------------------------------------------- |
+| **0 (Echo Reply)**              | Reply to a ping request                              |
+| **3 (Destination Unreachable)** | Sent if a destination can’t be reached              |
+| **5 (Redirect)**                | Sent by a router if a better route exists            |
+| **8 (Echo Request)**            | Sent by ping to test reachability                    |
+| **11 (Time Exceeded)**          | Sent when a packet's TTL hits 0 (used by traceroute) |
+
+### ⚙️ Example: Ping
+
+When you run:
+
+```bash
+ping google.com
+```
+
+* Your computer sends **ICMP Echo Request** packets.
+* Google replies with **ICMP Echo Reply** packets.
+* This checks if the destination is reachable and measures round-trip time.
+
+### ❌ ICMP and Security
+
+Some administrators **block ICMP** at firewalls to:
+
+* Prevent network mapping by attackers.
+* Avoid ping flood DoS attacks.
+
+However, overblocking can make diagnosing issues harder.
+
+### 🧠 Analogy
+
+Think of IP as a delivery truck, and ICMP as a  **note left by the delivery driver** :
+
+* “Address doesn’t exist” → Destination unreachable.
+* “Try using this other road” → Redirect.
+* “Couldn’t reach in time” → Time exceeded.
+
+### ✅ Summary:
+
+* ICMP helps maintain and troubleshoot network communication.
+* It doesn’t carry user data.
+* Tools like `ping` and `traceroute` depend on ICMP.
+* It’s tightly integrated with IP for error messaging and control.
+
+---
+
+# ----Network Interfaces
+
+✅ What is a  **Network Interface** ?
+
+A **network interface** is a **hardware or software component** that connects a computer or device to a network. It is the point where the system **sends or receives data to/from a network** (like the Internet or a local network).
+
+### 🧱 Types of Network Interfaces:
+
+| Type                          | Description                                                                             |
+| ----------------------------- | --------------------------------------------------------------------------------------- |
+| **Physical Interfaces** | Actual hardware like Ethernet cards, Wi-Fi adapters, etc.                               |
+| **Virtual Interfaces**  | Software-defined interfaces like `lo`(loopback), VPN interfaces, Docker bridges, etc. |
+
+### 🧩 Examples of Interfaces:
+
+| Interface   | Description                                                 |
+| ----------- | ----------------------------------------------------------- |
+| `eth0`    | First Ethernet interface (wired LAN)                        |
+| `wlan0`   | First Wireless LAN interface (Wi-Fi)                        |
+| `lo`      | Loopback interface (127.0.0.1) for internal communication   |
+| `tun0`    | VPN interface (via tunneling)                               |
+| `docker0` | Bridge interface created by Docker for container networking |
+
+### 🔗 Key Components of a Network Interface:
+
+1. **MAC Address** – Unique hardware address used in local communication (Layer 2).
+2. **IP Address** – Logical address assigned to the interface (Layer 3).
+3. **Subnet Mask** – Defines the network and host portion of the IP.
+4. **MTU (Maximum Transmission Unit)** – The largest packet size the interface can handle.
+
+### 💡 What Does It Actually Do?
+
+Let’s say you're on a laptop:
+
+* Your Wi-Fi card is a  **network interface** .
+* It gets an IP address from the router.
+* When you visit `google.com`, your request goes through this interface.
+* Similarly, responses from the Internet come  **into your system via this interface** .
+
+### 🖥️ Commands to View Interfaces:
+
+On  **Linux/macOS** :
+
+```bash
+ifconfig     # deprecated, but still used
+ip a         # modern way
+```
+
+On  **Windows** :
+
+```powershell
+ipconfig /all
+```
+
+### 📦 Virtual Interfaces (Advanced Note):
+
+Used for things like:
+
+* Docker containers (`veth` pairs)
+* Bridges (e.g., `br0`)
+* VPN tunnels (`tun`, `tap`)
+* VLAN interfaces (`eth0.10`, for VLAN ID 10)
+
+### 🧠 Analogy:
+
+Think of your **network interface** as the **doorway** of your house:
+
+* If your device is your house...
+* The network interface is the **door** where messages come in and go out.
+* You can have multiple doors (interfaces) – wired, wireless, virtual, etc.
+
+---

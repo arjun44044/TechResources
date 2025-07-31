@@ -4059,7 +4059,7 @@ The **command line (CLI)** and **graphical user interface (GUI)** each have stre
 > 🧾 Example:
 >
 > ```bash
-> ssh -X username@server-ip
+>  ssh -X username@server-ip
 > gedit
 > ```
 >
@@ -7747,7 +7747,7 @@ Command utilities are preinstalled (or installable) CLI programs used for:
 >
 > ```bash
 > sudo halt
-> sudo reboot now
+> sudo reboot 
 > sudo reboot --force
 > ```
 >
@@ -11709,14 +11709,12 @@ It will prompt:
   >
   > ✅ Common SSH authentication methods:
   >
-  > | Method                         | Description                                  |
-  > | ------------------------------ | -------------------------------------------- |
-  > | **Password**             | Asks for username & password                 |
-  > | **Public Key**           | Matches your private key with its public key |
-  > | **Keyboard-Interactive** | Can include 2FA or OTPs                      |
-  > | **GSSAPI/Kerberos**      | For enterprise login setups (less common)    |
-  >
-  >
+  > | Method                         | Description                                                       |
+  > | ------------------------------ | ----------------------------------------------------------------- |
+  > | **Password**             | Asks for username & password                                      |
+  > | **Public Key**           | Matches your private key with its public key (MOST COMMON METHOD) |
+  > | **Keyboard-Interactive** | Can include 2FA or OTPs                                           |
+  > | **GSSAPI/Kerberos**      | For enterprise login setups (less common)                         |
   >
 
 ### 🔑 Public and Private key for SSH
@@ -11882,6 +11880,42 @@ ssh user@remote_ip
 >
 > ✅ and the correct private key will be used automatically.
 
+##### ⭐ See the list of  **SSH keys on your system**
+
+To see the list of  **SSH keys on your system** , you can simply list the contents of your `~/.ssh` directory:
+
+```bash
+ls -l ~/.ssh
+```
+
+🔍 Typical Output:
+
+```bash
+-rw-------  id_rsa          ← private key (do not share)
+-rw-r--r--  id_rsa.pub      ← public key (safe to share)
+-rw-------  id_ed25519      ← another private key (more modern)
+-rw-r--r--  id_ed25519.pub  ← its public key
+-rw-r--r--  known_hosts     ← servers you’ve connected to
+-rw-r--r--  authorized_keys ← server-side: accepted public keys
+```
+
+✅ Optional: List Only Public Keys
+
+```bash
+ls ~/.ssh/*.pub
+```
+
+This will show only the `.pub` files — i.e., the **public** keys you can upload to servers.
+
+> ##### 🧠 Tips:
+>
+> * `id_rsa` and `id_ed25519` are default key names for RSA and Ed25519
+> * You can also have  **custom keys** , e.g., `work_key`, `github_key`
+> * If you want to **view** the contents of a public key:
+>   ```bash
+>   cat ~/.ssh/id_rsa.pub
+>   ```
+
 ##### 🔐 Example Use Case: GitHub
 
 To use Git over SSH:
@@ -11987,16 +12021,8 @@ sftp user@remote
 | Port       | 22     | 23            |
 | Secure     | ✅ Yes | ❌ Not secure |
 
-### 🧪 Want to Practice?
-
-Try running:
-
-```bash
-ssh localhost
-```
-
-(Enable SSH on your system first.)
-
-Or use two VMs and connect from one to another using SSH.
+---
 
 ---
+
+# ------------ PRACTICAL QUESTIONS -------------

@@ -263,7 +263,11 @@ Example:
 
 ---
 
-# AWS **(Amazon Web Services)**
+---
+
+# -----------------------------------------------------------------------------------------------------------
+
+# ---------AWS, NVM, PM2----------------
 
 **AWS (Amazon Web Services)** is a **cloud computing platform** created by Amazon.
 
@@ -356,9 +360,7 @@ After 12 months, it’s pay-as-you-go — and still cheap for small projects.
 
 ---
 
----
-
-# ------- EC2 (Elastic Compute Cloud) -------
+## ------- EC2 (Elastic Compute Cloud) -------
 
 **Amazon EC2 (Elastic Compute Cloud)** — one of the **most important and powerful services** on AWS. It’s the core of many real-world deployments, including for example a MERN eCommerce project.
 
@@ -602,9 +604,13 @@ is open.
 
 ---
 
-## Connecting instance in EC2
+## Connecting Linux instance in EC2
 
-#### ✅ Prerequisites Before You Connect
+To  **get inside your EC2 instance** , you use **SSH (Secure Shell)** — this lets you open a terminal session directly on your cloud server.
+
+Once you gets inside the Linux or Ubuntu Instance, you will see only a terminal so as to communicate with the instance
+
+### ✅ Prerequisites Before You Connect
 
 Make sure you’ve done the following in AWS:
 
@@ -614,7 +620,11 @@ Make sure you’ve done the following in AWS:
 4. ✅ Created and downloaded a **Key Pair** (`.pem` file)
 5. ✅ Your **Security Group** has **port 22 (SSH)** open
 
-#### 🔑 Step 1: Locate Your `.pem` Key File
+### -----🚀 3 WAYS TO CONNECT -----
+
+#### 🔥 1. Using SSH
+
+##### 🔑 Step 1: Locate Your `.pem` Key File
 
 * When you launched your EC2 instance, you were prompted to  **create or select a key pair** .
 * You must have downloaded a file like:
@@ -624,15 +634,15 @@ Make sure you’ve done the following in AWS:
 
 > Keep this safe. You **can't connect** without this file.
 
-#### 📍 Step 2: Find Your EC2 Instance Public IP
+##### 📍 Step 2: Find Your EC2 Instance Public IP
 
 * Go to the **AWS EC2 Dashboard**
 * Click **Instances**
 * Note the **Public IPv4 address** (e.g., `3.108.22.55`)
 
-#### 🖥️ Step 3: Open Terminal and Connect
+##### 🖥️ Step 3: Open Terminal and Connect
 
-###### 🔹 On **Linux/Mac** (or Windows with WSL or Git Bash):
+🔹 On **Linux/Mac** (or Windows with WSL or Git Bash):
 
 ```bash
 chmod 400 my-key.pem  # give proper permissions (only once)
@@ -654,79 +664,12 @@ If your instance uses Amazon Linux:
 ssh -i my-key.pem ec2-user@3.108.22.55
 ```
 
-###### 🔹 On **Windows (No WSL/Git Bash)?**
-
-Use **PuTTY** (Windows SSH client):
-
-1. Convert `.pem` to `.ppk` using **PuTTYgen**
-2. Open PuTTY → Host: `ubuntu@<your-ip>`
-3. Load the `.ppk` key under SSH > Auth > Private Key File
-
-#### ✅ Step 4: You’re In!
-
-If successful, you'll see:
-
-```bash
-Welcome to Ubuntu 22.04 LTS
-ubuntu@ip-172-31-xx-xx:~$
-```
-
-This is your  **remote Linux machine in the cloud** . You can now:
-
-* Install Node.js
-* Clone your repo
-* Start your app
-* Install nginx or PM2
-
-#### 🛠️ Common Errors & Fixes
-
-| Error                             | Fix                                                                                              |
-| --------------------------------- | ------------------------------------------------------------------------------------------------ |
-| `Permission denied (publickey)` | Check you're using correct `-i`file with right user (`ubuntu`,`ec2-user`)                  |
-| `Unprotected private key`       | Run `chmod 400 my-key.pem`                                                                     |
-| `Connection timed out`          | Make sure**port 22 is open**in EC2 Security Group                                          |
-| Can't find `.pem`file           | Must download it**at the time of instance creation**— or recreate instance with a new key |
-
-#### 🧠 Tip
-
-Use `pm2` to keep your app running in the background:
-
-```bash
-npm install -g pm2
-pm2 start index.js
-pm2 save
-```
-
----
-
-## Get Inside the Instance (How to SSH into your Instance)
-
-To  **get inside your EC2 instance** , you use **SSH (Secure Shell)** — this lets you open a terminal session directly on your cloud server.
-
-Once you gets inside the Linux or Ubuntu Instance, you will see only a terminal so as to communicate with the instance
-
-#### ✅ Step-by-Step: How to Get Inside Your EC2 Instance
-
-##### 🟢 **1. Get Your EC2 Public IP Address**
-
-* Go to the **AWS EC2 Dashboard** → **Instances**
-* Find your instance and copy its **Public IPv4 address**
-
-  (e.g., `3.108.22.55`)
-
-##### 🟢 **2. Find Your `.pem` Key File**
-
-* When you launched your instance, you downloaded a **key pair** (e.g., `my-key.pem`)
-* This is the **private key** used to connect securely
-
-##### 🟢 **3. Set Permissions for `.pem` File**
-
 > Only if you're on Mac, Linux, or WSL/Git Bash on Windows:
-
-```bash
-chmod 400 my-key.pem
-```
-
+>
+> ```bash
+> chmod 400 my-key.pem
+> ```
+>
 > This command restricts file access to keep it secure
 >
 > ###### 🔍 Breakdown
@@ -769,93 +712,135 @@ chmod 400 my-key.pem
 > ```
 >
 > So `chmod 400` is required to make the `.pem` secure enough for SSH to use.
+>
+> ##### **⚡ Connect to Your Instance via SSH**
+>
+> Use this format:
+>
+> ```bash
+> ssh -i /path/to/my-key.pem ubuntu@<public-ip>
+> ```
+>
+> ✅ Examples:
+>
+> | AMI Type     | Command                                    |
+> | ------------ | ------------------------------------------ |
+> | Ubuntu       | `ssh -i my-key.pem ubuntu@3.108.22.55`   |
+> | Amazon Linux | `ssh -i my-key.pem ec2-user@3.108.22.55` |
 
-##### 🟢 **4. Connect to Your Instance via SSH**
+#### 🔥 2. Using PuTTY (In your Windows System)
 
-Use this format:
+###### 🔹 On **Windows (No WSL/Git Bash)?**
 
-```bash
-ssh -i /path/to/my-key.pem ubuntu@<public-ip>
-```
+Use **PuTTY** (Windows SSH client):
 
-✅ Examples:
+1. Convert `.pem` to `.ppk` using **PuTTYgen**
+2. Open PuTTY → Host: `ubuntu@<your-ip>`
+3. Load the `.ppk` key under SSH > Auth > Private Key File
 
-| AMI Type     | Command                                    |
-| ------------ | ------------------------------------------ |
-| Ubuntu       | `ssh -i my-key.pem ubuntu@3.108.22.55`   |
-| Amazon Linux | `ssh -i my-key.pem ec2-user@3.108.22.55` |
+✅ You’re In!
 
-> If your  **EC2 AMI is a Windows Server** , you  **don’t use SSH like you do with Ubuntu/Linux** . Instead, you connect using  **Remote Desktop Protocol (RDP)** .
->
-> ###### 🖥️ Connecting to a Windows EC2 Instance (Step-by-Step)
->
-> ✅ 1. Open AWS Console → EC2 → Instances
->
-> * Select your **Windows instance**
-> * Wait until its **status is "Running"**
->
-> ✅ 2. Get the Public IPv4 Address
->
-> * In the instance details pane, note the **Public IPv4 address**
->   > Example: `3.108.22.55`
->   >
->
-> ✅ 3. Select the Instance → Click **Connect** Button (Top Right)
->
-> * In the popup:
->   * Choose **RDP Client**
->   * Click **"Get Password"**
->
->     (Wait ~4 minutes after instance starts)
->
-> ✅ 4. Decrypt Windows Password
->
-> * Upload your `.pem` key file
-> * AWS will decrypt the **Administrator password**
-> * Copy it (you'll use it to log in)
->
-> ✅ 5. Use Remote Desktop (RDP) to Connect
->
-> 🟢 On Windows:
->
-> * Press `Win + R` → type `mstsc` → hit Enter
-> * In the RDP client:
->   * Computer: `3.108.22.55`
->   * Username: `Administrator`
->   * Password: (paste the decrypted one)
->
-> 🟢 On Mac:
->
-> * Use the **Microsoft Remote Desktop** app (from App Store)
-> * Add a new PC using:
->   * PC name: `3.108.22.55`
->   * User: `Administrator`
->   * Password: (paste the password)
-
-##### 🟢 **5. You're In! 🎉**
-
-If successful, you'll see something like:
+If successful, you'll see:
 
 ```bash
 Welcome to Ubuntu 22.04 LTS
 ubuntu@ip-172-31-xx-xx:~$
 ```
 
-Now you are  *inside your EC2 instance terminal* . You can:
+This is your  **remote Linux machine in the cloud** . You can now:
 
-* Run Linux commands
-* Install Node.js, PM2, Git, etc.
-* Clone your backend repo
-* Start servers
+* Install Node.js
+* Clone your repo
+* Start your app
+* Install nginx or PM2
 
-#### 🛠 Common Errors & Fixes
+#### 🛠️ Common Errors & Fixes
 
-| Error                             | Fix                                                                                                            |
-| --------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `Permission denied (publickey)` | Wrong user or key file; make sure you're using the correct username (`ubuntu`,`ec2-user`) and `.pem`file |
-| `Unprotected private key file`  | Run `chmod 400 my-key.pem`                                                                                   |
-| `Connection timed out`          | Check that**port 22 is open**in the**Security Group**                                              |
-| `.pem`file not found            | Must be downloaded during EC2 creation; recreate instance if lost                                              |
+| Error                             | Fix                                                                                              |
+| --------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `Permission denied (publickey)` | Check you're using correct `-i`file with right user (`ubuntu`,`ec2-user`)                  |
+| `Unprotected private key`       | Run `chmod 400 my-key.pem`                                                                     |
+| `Connection timed out`          | Make sure**port 22 is open**in EC2 Security Group                                          |
+| Can't find `.pem`file           | Must download it**at the time of instance creation**— or recreate instance with a new key |
+
+#### 🧠 Tip
+
+Use `pm2` to keep your app running in the background:
+
+```bash
+npm install -g pm2
+pm2 start index.js
+pm2 save
+```
+
+#### 🔥 3. EC2 Instance Connect
+
+Select the required linux instance from the dashboard and press "Connect". It goes to "EC2 instance Connect" and click connect
+
+---
+
+## Connecting Windows instance in EC2
+
+If your  **EC2 AMI is a Windows Server** , you  **don’t use SSH like you do with Ubuntu/Linux** . Instead, you connect using  **Remote Desktop Protocol (RDP)** .
+
+##### 🖥️ Connecting to a Windows EC2 Instance (Step-by-Step)
+
+✅ 1. Open AWS Console → EC2 → Instances
+
+* Select your **Windows instance**
+* Wait until its **status is "Running"**
+
+✅ 2. Get the Public IPv4 Address
+
+* In the instance details pane, note the **Public IPv4 address**
+  > Example: `3.108.22.55`
+  >
+
+✅ 3. Select the Instance → Click **Connect** Button (Top Right)
+
+* In the popup:
+  * Choose **RDP Client**
+  * Click **"Get Password"**
+
+    (Wait ~4 minutes after instance starts)
+
+✅ 4. Decrypt Windows Password
+
+* Upload your `.pem` key file
+* AWS will decrypt the **Administrator password**
+* Copy it (you'll use it to log in)
+
+✅ 5. Use Remote Desktop (RDP) to Connect
+
+🟢 On Windows:
+
+* Press `Win + R` → type `mstsc` → hit Enter
+* In the RDP client:
+  * Computer: `3.108.22.55`
+  * Username: `Administrator`
+  * Password: (paste the decrypted one)
+
+🟢 On Mac:
+
+* Use the **Microsoft Remote Desktop** app (from App Store)
+* Add a new PC using:
+  * PC name: `3.108.22.55`
+  * User: `Administrator`
+  * Password: (paste the password)---
+
+> #### 💻 What is  **RDP** ?
+>
+> **RDP (Remote Desktop Protocol)** is a proprietary protocol developed by Microsoft that allows you to  **remotely connect to another Windows computer/server with a full graphical interface** .
+>
+> * Developed by: Microsoft
+> * Port used: **TCP 3389**
+> * Common use: Remotely manage a Windows Server or PC from another device
+>
+> #### 🧠 What Happens During an RDP Session?
+>
+> * Your **keyboard/mouse inputs** are sent to the remote machine.
+> * The remote machine sends **visual output** (GUI screen) back to your device.
+> * It feels like you’re using the remote machine physically.
 
 ---
 
@@ -1134,7 +1119,7 @@ aws s3 cp s3://your-bucket-name/build/ /var/www/html/ --recursive
 
 ---
 
-## Inbound Ruless in EC2
+## Inbound Rules in EC2
 
 **Inbound rules** in EC2 **control what traffic is allowed *into* your instance** — like who can access your backend, SSH, or frontend.
 
@@ -1218,7 +1203,9 @@ It lets you:
 * **Attach permissions** to control access to AWS services
 * **Secure your cloud infrastructure**
 
-Absolutely! Let's dive into **AWS IAM (Identity and Access Management)** in full detail — in a way that’s useful for your  **MERN + DevOps goals** , and that helps you  **speak confidently in interviews** .
+**✅ Its just permissions granted to some SERVICES, USERS OR GROUPS**
+
+Let's dive into **AWS IAM (Identity and Access Management)** in full detail — in a way that’s useful for your  **MERN + DevOps goals** , and that helps you  **speak confidently in interviews** .
 
 #### 🔑 Why IAM Is Crucial
 
@@ -1257,6 +1244,8 @@ Let’s break down the  **building blocks** :
 ##### 3. **IAM Policies (Permissions)**
 
 > Policies define **what actions are allowed or denied** on  **which resources** .
+>
+> A policy is an object in AWS that defines permissions.
 
 * Written in **JSON**
 * Attached to:
@@ -1282,6 +1271,8 @@ You can also use:
 ##### 4. **IAM Roles**
 
 > Roles are like **temporary permission sets** assigned to AWS **resources** or  **trusted entities** .
+>
+> An  IAM role is an identity you can create that has specific permissions with credentials that are valid for short durations. Roles can be  assumed by entities that you trust.
 
 * Used by:
   * **EC2** (to access S3, DynamoDB, etc.)
@@ -1359,7 +1350,7 @@ Let’s break it down clearly. 👇
 
 #### 📌 Why Use an IAM Role for EC2?
 
-Without a role, your EC2 instance **can’t access** other AWS services unless you:
+Without a role, your EC2 instance **can’t access** other AWS servsices unless you:
 
 * Manually configure `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`
 * Risk exposing secrets in your `.env` or code (⚠️ Bad Practice)
@@ -1426,6 +1417,73 @@ No need to configure keys — it just works ✅
 #### 💡 Bonus: Attach Role at Launch Time
 
 While creating an EC2 instance, in  **Step 3: Configure Instance** , you can choose a role under  **IAM role** .
+
+#### 🔐 **Use Cases**
+
+Attaching an **IAM role to an EC2 instance** allows the instance to access AWS services securely  **without needing to hard-code credentials** . Here's a real-world example to illustrate this:
+
+##### 📘 Scenario: EC2 Instance Uploading Files to S3
+
+You have a web application running on an **EC2 instance** that processes user-uploaded files and then stores them in an **S3 bucket** for durability and global access.
+
+If you don't want to store AWS access keys directly on the instance (which is insecure), you can **attach an IAM role** with specific permissions to the instance.
+
+##### ✅ Steps and How the Role Helps:
+
+###### 1.  **Create an IAM Role** :
+
+* **Trusted entity** : EC2
+* **Permissions policy** : e.g., `AmazonS3FullAccess` (or preferably a custom policy like below)
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::my-app-bucket",
+        "arn:aws:s3:::my-app-bucket/*"
+      ]
+    }
+  ]
+}
+```
+
+###### 2.  **Attach the Role to the EC2 Instance** :
+
+* When launching the instance, or by modifying the instance settings in the EC2 console later.
+
+###### 3.  **Inside the EC2 Instance** :
+
+Your app (say in Node.js, Python, etc.) can now use AWS SDKs or CLI **without** specifying any credentials.
+
+```bash
+aws s3 cp /path/to/file.jpg s3://my-app-bucket/
+```
+
+> The EC2 instance will use the **temporary credentials** provided via the IAM role to authenticate the `aws` command.
+
+##### 🔐  **Why This is Important** :
+
+* **No need to store access/secret keys** in code or on disk.
+* IAM role credentials are  **automatically rotated** .
+* Access is limited based on policies, following  **principle of least privilege** .
+* Works with  **CloudWatch** ,  **S3** ,  **DynamoDB** ,  **SSM** , etc.
+
+##### 🧠 Other Common Use Cases:
+
+| Use Case                     | Service Accessed                                         | IAM Permissions                                        |
+| ---------------------------- | -------------------------------------------------------- | ------------------------------------------------------ |
+| Logs shipping                | CloudWatch Logs                                          | `logs:PutLogEvents`,`logs:CreateLogStream`         |
+| Auto scaling lifecycle hooks | Auto Scaling, Lambda                                     | Depends on hook                                        |
+| App config fetch             | Systems Manager (SSM) Parameter Store or Secrets Manager | `ssm:GetParameter`,`secretsmanager:GetSecretValue` |
+| Monitoring                   | CloudWatch Agent                                         | `cloudwatch:PutMetricData`                           |
 
 ---
 
@@ -1987,6 +2045,8 @@ Characteristics:
 
 🧠 Example: Deploying your **FitLab backend in production** — assign an Elastic IP and connect your domain to it (`api.fitlab.in` → Elastic IP)
 
+![1753692071884](image/Hosting/1753692071884.png)
+
 #### 🆚 Key Differences Table
 
 | Feature                  | Private IP          | Public IP               | Elastic IP                   |
@@ -2102,3 +2162,774 @@ curl http://172.31.1.9:3000/api/products
 | Common use          | Backend <-> DB, app-tier <-> cache         |
 
 ---
+
+## Elastic Network Interface (ENI)
+
+✅ **What Is It?**
+
+An **ENI** is a **virtual network interface** that you can attach to an EC2 instance.
+
+It contains:
+
+* A **primary private IP address**
+* One or more **secondary private IPs**
+* A **public IP** (or Elastic IP)
+* MAC address
+* Security groups
+
+### 🔧 **Use Case**
+
+* Move an IP configuration from one EC2 to another (failover)
+* Use multiple NICs for complex networking setups (e.g., firewalls, dual-subnet apps)
+* Assign multiple private IPs to a single instance
+
+### 🧠 Example:
+
+Suppose you're building a failover system.
+
+If your EC2 crashes, you can **detach the ENI** and  **re-attach it to a backup instance** , and traffic resumes instantly without DNS changes.
+
+### 💡 Key Points:
+
+| Feature                       | Description                                   |
+| ----------------------------- | --------------------------------------------- |
+| **Attach/Detach**       | Can attach ENIs to instances in the same AZ   |
+| **Multiple ENIs**       | Instances can have more than one ENI          |
+| **Backup and failover** | Used in high availability systems             |
+| **Primary ENI**         | Created automatically when an EC2 is launched |
+| **Secondary ENIs**      | You can create more via the console or API    |
+
+### 🔁 **EIP vs ENI – Key Differences**
+
+| Feature  | Elastic IP                     | Elastic Network Interface          |
+| -------- | ------------------------------ | ---------------------------------- |
+| Type     | IP address                     | Virtual network interface          |
+| Scope    | Public Internet Access         | Internal VPC communication + more  |
+| Use Case | Fixed public IP                | Advanced networking, failover      |
+| Movement | Can be reassigned between EC2s | Can be attached/detached from EC2s |
+
+### ✅ Quick Summary:
+
+| Concept              | Description                                         |
+| -------------------- | --------------------------------------------------- |
+| **Elastic IP** | Static public IP for EC2                            |
+| **ENI**        | Virtual network card with IPs and security settings |
+
+![1753738099117](image/Hosting/1753738099117.png)
+
+![1753738118998](image/Hosting/1753738118998.png)
+
+![1753738139253](image/Hosting/1753738139253.png)
+
+![1753738197222](image/Hosting/1753738197222.png)
+
+![1753738259320](image/Hosting/1753738259320.png)
+
+![1753738279624](image/Hosting/1753738279624.png)
+
+![1753738289351](image/Hosting/1753738289351.png)
+
+![1753738541455](image/Hosting/1753738541455.png)
+
+![1753738556817](image/Hosting/1753738556817.png)
+
+![1753738630078](image/Hosting/1753738630078.png)
+
+![1753738645075](image/Hosting/1753738645075.png)
+
+![1753738703322](image/Hosting/1753738703322.png)
+
+---
+
+## ----NVM (Node Version Manager)
+
+💻 What is NVM?
+
+**NVM (Node Version Manager)** is a **tool used to manage multiple versions of Node.js** on a single machine.
+
+> Think of it as a version switcher for Node.js — useful when you work on different projects that require different Node versions.
+
+#### ✅ Why Use NVM?
+
+* Install and use **multiple versions** of Node.js easily.
+* **Switch** between Node versions per project.
+* **Test** your app across different Node.js versions.
+* No need to use `sudo` or mess with system-wide Node installation.
+
+#### 🔧 Key Features
+
+| Feature                   | Description                     |
+| ------------------------- | ------------------------------- |
+| 📦 Install Node versions  | `nvm install <version>`       |
+| 🔁 Switch Node versions   | `nvm use <version>`           |
+| 🧪 Set default version    | `nvm alias default <version>` |
+| 🗑️ Remove versions      | `nvm uninstall <version>`     |
+| 🔍 See installed versions | `nvm ls`                      |
+
+#### 🛠️ How to Install NVM
+
+On  **Linux/macOS** :
+
+1. Open terminal and run:
+   ```bash
+   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+   ```
+2. Restart terminal or run:
+   ```bash
+   source ~/.nvm/nvm.sh
+   ```
+3. Verify:
+   ```bash
+   nvm --version
+   ```
+
+#### 🚀 Common NVM Commands
+
+| Task                        | Command                  |
+| --------------------------- | ------------------------ |
+| Install Node.js v18         | `nvm install 18`       |
+| Use Node.js v16             | `nvm use 16`           |
+| Show all installed versions | `nvm ls`               |
+| List all available versions | `nvm ls-remote`        |
+| Set Node.js v18 as default  | `nvm alias default 18` |
+| Uninstall Node.js v16       | `nvm uninstall 16`     |
+| Check current Node version  | `node -v`              |
+
+#### 📦 NVM for Windows?
+
+* Windows doesn’t support the standard `nvm` natively.
+* Use: [**nvm-windows**](https://github.com/coreybutler/nvm-windows)
+
+#### Install (for Windows):
+
+1. Download from: [https://github.com/coreybutler/nvm-windows/releases](https://github.com/coreybutler/nvm-windows/releases)
+2. Install and use via Command Prompt or PowerShell:
+   ```bash
+   nvm install 18.16.0
+   nvm use 18.16.0
+   ```
+
+#### 🧠 Example Workflow
+
+```bash
+nvm install 18
+nvm install 16
+
+nvm use 18         # Uses Node.js v18
+node -v            # Prints v18.x.x
+
+nvm use 16         # Switches to Node.js v16
+node -v            # Prints v16.x.x
+```
+
+#### 🧼 Tip:
+
+Each version of Node.js you install via NVM has  **its own `npm`** , so packages are kept separate per version.
+
+#### 🔧 **Complete List of Useful `nvm` Commands**
+
+Yes! In addition to the commonly used commands, **NVM (Node Version Manager)** has several more commands and options that are helpful for managing Node.js versions more effectively.
+
+##### 📥 **Installing Node**
+
+| `nvm install <version>` | Install a specific Node.js version (e.g. `nvm install 18`) |
+
+| `nvm install node`       | Install the latest **stable** version of Node.js |
+
+| `nvm install --lts`      | Install the latest **LTS** (Long Term Support) version |
+
+| `nvm install <version> --reinstall-packages-from=<oldVersion>` | Installs new version & reinstalls npm packages from another version |
+
+##### 🔁 **Using / Switching Versions**
+
+| `nvm use <version>`      | Switch to a specific installed Node.js version |
+
+| `nvm use system`         | Switch back to the system-installed Node.js |
+
+| `nvm run <version> <file.js>` | Run a JS file with a specific Node version, e.g. `nvm run 16 app.js` |
+
+##### 🧼 **Uninstalling / Cleaning Up**
+
+| `nvm uninstall <version>` | Uninstall a specific version |
+
+| `nvm clear-cache`         | Clears the download cache |
+
+##### 🔍 **Listing Versions**
+
+| `nvm ls` or `nvm list`   | List installed Node versions |
+
+| `nvm ls-remote`          | Show all versions available for install |
+
+| `nvm ls-remote --lts`    | Show only LTS versions available |
+
+| `nvm current`            | Show currently active Node.js version |
+
+| `nvm which <version>`    | Show path of specific version’s Node.js binary |
+
+##### 📌 **Aliasing**
+
+| `nvm alias <name> <version>` | Create an alias, e.g. `nvm alias dev 18.17.0` |
+
+| `nvm unalias <name>`         | Remove an alias |
+
+| `nvm alias default <version>`| Set default version to use in new shells |
+
+##### 🧰 **Other Commands**
+
+| `nvm reinstall-packages <version>` | Reinstall global packages from one version to another |
+
+| `nvm exec <version> <command>`     | Run a shell command using a specific Node version, e.g., `nvm exec 18 npm -v` |
+
+| `nvm version`                      | Show the current nvm version |
+
+#### 📝 **Bonus: `.nvmrc` File**
+
+You can create a `.nvmrc` file in your project directory:
+
+```bash
+echo "18" > .nvmrc
+```
+
+Then in any shell:
+
+```bash
+nvm use     # automatically uses the version from .nvmrc
+```
+
+---
+
+## ----PM2 (Process Manager 2)
+
+**PM2** (Process Manager 2) is a  **production-grade process manager for Node.js applications** . It makes it easy to keep your Node.js apps  **alive forever** ,  **reload them without downtime** , and  **monitor their resource usage** .
+
+#### 🔧 **What PM2 Does**
+
+PM2 helps you:
+
+| Feature               | Description                                    |
+| --------------------- | ---------------------------------------------- |
+| 🔁 Process Management | Start, stop, restart, delete Node.js apps      |
+| 📈 Monitoring         | Real-time metrics (CPU, memory)                |
+| 💥 Crash Recovery     | Auto-restarts apps on failure                  |
+| 🌐 Cluster Mode       | Load-balancing across CPU cores                |
+| 🔄 Zero Downtime      | Reload apps without downtime (graceful reload) |
+| ☁️ Deployment       | Simple CLI deployment system (optional)        |
+
+#### 📦 Installation
+
+```bash
+npm install -g pm2
+```
+
+#### ✅ Basic PM2 Commands
+
+| Command              | Description            |
+| -------------------- | ---------------------- |
+| `pm2 start app.js` | Starts your Node app   |
+| `pm2 list`         | Lists all running apps |
+| `pm2 stop <id        | name>`                 |
+| `pm2 restart <id     | name>`                 |
+| `pm2 delete <id      | name>`                 |
+
+Example:
+
+```bash
+pm2 start server.js --name my-api
+pm2 restart my-api
+```
+
+#### ⚙️ Run with Arguments or Env
+
+```bash
+pm2 start app.js --name my-app --watch
+```
+
+* `--watch`: Restarts app on file changes
+
+Using environment:
+
+```bash
+pm2 start app.js --env production
+```
+
+#### 🔁 Autostart on System Reboot
+
+```bash
+pm2 startup      # Generates startup script
+pm2 save         # Saves current process list
+```
+
+This ensures your app restarts after a system reboot.
+
+#### 📄 Logs
+
+| Command                 | Description            |
+| ----------------------- | ---------------------- |
+| `pm2 logs`            | View combined logs     |
+| `pm2 logs <app-name>` | Logs of a specific app |
+| `pm2 flush`           | Clears logs            |
+
+#### 🧠 Cluster Mode (Multi-core CPU usage)
+
+```bash
+pm2 start app.js -i max
+```
+
+* `-i max`: Runs one process per CPU core
+* Helps handle high traffic by load balancing across cores
+
+#### 📦 JSON Configuration (`ecosystem.config.js`)
+
+```js
+module.exports = {
+  apps: [
+    {
+      name: "my-api",
+      script: "./app.js",
+      instances: "max",
+      env: {
+        NODE_ENV: "development",
+      },
+      env_production: {
+        NODE_ENV: "production",
+      },
+    },
+  ],
+};
+```
+
+Start with:
+
+```bash
+pm2 start ecosystem.config.js --env production
+```
+
+#### 🌐 Deployment with PM2 (Optional)
+
+You can define servers and run deployment:
+
+```bash
+pm2 deploy ecosystem.config.js production setup
+pm2 deploy ecosystem.config.js production
+```
+
+#### 🧼 Cleanup
+
+* `pm2 delete all`: Delete all processes
+* `pm2 kill`: Kill the PM2 daemon
+
+#### 🔍 Monitor Dashboard
+
+```bash
+pm2 monit
+```
+
+Real-time CLI dashboard with memory and CPU usage per app.
+
+#### 🟢 Why PM2 Is Popular for Production
+
+* Keeps your app running even if it crashes
+* Easy to scale horizontally across cores
+* Built-in monitoring
+* Easy integration with logs, metrics, and deployment flows
+
+#### 🔥 Comprehensive list of **PM2 commands** grouped by functionality:
+
+##### 🔹 **Process Management**
+
+| Command                             | Description                                                         |
+| ----------------------------------- | ------------------------------------------------------------------- |
+| `pm2 start <file>`                | Start an application (e.g.,`pm2 start app.js`)                    |
+| `pm2 start <file> --name <name>`  | Start an application with a custom name                             |
+| `pm2 start <file> -i max`         | Start the app in**cluster mode**using all available CPU cores |
+| `pm2 restart <name or id>`        | Restart a specific process by name or ID                            |
+| `pm2 stop <name or id>`           | Stop a specific process by name or ID                               |
+| `pm2 delete <name or id>`         | Delete a specific process from PM2                                  |
+| `pm2 reload <name or id>`         | Reload an app (zero-downtime reload if in cluster mode)             |
+| `pm2 gracefulReload <name or id>` | Gracefully reload an app (useful for cluster mode)                  |
+| `pm2 scale <name> <instances>`    | Scale app up/down to a specific number of instances                 |
+
+##### 🔹 **Listing & Info**
+
+| Command                       | Description                                                                                         |
+| ----------------------------- | --------------------------------------------------------------------------------------------------- |
+| `pm2 list`or `pm2 ls`     | Display a list of all PM2-managed processes with status, uptime, CPU, memory usage, etc.            |
+| `pm2 status`                | Alias for `pm2 list`— shows the current status of all processes                                  |
+| `pm2 describe <name or id>` | Show detailed metadata for a specific process, including environment variables, restart count, etc. |
+| `pm2 show <name or id>`     | Alias for `pm2 describe`— gives process details                                                  |
+
+##### 🔹 **Monitoring**
+
+| Command             | Description                       |
+| ------------------- | --------------------------------- |
+| `pm2 monit`       | Real-time dashboard (CPU, memory) |
+| `pm2 logs`        | Combined logs of all apps         |
+| `pm2 logs <name>` | Logs of a specific app            |
+| `pm2 flush`       | Clear all logs                    |
+| `pm2 reloadLogs`  | Reload logs                       |
+
+##### 🔹 **Startup & Reboot Persistence**
+
+| Command           | Description                                                |
+| ----------------- | ---------------------------------------------------------- |
+| `pm2 save`      | Save current process list for auto-start                   |
+| `pm2 startup`   | Generate startup script (for auto-run on reboot)           |
+| `pm2 unstartup` | Remove startup script                                      |
+| `pm2 resurrect` | Restore processes from last `pm2 save`                   |
+| `pm2 update`    | Update in-memory PM2 runtime with latest code/process list |
+
+##### 🔹 **Configuration**
+
+| Command                           | Description                            |
+| --------------------------------- | -------------------------------------- |
+| `pm2 init`                      | Create default `ecosystem.config.js` |
+| `pm2 start ecosystem.config.js` | Start apps using ecosystem file        |
+| `pm2 ecosystem`                 | Generate ecosystem template            |
+
+##### 🔹 **Deployment (Advanced)**
+
+| Command                            | Description               |
+| ---------------------------------- | ------------------------- |
+| `pm2 deploy <file> <env> setup`  | Set up remote environment |
+| `pm2 deploy <file> <env>`        | Deploy to remote server   |
+| `pm2 deploy <file> <env> update` | Update remote server      |
+| `pm2 deploy <file> <env> revert` | Rollback last deployment  |
+| `pm2 deploy <file> <env> list`   | List deployments          |
+
+##### 🔹 **Miscellaneous**
+
+| Command                    | Description                                                                       |
+| -------------------------- | --------------------------------------------------------------------------------- |
+| `pm2 kill`               | Stops all running processes and shuts down the PM2 daemon completely.             |
+| `pm2 delete all`         | Deletes all processes from the PM2 process list (they will no longer be managed). |
+| `pm2 restart all`        | Restarts all currently managed applications.                                      |
+| `pm2 stop all`           | Stops all currently running applications without deleting them from the list.     |
+| `pm2 updatePM2`          | Updates PM2 itself to the latest version.                                         |
+| `pm2 reset <name or id>` | Resets the process logs and restart count for the specified app.                  |
+| `pm2 ping`               | Checks if the PM2 daemon is alive and responsive (returns "pong" if successful).  |
+| `pm2 version`            | Displays the current PM2 version.                                                 |
+| `pm2 env <name or id>`   | Shows environment variables associated with the specified application.            |
+
+---
+
+## ----Deploying Node Application in EC2
+
+#### Step 1: Install NodeJS and NPM using nvm
+
+[](https://github.com/yeshwanthlm/nodejs-on-ec2?tab=readme-ov-file#step-1-install-nodejs-and-npm-using-nvm)
+
+Install node version manager (nvm) by typing the following at the command line.
+
+```shell
+sudo su -
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
+```
+
+Activate nvm by typing the following at the command line.
+
+```shell
+. ~/.nvm/nvm.sh   # OR source ~/.nvm/nvm.sh  
+```
+
+> The command:
+>
+> ```bash
+> . ~/.nvm/nvm.sh
+> ```
+>
+> means:
+>
+> **✅ What it does:**
+>
+> This **loads the `nvm` (Node Version Manager) script** into your current shell session.
+>
+> **🔍 Breakdown:**
+>
+> * `.` (dot) is shorthand for the `source` command in bash. It  **executes a script in the current shell** , not a new one.
+> * `~/.nvm/nvm.sh` is the **path to the main script** of `nvm`, typically located in the user's home directory.
+>
+> So this command tells your shell:
+>
+>> "Run the `nvm.sh` script from the `.nvm` directory so I can use `nvm` commands like `nvm install`, `nvm use`, etc."
+>>
+>
+> **🧠 Why you need this:**
+>
+> If `nvm` isn't already loaded (like in some login shells or scripts), running this command manually makes `nvm` available  **without restarting the terminal** .
+>
+> ##### 🔄 Alternative:
+>
+> You can also add this line to your shell config file (`~/.bashrc`, `~/.zshrc`, etc.) to auto-load `nvm` every time a new shell session starts.
+>
+> ```bash
+> export NVM_DIR="$HOME/.nvm"
+> [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+> ```
+>
+>
+
+Use nvm to install the latest version of Node.js by typing the following at the command line.
+
+```shell
+nvm install node
+```
+
+Test that node and npm are installed and running correctly by typing the following at the terminal:
+
+```shell
+node -v
+npm -v
+```
+
+#### Step 2: Install Git and clone repository from GitHub
+
+[](https://github.com/yeshwanthlm/nodejs-on-ec2?tab=readme-ov-file#step-2-install-git-and-clone-repository-from-github)
+
+To install git, run below commands in the terminal window:
+
+```shell
+sudo apt-get update -y
+sudo apt-get install git -y
+```
+
+Just to verify if system has git installed or not, please run below command in terminal:
+
+```shell
+git — version
+```
+
+This command will print the git version in the terminal.
+
+Run below command to clone the code repository from Github:
+
+```shell
+git clone https://github.com/yeshwanthlm/nodejs-on-ec2.git
+  
+```
+
+Get inside the directory and Install Packages
+
+```shell
+cd nodejs-on-ec2
+npm install
+```
+
+Start the application
+To start the application, run the below command in the terminal:
+
+```shell
+npm start
+```
+
+---
+
+---
+
+# ----------------------------------------------------------------------------------------
+
+# --------------NGNIX-----------------------
+
+## ----Introduction
+
+Nginx (pronounced "engine-x") is a **high-performance, open-source web server** and **reverse proxy** server. Originally designed for handling high concurrency, it's now widely used in modern web architectures for  **serving static content** ,  **load balancing** ,  **reverse proxying** ,  **SSL termination** , and more.
+
+#### 🔍 **What Is Nginx Exactly?**
+
+Nginx is a **web server software** that can:
+
+* Serve **static files** (like HTML, CSS, JS, images)
+* Act as a **reverse proxy** (forward client requests to other servers like Node.js)
+* Handle **HTTPS/SSL termination**
+* Perform **load balancing**
+* Function as a  **mail proxy** ,  **API gateway** , or **content cache**
+
+It's known for:
+
+* **Asynchronous** , **event-driven architecture** (more efficient than Apache for concurrency)
+* Very **low memory usage**
+* **High scalability and speed**
+
+#### 🧠 **Key Concepts**
+
+##### 1. **Web Server**
+
+* Serves static files directly (HTML, JS, images).
+* E.g., A static website hosted on EC2 or S3 behind Nginx.
+
+##### 2. **Reverse Proxy**
+
+* Receives requests from the client and **forwards them to another server** (e.g., a Node.js backend running on `localhost:3000`).
+* Hides internal architecture from the outside world.
+* Useful for  **security, load distribution, and HTTPS handling** .
+
+##### 3. **Load Balancer**
+
+* Distributes incoming traffic to multiple backend servers.
+* Used for  **horizontal scaling** .
+
+##### 4. **SSL/TLS Termination**
+
+* Nginx can handle HTTPS connections using certificates (via Let’s Encrypt or AWS ACM).
+* It decrypts SSL traffic and forwards plain HTTP traffic to internal servers.
+
+#### ✨ **Features of Nginx**
+
+| Feature                | Description                                                    |
+| ---------------------- | -------------------------------------------------------------- |
+| ✅ High performance    | Handles thousands of concurrent connections efficiently        |
+| ✅ Reverse proxy       | Forwards requests to backend servers like Node.js, Python, PHP |
+| ✅ Load balancing      | Supports round-robin, IP-hash, and least-connected algorithms  |
+| ✅ Static file serving | Fast, direct delivery of HTML, CSS, JS, images                 |
+| ✅ TLS/SSL             | Easily handles HTTPS using Certbot or other tools              |
+| ✅ Gzip compression    | Reduces response size for faster client delivery               |
+| ✅ Caching             | Static and dynamic content caching options                     |
+| ✅ Security features   | Rate limiting, request filtering, header control               |
+| ✅ Logging             | Access logs and error logs for analytics/debugging             |
+| ✅ Virtual Hosts       | Host multiple domains/subdomains on the same server            |
+
+#### 💡 **Common Use Cases / Scenarios**
+
+##### 1. **Serve a Node.js Backend**
+
+* Your Express app runs on port 3000
+* Nginx listens on port 80 and proxies traffic to `localhost:3000`
+
+##### 2. **Host a React Frontend**
+
+* Build the React app → Upload to `/var/www/html`
+* Nginx serves the `index.html`, CSS, and JS files
+
+##### 3. **Combine Both**
+
+* Serve React frontend (on `/`)
+* Proxy API requests (e.g., `/api`) to Node.js backend
+
+##### 4. **Use with SSL/HTTPS**
+
+* Set up Let's Encrypt with Nginx to secure your site with HTTPS
+* All requests go through HTTPS via Nginx, keeping your backend HTTP
+
+##### 5. **Host Multiple Sites**
+
+* Use `server_name` and `listen` directives to serve multiple apps or domains from one EC2
+
+#### 🛠️ **Typical Configuration Examples**
+
+##### 🌐 Serve Static Frontend:
+
+```nginx
+server {
+    listen 80;
+    server_name yourdomain.com;
+
+    root /var/www/html;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+```
+
+##### 🔁 Reverse Proxy to Node.js Backend:
+
+```nginx
+server {
+    listen 80;
+    server_name api.yourdomain.com;
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+```
+
+##### 🔒 HTTPS Setup (with Certbot)
+
+```nginx
+server {
+    listen 443 ssl;
+    server_name yourdomain.com;
+
+    ssl_certificate /etc/letsencrypt/live/yourdomain.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/yourdomain.com/privkey.pem;
+
+    location / {
+        root /var/www/html;
+        index index.html;
+    }
+}
+```
+
+#### 🚀 When to Use Nginx in MERN Stack Projects
+
+| Purpose                        | Role of Nginx                                       |
+| ------------------------------ | --------------------------------------------------- |
+| Deploying a fullstack MERN app | Serve React frontend and reverse proxy Node backend |
+| Static React only              | Serve from Nginx or host on S3                      |
+| Scaling backend                | Add Nginx as a load balancer                        |
+| Domain + HTTPS                 | Handle SSL for free with Let’s Encrypt             |
+| Clean URLs                     | Redirect or rewrite routes using `location`blocks |
+
+#### 📌 Summary
+
+* ✅ **Nginx is essential** for modern web deployment.
+* ✅ It can  **serve your frontend** ,  **proxy backend** ,  **secure with HTTPS** , and  **scale with load balancing** .
+* ✅ Learning Nginx early gives you strong deployment and DevOps skills.
+
+---
+
+## ----Nginx vs Traditional Web Servers
+
+✅ **What is a traditional web server?**
+
+Traditional web servers, like  **Apache HTTP Server** , were designed primarily to serve web content using the  **process/thread-per-connection model** . For every request or connection, a new thread or process is created to handle it.
+
+#### ✅ **Nginx vs Traditional Web Servers (like Apache)**
+
+| Feature / Aspect                  | **Nginx**                                                         | **Apache (Traditional Web Server)**                                     |
+| --------------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| **Architecture**            | Event-driven, asynchronous, non-blocking                                | Process- or thread-based, blocking                                            |
+| **Performance under Load**  | Handles thousands of concurrent connections efficiently                 | Struggles as connections increase due to process/thread overhead              |
+| **Static Content Handling** | Extremely fast and efficient                                            | Slower compared to Nginx                                                      |
+| **Dynamic Content**         | Relies on external processors (e.g., PHP-FPM)                           | Built-in (mod_php or other modules)                                           |
+| **Configuration**           | Declarative, concise, fast reloads                                      | Verbose, flexible, but slower reloads                                         |
+| **Reverse Proxy Support**   | First-class support, highly performant                                  | Available but not the primary focus                                           |
+| **Memory Usage**            | Very low even with many connections                                     | High when many threads/processes are active                                   |
+| **Security**                | Smaller attack surface due to fewer modules                             | More features = larger surface for vulnerabilities                            |
+| **Use Case Preference**     | Best for high concurrency, reverse proxy, load balancing, microservices | Useful when extensive module support and in-process dynamic content is needed |
+
+#### ✅ **Nginx is typically preferred when:**
+
+* You need to serve **static files (HTML, JS, CSS, images)** at high speed.
+* You're acting as a **reverse proxy** or **load balancer** for backend servers.
+* Your application must handle  **tens of thousands of concurrent users** .
+* You're using **microservices** or  **containerized services** .
+* You want an **API gateway** for routing requests efficiently.
+
+---
+
+### ✅ **Apache is better suited when:**
+
+* You have legacy applications that rely heavily on **.htaccess** files.
+* You're running **PHP-heavy** apps (though Nginx + PHP-FPM is better today).
+* You need specific modules only available in Apache.
+
+---
+
+### ✅ **Summary**
+
+* **Nginx = Lightweight, high performance, ideal for modern web apps.**
+* **Apache = Versatile and feature-rich, but heavier and less performant at scale.**
+
+For your learning path (since you’re working with EC2, PM2, and deploying apps), **Nginx is an essential modern skill** for:
+
+* Serving frontend files
+* Reverse proxying Node apps
+* SSL termination
+* Load balancing
+
+Let me know if you want a setup example or config breakdown for Nginx.
