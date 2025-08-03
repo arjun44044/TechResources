@@ -5414,7 +5414,6 @@ We want to create  **4 subnets** . We need 2 extra bits (because 2² = 4):
 > * 1 slice for "network name" (start of the half)
 > * 1 slice for "broadcast" (end of the half)
 > * Remaining 126 slices for actual users/devices
->
 
 ### 📡 Why Subnetting?
 
@@ -5799,5 +5798,171 @@ Think of your **network interface** as the **doorway** of your house:
 * If your device is your house...
 * The network interface is the **door** where messages come in and go out.
 * You can have multiple doors (interfaces) – wired, wireless, virtual, etc.
+
+---
+
+# ----SSL/TLS
+
+🛡️ 1. What is SSL/TLS?
+
+| Protocol | Meaning                  | Status                                          |
+| -------- | ------------------------ | ----------------------------------------------- |
+| SSL      | Secure Sockets Layer     | **Deprecated**                            |
+| TLS      | Transport Layer Security | **Successor**to SSL and widely used today |
+
+✅ **TLS** is what your browser uses today when you see `https://`.
+
+### 🔐 2. Why SSL/TLS?
+
+To **secure communication** between a client (browser) and server (website). It provides:
+
+* **Encryption** – so no one can read the data in transit
+* **Authentication** – proving the server is who it claims to be
+* **Integrity** – ensures data wasn’t changed in transit
+
+### 🔄 3. TLS Handshake (Step-by-step)
+
+This happens **before** actual data (like your passwords) starts flowing:
+
+**🔗 Step 1: Client Hello**
+
+Client (browser) sends:
+
+* TLS version
+* Random number
+* List of supported cipher suites
+* (Optionally) SNI: domain name (for virtual hosting)
+
+**🔒 Step 2: Server Hello**
+
+Server replies:
+
+* Selected cipher suite
+* Server's certificate (contains  **public key** )
+* Server random number
+
+**🔍 Step 3: Certificate Verification**
+
+* Client verifies the certificate is trusted (via CA chain)
+
+**🔑 Step 4: Key Exchange**
+
+Depending on cipher suite:
+
+* Client and server exchange keys to generate a **shared symmetric key**
+* (e.g., via **Diffie-Hellman** or  **RSA encrypted pre-master secret** )
+
+**✅ Step 5: Finished**
+
+Both sides send an encrypted "Finished" message using the symmetric key.
+
+Connection is now secured!
+
+### 🧾 4. SSL/TLS Certificate
+
+A certificate is like an  **ID card for a website** . It's issued by a **Certificate Authority (CA)** and contains:
+
+* **Domain name**
+* **Public key**
+* **Issuer (CA name)**
+* **Validity (start–expiry)**
+* **Signature (by CA)**
+
+It’s based on **X.509** standard.
+
+### 🔐 Public vs Private Key:
+
+* **Public key** is shared (in certificate)
+* **Private key** stays on the server (never shared)
+
+### 📦 Certificate File Formats:
+
+| Format  | Extension         | Description               |
+| ------- | ----------------- | ------------------------- |
+| PEM     | `.pem`,`.crt` | Base64 encoded X.509 cert |
+| DER     | `.der`          | Binary format             |
+| PFX/P12 | `.pfx`,`.p12` | Certificate + private key |
+
+### 🏛️ 5. Certificate Authorities (CAs)
+
+CAs are trusted third parties that issue certificates.
+
+Examples:
+
+* **DigiCert**
+* **Let's Encrypt** (free)
+* **GlobalSign**
+* **Sectigo**
+
+Your OS/browser trusts certain  **Root CAs** . If a site presents a certificate signed by a CA in this trust store, the browser trusts it.
+
+### 🔗 6. Certificate Chain
+
+```
+[Your Website Cert]
+        ↓
+[Intermediate CA Cert]
+        ↓
+[Root CA Cert] ← trusted by browser/OS
+```
+
+If any part of the chain is broken, your browser shows a **“certificate not trusted”** error.
+
+### 🕵️ 7. TLS Encryption
+
+Two main types of encryption involved:
+
+a. **Asymmetric Encryption (Public/Private key)**
+
+* Used during **handshake** to exchange keys
+* Slow, but secure
+
+b. **Symmetric Encryption (Shared key)**
+
+* Used **after handshake** to encrypt the actual data
+* Fast and efficient
+
+### 📶 8. HTTPS in Action
+
+When you go to:
+
+```
+https://www.bank.com
+```
+
+The browser:
+
+* Initiates a **TLS handshake**
+* Verifies **certificate**
+* Encrypts the communication using a **shared key**
+* Displays 🔒 padlock if all good
+
+### 🧪 9. Testing and Tools
+
+You can use tools like:
+
+* `openssl s_client -connect example.com:443`
+* [https://www.ssllabs.com/ssltest/](https://www.ssllabs.com/ssltest/)
+* Browser dev tools → Security tab
+
+### 🧰 10. Summary Table
+
+| Feature     | Purpose                                |
+| ----------- | -------------------------------------- |
+| SSL/TLS     | Protocol to secure data in transit     |
+| Certificate | ID card proving server’s identity     |
+| Public Key  | Used by client to encrypt data         |
+| Private Key | Used by server to decrypt              |
+| CA          | Trusted authority issuing certificates |
+| HTTPS       | HTTP over TLS                          |
+
+### 🧠 Bonus: Common TLS Issues
+
+| Problem                        | Cause                               |
+| ------------------------------ | ----------------------------------- |
+| `NET::ERR_CERT_DATE_INVALID` | Expired certificate                 |
+| `NET::ERR_CERT_COMMON_NAME`  | Domain name mismatch                |
+| Self-signed certificate error  | Not issued by a trusted CA          |
+| Mixed content warning          | Some HTTP elements in an HTTPS page |
 
 ---
