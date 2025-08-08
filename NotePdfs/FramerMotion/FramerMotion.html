@@ -1,0 +1,3222 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>FramerMotion.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="framermotion">FramerMotion</h1>
+<h2 id="key-features-of-framer-motion"><strong><strong>Key Features of Framer Motion</strong></strong></h2>
+<ul>
+<li><strong><strong>Declarative Animations</strong></strong> : Motion uses a simple, declarative API, allowing developers to define animations directly in their <a href="https://www.geeksforgeeks.org/reactjs-jsx-introduction/">JSX </a>code, making it intuitive and easy to work with.</li>
+<li><strong><strong>Smooth Transitions</strong></strong> :
+The library provides built-in support for smooth transitions between
+different states of a component (like opacity, position, scale, and
+rotation), ensuring a seamless user experience.</li>
+<li><strong><strong>Gesture-based Animations</strong></strong> :
+Framer Motion allows you to trigger animations based on user gestures,
+such as hover, tap, drag, or while the user is scrolling. This creates
+more interactive and dynamic UI elements.</li>
+<li><strong><strong>Page Transitions</strong></strong> : The library supports smooth page transitions, which can be especially useful in <a href="https://www.geeksforgeeks.org/what-is-single-page-application/">single-page applications</a> (SPAs) to enhance the user experience when navigating between views or routes.</li>
+<li><strong><strong>Customizable and Flexible</strong></strong> :
+Framer Motion offers extensive control over animations with properties
+like timing, easing functions, and variants, allowing you to create
+complex and customized animations that fit your needs.</li>
+</ul>
+<h2 id="components-of-framer-motion">Components of Framer Motion</h2>
+<ul>
+<li><strong><strong>Motion Components</strong></strong> :
+Motion components (e.g., &lt;motion.div/&gt;, &lt;motion.circle/&gt;)
+are the core of the Motion API, allowing you to animate any <a href="https://www.geeksforgeeks.org/html-tutorial/">HTML</a> or SVG element with additional props to handle gestures and animations easily.</li>
+<li><strong><strong>Animate Presence</strong></strong> : This component is used for unmounting animations. It animates elements when they are removed from the<a href="https://www.geeksforgeeks.org/react/"> React </a>tree, providing smooth transitions during component removal.</li>
+<li><strong><strong>Layout Group</strong></strong> :
+LayoutGroup groups motion components that should perform layout
+animations together, allowing for smooth transitions and animations when
+components change their layout within the parent container.</li>
+<li><strong><strong>Lazy Motion</strong></strong> :
+LazyMotion helps reduce the bundle size by loading motion component
+features synchronously or asynchronously, optimizing performance by only
+loading the required features.</li>
+<li><strong><strong>Reorder</strong></strong> :
+The Reorder component enables drag-to-reorder functionality, perfect
+for creating reorderable lists or items like to-do lists or tabs with
+simple drag-and-drop behaviour.</li>
+</ul>
+<h2 id="motion-component-its-variants-animateprescence-code">Motion Component, Its variants,  AnimatePrescence [CODE]</h2>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> React, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<span class="hljs-keyword">import</span> { motion, AnimatePresence } <span class="hljs-keyword">from</span> <span class="hljs-string">"framer-motion"</span>;
+
+<span class="hljs-keyword">const</span> BasicsOfMotion = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">const</span> [isVisible, setIsVisible] = useState(<span class="hljs-literal">true</span>);
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>
+      <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+        <span class="hljs-attr">display:</span> "<span class="hljs-attr">grid</span>",
+        <span class="hljs-attr">placeContent:</span> "<span class="hljs-attr">center</span>",
+        <span class="hljs-attr">height:</span> "<span class="hljs-attr">100vh</span>",
+        <span class="hljs-attr">gap:</span> "<span class="hljs-attr">0.8rem</span>",
+      }}
+    &gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">motion.button</span>
+        <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span> setIsVisible(!isVisible)}
+        className="example-button"
+        layout
+      &gt;
+        Show/Hide
+      <span class="hljs-tag">&lt;/<span class="hljs-name">motion.button</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">AnimatePresence</span> <span class="hljs-attr">mode</span>=<span class="hljs-string">"popLayout"</span>&gt;</span>
+        {isVisible &amp;&amp; (
+          <span class="hljs-tag">&lt;<span class="hljs-name">motion.div</span>
+            <span class="hljs-attr">initial</span>=<span class="hljs-string">{{</span>
+              <span class="hljs-attr">rotate:</span> "<span class="hljs-attr">0deg</span>",
+              <span class="hljs-attr">scale:</span> <span class="hljs-attr">0</span>,
+              <span class="hljs-attr">y:</span> <span class="hljs-attr">0</span>,
+            }}
+            <span class="hljs-attr">animate</span>=<span class="hljs-string">{{</span>
+              <span class="hljs-attr">rotate:</span> "<span class="hljs-attr">180deg</span>",
+              <span class="hljs-attr">scale:</span> <span class="hljs-attr">1</span>,
+              <span class="hljs-attr">y:</span> [<span class="hljs-attr">0</span>, <span class="hljs-attr">150</span>, <span class="hljs-attr">-150</span>, <span class="hljs-attr">-150</span>, <span class="hljs-attr">0</span>],
+            }}
+            <span class="hljs-attr">exit</span>=<span class="hljs-string">{{</span>
+              <span class="hljs-attr">rotate:</span> "<span class="hljs-attr">0deg</span>",
+              <span class="hljs-attr">scale:</span> <span class="hljs-attr">0</span>,
+              <span class="hljs-attr">y:</span> <span class="hljs-attr">0</span>,
+            }}
+            <span class="hljs-attr">transition</span>=<span class="hljs-string">{{</span>
+              <span class="hljs-attr">duration:</span> <span class="hljs-attr">1</span>,
+              <span class="hljs-attr">ease:</span> "<span class="hljs-attr">backInOut</span>",
+              <span class="hljs-attr">times:</span> [<span class="hljs-attr">0</span>, <span class="hljs-attr">0.25</span>, <span class="hljs-attr">0.5</span>, <span class="hljs-attr">0.85</span>, <span class="hljs-attr">1</span>],
+            }}
+            <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+              <span class="hljs-attr">width:</span> <span class="hljs-attr">150</span>,
+              <span class="hljs-attr">height:</span> <span class="hljs-attr">150</span>,
+              <span class="hljs-attr">background:</span> "<span class="hljs-attr">black</span>",
+            }}
+          &gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">motion.div</span>&gt;</span>
+        )}
+      <span class="hljs-tag">&lt;/<span class="hljs-name">AnimatePresence</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  );
+};
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> BasicsOfMotion;
+</div></code></pre>
+<h2 id="gestures-and-motionconfig-code">Gestures and MotionConfig [CODE]</h2>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<span class="hljs-keyword">import</span> { motion, MotionConfig } <span class="hljs-keyword">from</span> <span class="hljs-string">"framer-motion"</span>;
+
+<span class="hljs-keyword">const</span> Gestures = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>
+      <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+        <span class="hljs-attr">display:</span> "<span class="hljs-attr">grid</span>",
+        <span class="hljs-attr">placeContent:</span> "<span class="hljs-attr">center</span>",
+        <span class="hljs-attr">height:</span> "<span class="hljs-attr">100vh</span>",
+        <span class="hljs-attr">gap:</span> "<span class="hljs-attr">0.8rem</span>",
+      }}
+    &gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">MotionConfig</span>
+        <span class="hljs-attr">transition</span>=<span class="hljs-string">{{</span>
+          <span class="hljs-attr">duration:</span> <span class="hljs-attr">0.125</span>,
+          <span class="hljs-attr">ease:</span> "<span class="hljs-attr">easeInOut</span>",
+        }}
+      &gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">motion.button</span>
+          <span class="hljs-attr">whileHover</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">scale:</span> <span class="hljs-attr">1.05</span> }}
+          <span class="hljs-attr">whileTap</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">scale:</span> <span class="hljs-attr">0.95</span>, <span class="hljs-attr">rotate:</span> "<span class="hljs-attr">2.5deg</span>" }}
+          <span class="hljs-attr">className</span>=<span class="hljs-string">"example-button"</span>
+        &gt;</span>
+          Click me!
+        <span class="hljs-tag">&lt;/<span class="hljs-name">motion.button</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">motion.button</span>
+          <span class="hljs-attr">whileHover</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">scale:</span> <span class="hljs-attr">1.15</span> }}
+          <span class="hljs-attr">whileTap</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">scale:</span> <span class="hljs-attr">0.85</span>, <span class="hljs-attr">rotate:</span> "<span class="hljs-attr">-2.5deg</span>" }}
+          <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">backgroundColor:</span> "<span class="hljs-attr">red</span>" }}
+          <span class="hljs-attr">className</span>=<span class="hljs-string">"example-button"</span>
+        &gt;</span>
+          Click me!
+        <span class="hljs-tag">&lt;/<span class="hljs-name">motion.button</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">MotionConfig</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  );
+};
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> Gestures;
+</div></code></pre>
+<h2 id="variants-example">Variants Example</h2>
+<pre class="hljs"><code><div><span class="hljs-keyword">const</span> containerVariants = {
+  <span class="hljs-attr">hidden</span>: { <span class="hljs-attr">opacity</span>: <span class="hljs-number">0</span> },
+  <span class="hljs-attr">visible</span>: {
+    <span class="hljs-attr">opacity</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">transition</span>: {
+      <span class="hljs-attr">staggerChildren</span>: <span class="hljs-number">0.2</span>
+    }
+  }
+};
+
+<span class="hljs-keyword">const</span> itemVariants = {
+  <span class="hljs-attr">hidden</span>: { <span class="hljs-attr">y</span>: <span class="hljs-number">20</span>, <span class="hljs-attr">opacity</span>: <span class="hljs-number">0</span> },
+  <span class="hljs-attr">visible</span>: { <span class="hljs-attr">y</span>: <span class="hljs-number">0</span>, <span class="hljs-attr">opacity</span>: <span class="hljs-number">1</span> }
+};
+
+<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">motion.ul</span>
+  <span class="hljs-attr">variants</span>=<span class="hljs-string">{containerVariants}</span>
+  <span class="hljs-attr">initial</span>=<span class="hljs-string">"hidden"</span>
+  <span class="hljs-attr">animate</span>=<span class="hljs-string">"visible"</span>
+&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">motion.li</span> <span class="hljs-attr">variants</span>=<span class="hljs-string">{itemVariants}</span>&gt;</span>Item 1<span class="hljs-tag">&lt;/<span class="hljs-name">motion.li</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">motion.li</span> <span class="hljs-attr">variants</span>=<span class="hljs-string">{itemVariants}</span>&gt;</span>Item 2<span class="hljs-tag">&lt;/<span class="hljs-name">motion.li</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">motion.ul</span>&gt;</span></span>
+
+</div></code></pre>
+<h2 id="variants-with-staggerchildren-and-delaychildren">Variants with staggerChildren and delayChildren</h2>
+<p><code>staggerChildren</code> is a <strong>special property</strong> used inside a  <strong>parent variant's <code>transition</code> object</strong> . It tells Framer Motion to  <strong>delay the start of each child’s animation by a specific amount of time</strong> , creating a  <strong>staggered or cascading effect</strong> .</p>
+<ul>
+<li>
+<p>You apply <code>staggerChildren</code> inside the  <strong>parent's variant</strong> , not on the children.</p>
+</li>
+<li>
+<p>In  <strong>Framer Motion</strong> , it's very common (and recommended) to define the <code>transition</code>  <strong>inside a specific variant</strong> , such as <code>&quot;visible&quot;</code>.</p>
+<blockquote>
+<p>Because transitions often depend on <strong>what the target state is</strong> (e.g., fade in, slide in), defining them inside the variant keeps the animation  logic clean and localized</p>
+</blockquote>
+</li>
+</ul>
+<p>You can also use <code>delayChildren</code> in the parent to delay <strong>when</strong> the first child starts.</p>
+<pre class="hljs"><code><div>
+<span class="hljs-keyword">const</span> containerVariants = {
+  <span class="hljs-attr">hidden</span>: { <span class="hljs-attr">opacity</span>: <span class="hljs-number">0</span> },
+  <span class="hljs-attr">visible</span>: {
+    <span class="hljs-attr">opacity</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">transition</span>: {
+      <span class="hljs-attr">delayChildren</span>: <span class="hljs-number">0.5</span>,
+      <span class="hljs-attr">staggerChildren</span>: <span class="hljs-number">0.2</span> <span class="hljs-comment">// &lt;-- Delay between each child</span>
+    }
+  }
+};
+
+<span class="hljs-keyword">const</span> itemVariants = {
+  <span class="hljs-attr">hidden</span>: { <span class="hljs-attr">opacity</span>: <span class="hljs-number">0</span>, <span class="hljs-attr">y</span>: <span class="hljs-number">20</span> },
+  <span class="hljs-attr">visible</span>: { <span class="hljs-attr">opacity</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">y</span>: <span class="hljs-number">0</span> }
+};
+
+<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">motion.ul</span>
+  <span class="hljs-attr">variants</span>=<span class="hljs-string">{containerVariants}</span>
+  <span class="hljs-attr">initial</span>=<span class="hljs-string">"hidden"</span>
+  <span class="hljs-attr">animate</span>=<span class="hljs-string">"visible"</span>
+&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">motion.li</span> <span class="hljs-attr">variants</span>=<span class="hljs-string">{itemVariants}</span>&gt;</span>Item 1<span class="hljs-tag">&lt;/<span class="hljs-name">motion.li</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">motion.li</span> <span class="hljs-attr">variants</span>=<span class="hljs-string">{itemVariants}</span>&gt;</span>Item 2<span class="hljs-tag">&lt;/<span class="hljs-name">motion.li</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">motion.li</span> <span class="hljs-attr">variants</span>=<span class="hljs-string">{itemVariants}</span>&gt;</span>Item 3<span class="hljs-tag">&lt;/<span class="hljs-name">motion.li</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">motion.ul</span>&gt;</span></span>
+
+
+</div></code></pre>
+<p>Below is the code where transition is applied normally which applies globally ie</p>
+<pre class="hljs"><code><div>&lt;motion.div
+  initial=<span class="hljs-string">"hidden"</span>
+  animate=<span class="hljs-string">"visible"</span>
+  variants={boxVariants}
+  transition={{ <span class="hljs-attr">duration</span>: <span class="hljs-number">0.5</span> }} <span class="hljs-comment">// applies to all animated props</span>
+/&gt;
+
+</div></code></pre>
+<h2 id="view-based-animation">View Based Animation</h2>
+<h4 id="useinview-hook">--useInView() HOOK</h4>
+<p>The <code>useInView()</code> hook from Framer Motion is a <strong>React hook</strong> that tells you <strong>whether a DOM element is visible in the viewport</strong></p>
+<p>Use <code>useInView()</code> when you want <strong>programmatic control</strong> over what happens when an element enters or exits the viewport.</p>
+<p>Common use cases:</p>
+<ul>
+<li>Trigger animations manually (using <code>useAnimationControls</code>)</li>
+<li>Lazy loading content</li>
+<li>Updating UI state on scroll</li>
+<li>Tracking scroll-based progress</li>
+</ul>
+<p>Example---</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> React, { useEffect, useRef } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<span class="hljs-keyword">import</span> { motion, useInView } <span class="hljs-keyword">from</span> <span class="hljs-string">"framer-motion"</span>;
+
+<span class="hljs-keyword">const</span> ViewBasedAnimations = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">const</span> ref = useRef(<span class="hljs-literal">null</span>);
+  <span class="hljs-keyword">const</span> isInView = useInView(ref, { <span class="hljs-attr">once</span>: <span class="hljs-literal">true</span> }); <span class="hljs-comment">// Has 2nd parameter for options</span>
+
+  useEffect(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Is in view -&gt; "</span>, isInView);
+  }, [isInView]);
+
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">height:</span> "<span class="hljs-attr">150vh</span>" }} /&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">motion.div</span>
+        <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">height:</span> "<span class="hljs-attr">100vh</span>", <span class="hljs-attr">background:</span> "<span class="hljs-attr">black</span>" }}
+        <span class="hljs-attr">initial</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">opacity:</span> <span class="hljs-attr">0</span> }}
+        <span class="hljs-attr">whileInView</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">opacity:</span> <span class="hljs-attr">1</span> }}
+        <span class="hljs-attr">transition</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">duration:</span> <span class="hljs-attr">1</span> }}
+      /&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">div</span>
+        <span class="hljs-attr">ref</span>=<span class="hljs-string">{ref}</span>
+        <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+          <span class="hljs-attr">height:</span> "<span class="hljs-attr">100vh</span>",
+          <span class="hljs-attr">background:</span> <span class="hljs-attr">isInView</span> ? "<span class="hljs-attr">blue</span>" <span class="hljs-attr">:</span> "<span class="hljs-attr">red</span>",
+          <span class="hljs-attr">transition:</span> "<span class="hljs-attr">1s</span> <span class="hljs-attr">background</span>",
+        }}
+      /&gt;</span>
+    <span class="hljs-tag">&lt;/&gt;</span></span>
+  );
+};
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> ViewBasedAnimations;
+</div></code></pre>
+<p>Option parameter of the hook(2nd parameter) can have 3 fields---</p>
+<blockquote>
+<p>once: true,      // Only trigger once (default: false)
+margin: &quot;0px&quot;,   // Root margin (like CSS margin for viewport detection)
+amount: 0.5      // How much of the element must be visible (0 to 1 or &quot;some&quot;, &quot;all&quot;)</p>
+</blockquote>
+<p>ANOTHER GOOD EXAMPLE---</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> { motion, useAnimationControls, useInView } <span class="hljs-keyword">from</span> <span class="hljs-string">"framer-motion"</span>;
+<span class="hljs-keyword">import</span> { useEffect, useRef } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+
+<span class="hljs-keyword">const</span> ScrollAnimateBox = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">const</span> ref = useRef(<span class="hljs-literal">null</span>);
+  <span class="hljs-keyword">const</span> isInView = useInView(ref, { <span class="hljs-attr">once</span>: <span class="hljs-literal">true</span> });
+  <span class="hljs-keyword">const</span> controls = useAnimationControls();
+
+  useEffect(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    <span class="hljs-keyword">if</span> (isInView) {
+      controls.start({ <span class="hljs-attr">opacity</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">y</span>: <span class="hljs-number">0</span>, <span class="hljs-attr">transition</span>: { <span class="hljs-attr">duration</span>: <span class="hljs-number">1</span> } });
+    }
+  }, [isInView, controls]);
+
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">motion.div</span>
+      <span class="hljs-attr">ref</span>=<span class="hljs-string">{ref}</span>
+      <span class="hljs-attr">animate</span>=<span class="hljs-string">{controls}</span>
+      <span class="hljs-attr">initial</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">opacity:</span> <span class="hljs-attr">0</span>, <span class="hljs-attr">y:</span> <span class="hljs-attr">100</span> }}
+      <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>, <span class="hljs-attr">backgroundColor:</span> "<span class="hljs-attr">salmon</span>", <span class="hljs-attr">marginBottom:</span> <span class="hljs-attr">20</span> }}
+    &gt;</span>
+      I animate into view!
+    <span class="hljs-tag">&lt;/<span class="hljs-name">motion.div</span>&gt;</span></span>
+  );
+};
+
+</div></code></pre>
+<h2 id="scroll-based-animations">Scroll Based Animations--</h2>
+<p>Example using useScroll(), useSpring(), useTransform()----</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> { useScroll, motion, useSpring, useTransform } <span class="hljs-keyword">from</span> <span class="hljs-string">"framer-motion"</span>;
+<span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+
+<span class="hljs-keyword">const</span> ScrollAnimations = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">const</span> { scrollYProgress } = useScroll();
+
+  <span class="hljs-keyword">const</span> scaleX = useSpring(scrollYProgress);
+
+  <span class="hljs-keyword">const</span> background = useTransform(
+    scrollYProgress,
+    [<span class="hljs-number">0</span>, <span class="hljs-number">1</span>],
+    [<span class="hljs-string">"rgb(86, 1, 245)"</span>, <span class="hljs-string">"rgb(1, 245, 13)"</span>]
+  );
+
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">motion.div</span>
+        <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+          // <span class="hljs-attr">scaleX:</span> <span class="hljs-attr">scrollYProgress</span>,
+          <span class="hljs-attr">scaleX</span>,
+          <span class="hljs-attr">transformOrigin:</span> "<span class="hljs-attr">left</span>",
+          // <span class="hljs-attr">background:</span> "<span class="hljs-attr">blue</span>",
+          <span class="hljs-attr">background</span>,
+          <span class="hljs-attr">position:</span> "<span class="hljs-attr">sticky</span>",
+          <span class="hljs-attr">top:</span> <span class="hljs-attr">0</span>,
+          <span class="hljs-attr">width:</span> "<span class="hljs-attr">100</span>%",
+          <span class="hljs-attr">height:</span> "<span class="hljs-attr">20px</span>",
+        }}
+      /&gt;</span>
+
+      <span class="hljs-tag">&lt;<span class="hljs-name">div</span>
+        <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+          <span class="hljs-attr">maxWidth:</span> "<span class="hljs-attr">700px</span>",
+          <span class="hljs-attr">margin:</span> "<span class="hljs-attr">auto</span>",
+          <span class="hljs-attr">padding:</span> "<span class="hljs-attr">1.2rem</span>",
+        }}
+      &gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>
+          Lorem Ipsum is simply dummy text of the printing and typesetting
+          industry. Lorem Ipsum has been the industrys standard dummy text ever
+          since the 1500s, when an unknown printer took a galley of type and
+          scrambled it to make a type specimen book. It has survived not only
+          five centuries, but also the leap into electronic typesetting,
+          remaining essentially unchanged. It was popularised in the 1960s with
+          the release of Letraset sheets containing Lorem Ipsum passages, and
+          more recently with desktop publishing software like Aldus PageMaker
+          including versions of Lorem Ipsum.
+        <span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>
+          Lorem Ipsum is simply dummy text of the printing and typesetting
+          industry. Lorem Ipsum has been the industrys standard dummy text ever
+          since the 1500s, when an unknown printer took a galley of type and
+          scrambled it to make a type specimen book. It has survived not only
+          five centuries, but also the leap into electronic typesetting,
+          remaining essentially unchanged. It was popularised in the 1960s with
+          the release of Letraset sheets containing Lorem Ipsum passages, and
+          more recently with desktop publishing software like Aldus PageMaker
+          including versions of Lorem Ipsum.
+        <span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>
+          Lorem Ipsum is simply dummy text of the printing and typesetting
+          industry. Lorem Ipsum has been the industrys standard dummy text ever
+          since the 1500s, when an unknown printer took a galley of type and
+          scrambled it to make a type specimen book. It has survived not only
+          five centuries, but also the leap into electronic typesetting,
+          remaining essentially unchanged. It was popularised in the 1960s with
+          the release of Letraset sheets containing Lorem Ipsum passages, and
+          more recently with desktop publishing software like Aldus PageMaker
+          including versions of Lorem Ipsum.
+        <span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>
+          Lorem Ipsum is simply dummy text of the printing and typesetting
+          industry. Lorem Ipsum has been the industrys standard dummy text ever
+          since the 1500s, when an unknown printer took a galley of type and
+          scrambled it to make a type specimen book. It has survived not only
+          five centuries, but also the leap into electronic typesetting,
+          remaining essentially unchanged. It was popularised in the 1960s with
+          the release of Letraset sheets containing Lorem Ipsum passages, and
+          more recently with desktop publishing software like Aldus PageMaker
+          including versions of Lorem Ipsum.
+        <span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>
+          Lorem Ipsum is simply dummy text of the printing and typesetting
+          industry. Lorem Ipsum has been the industrys standard dummy text ever
+          since the 1500s, when an unknown printer took a galley of type and
+          scrambled it to make a type specimen book. It has survived not only
+          five centuries, but also the leap into electronic typesetting,
+          remaining essentially unchanged. It was popularised in the 1960s with
+          the release of Letraset sheets containing Lorem Ipsum passages, and
+          more recently with desktop publishing software like Aldus PageMaker
+          including versions of Lorem Ipsum.
+        <span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>
+          Lorem Ipsum is simply dummy text of the printing and typesetting
+          industry. Lorem Ipsum has been the industrys standard dummy text ever
+          since the 1500s, when an unknown printer took a galley of type and
+          scrambled it to make a type specimen book. It has survived not only
+          five centuries, but also the leap into electronic typesetting,
+          remaining essentially unchanged. It was popularised in the 1960s with
+          the release of Letraset sheets containing Lorem Ipsum passages, and
+          more recently with desktop publishing software like Aldus PageMaker
+          including versions of Lorem Ipsum.
+        <span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>
+          Lorem Ipsum is simply dummy text of the printing and typesetting
+          industry. Lorem Ipsum has been the industrys standard dummy text ever
+          since the 1500s, when an unknown printer took a galley of type and
+          scrambled it to make a type specimen book. It has survived not only
+          five centuries, but also the leap into electronic typesetting,
+          remaining essentially unchanged. It was popularised in the 1960s with
+          the release of Letraset sheets containing Lorem Ipsum passages, and
+          more recently with desktop publishing software like Aldus PageMaker
+          including versions of Lorem Ipsum.
+        <span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>
+          Lorem Ipsum is simply dummy text of the printing and typesetting
+          industry. Lorem Ipsum has been the industrys standard dummy text ever
+          since the 1500s, when an unknown printer took a galley of type and
+          scrambled it to make a type specimen book. It has survived not only
+          five centuries, but also the leap into electronic typesetting,
+          remaining essentially unchanged. It was popularised in the 1960s with
+          the release of Letraset sheets containing Lorem Ipsum passages, and
+          more recently with desktop publishing software like Aldus PageMaker
+          including versions of Lorem Ipsum.
+        <span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>
+          Lorem Ipsum is simply dummy text of the printing and typesetting
+          industry. Lorem Ipsum has been the industrys standard dummy text ever
+          since the 1500s, when an unknown printer took a galley of type and
+          scrambled it to make a type specimen book. It has survived not only
+          five centuries, but also the leap into electronic typesetting,
+          remaining essentially unchanged. It was popularised in the 1960s with
+          the release of Letraset sheets containing Lorem Ipsum passages, and
+          more recently with desktop publishing software like Aldus PageMaker
+          including versions of Lorem Ipsum.
+        <span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>
+          Lorem Ipsum is simply dummy text of the printing and typesetting
+          industry. Lorem Ipsum has been the industrys standard dummy text ever
+          since the 1500s, when an unknown printer took a galley of type and
+          scrambled it to make a type specimen book. It has survived not only
+          five centuries, but also the leap into electronic typesetting,
+          remaining essentially unchanged. It was popularised in the 1960s with
+          the release of Letraset sheets containing Lorem Ipsum passages, and
+          more recently with desktop publishing software like Aldus PageMaker
+          including versions of Lorem Ipsum.
+        <span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>
+          Lorem Ipsum is simply dummy text of the printing and typesetting
+          industry. Lorem Ipsum has been the industrys standard dummy text ever
+          since the 1500s, when an unknown printer took a galley of type and
+          scrambled it to make a type specimen book. It has survived not only
+          five centuries, but also the leap into electronic typesetting,
+          remaining essentially unchanged. It was popularised in the 1960s with
+          the release of Letraset sheets containing Lorem Ipsum passages, and
+          more recently with desktop publishing software like Aldus PageMaker
+          including versions of Lorem Ipsum.
+        <span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>
+          Lorem Ipsum is simply dummy text of the printing and typesetting
+          industry. Lorem Ipsum has been the industrys standard dummy text ever
+          since the 1500s, when an unknown printer took a galley of type and
+          scrambled it to make a type specimen book. It has survived not only
+          five centuries, but also the leap into electronic typesetting,
+          remaining essentially unchanged. It was popularised in the 1960s with
+          the release of Letraset sheets containing Lorem Ipsum passages, and
+          more recently with desktop publishing software like Aldus PageMaker
+          including versions of Lorem Ipsum.
+        <span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  );
+};
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> ScrollAnimations;
+</div></code></pre>
+<h1 id="all-props-of-motion-components">All props of Motion Components</h1>
+<p>These are the same props you'd pass to a regular <code>&lt;div&gt;</code>:</p>
+<ul>
+<li><code>className</code>, <code>style</code>, <code>id</code>, <code>onClick</code>, <code>ref</code>, etc.</li>
+<li>All HTML attributes like <code>role</code>, <code>tabIndex</code>, <code>aria-*</code>, etc.</li>
+</ul>
+<h4 id="animation-props"><strong>Animation Props---</strong></h4>
+<table>
+<thead>
+<tr>
+<th>Prop</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>animate</code></td>
+<td>Triggers animation to a target state or variant</td>
+</tr>
+<tr>
+<td><code>initial</code></td>
+<td>Sets initial style or variant before animation begins</td>
+</tr>
+<tr>
+<td><code>exit</code></td>
+<td>Defines exit animation (used with <code>AnimatePresence</code>)</td>
+</tr>
+<tr>
+<td><code>variants</code></td>
+<td>Defines named states for <code>initial</code>,<code>animate</code>, etc.</td>
+</tr>
+<tr>
+<td><code>transition</code></td>
+<td>Controls animation timing, delay, duration, easing, etc.</td>
+</tr>
+<tr>
+<td><code>whileHover</code></td>
+<td>Animation or variant to apply when hovered</td>
+</tr>
+<tr>
+<td><code>whileTap</code></td>
+<td>Animation or variant for when tapped/clicked</td>
+</tr>
+<tr>
+<td><code>whileDrag</code></td>
+<td>Animation or variant during drag</td>
+</tr>
+<tr>
+<td><code>whileFocus</code></td>
+<td>Animation or variant when focused</td>
+</tr>
+<tr>
+<td><code>whileInView</code></td>
+<td>Animation or variant triggered when element enters viewport</td>
+</tr>
+<tr>
+<td><code>layout</code></td>
+<td>Enables layout animations</td>
+</tr>
+<tr>
+<td><code>layoutId</code></td>
+<td>Used for shared layout transitions</td>
+</tr>
+<tr>
+<td><code>custom</code></td>
+<td>Passes custom data to variants</td>
+</tr>
+<tr>
+<td><code>onAnimationStart</code>,<code>onAnimationComplete</code></td>
+<td>Callbacks triggered at key points</td>
+</tr>
+</tbody>
+</table>
+<h4 id="gesture-props">Gesture Props---</h4>
+<table>
+<thead>
+<tr>
+<th>Prop</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>drag</code></td>
+<td>Enables dragging (<code>true</code>,<code>&quot;x&quot;</code>,<code>&quot;y&quot;</code>)</td>
+</tr>
+<tr>
+<td><code>dragConstraints</code></td>
+<td>Limits how far an element can be dragged</td>
+</tr>
+<tr>
+<td><code>dragElastic</code></td>
+<td>Sets resistance to draggingz</td>
+</tr>
+<tr>
+<td><code>dragSnapToOrigin</code></td>
+<td>Snaps back after release</td>
+</tr>
+<tr>
+<td><code>dragMomentum</code></td>
+<td>Enables/disables momentum</td>
+</tr>
+<tr>
+<td><code>dragTransition</code></td>
+<td>Configures how it behaves during momentum/bounce. Uses inertia-specific properties.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Callback</th>
+<th>When it Fires</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>onHoverStart</code></td>
+<td>When pointer<strong>enters</strong>the element.</td>
+</tr>
+<tr>
+<td><code>onHoverEnd</code></td>
+<td>When pointer<strong>leaves</strong>the element.</td>
+</tr>
+<tr>
+<td><code>onTapStart</code></td>
+<td>When user<strong>presses down</strong>(mouse or touch).</td>
+</tr>
+<tr>
+<td><code>onTapCancel</code></td>
+<td>If the user<strong>releases outside</strong>the element.</td>
+</tr>
+<tr>
+<td><code>onTapEnd</code></td>
+<td>When user<strong>releases</strong> , regardless of cancel/tap result.</td>
+</tr>
+<tr>
+<td><code>onTap</code></td>
+<td>When press and release happen<strong>inside</strong>the element.</td>
+</tr>
+<tr>
+<td><code>onDragStart</code>,<code>onDrag</code>,<code>onDragEnd</code></td>
+<td>Drag lifecycle callbacks</td>
+</tr>
+</tbody>
+</table>
+<h6 id="%E2%9C%A8-why-use-framer-motions-versions">✨ Why use Framer Motion's versions?</h6>
+<ul>
+<li><code>onHoverStart</code> is same as <code>onMouseEnter</code> , <code>onHoverEnd </code> same as <code>onMouseLeave</code>, <code>onTapStart</code> same as <code>onMouseDown</code>, <code>onTapEnd</code> same as <code>onMouseUp</code></li>
+<li>But Framer Motion's versions are  <strong>gesture-aware</strong> , meaning they work  <strong>consistently across devices</strong> , including touch-enabled screens (where applicable).</li>
+<li>They also <strong>integrate better</strong> with <code>whileHover or whileTap</code>, allowing you to combine animations declaratively and imperatively.</li>
+<li>Also are designed to work perfectly with motion effects.</li>
+</ul>
+<h4 id="scroll-and-view-props">Scroll and view props----</h4>
+<table>
+<thead>
+<tr>
+<th>Prop</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>whileInView</code></td>
+<td>Animation triggered when in viewport</td>
+</tr>
+<tr>
+<td><code>viewport</code></td>
+<td>Options for <code>whileInView</code>(e.g.,<code>{ once: true, amount: 0.5 }</code>)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="layout-and-shared-transitions">Layout  and Shared Transitions---</h4>
+<table>
+<thead>
+<tr>
+<th>Prop</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>layout</code></td>
+<td>Enables auto-animated layout transitions</td>
+</tr>
+<tr>
+<td><code>layoutId</code></td>
+<td>Used for shared element transitions between screens/components</td>
+</tr>
+<tr>
+<td><code>layoutScroll</code></td>
+<td>Animates when scroll position/layout changes</td>
+</tr>
+</tbody>
+</table>
+<h4 id="motionvalue-and-style-binding">MotionValue And Style Binding----</h4>
+<table>
+<thead>
+<tr>
+<th>Prop</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>style</code></td>
+<td>Accepts <code>MotionValue</code>s and updates in REAL TIME</td>
+</tr>
+<tr>
+<td><code>transformTemplate</code></td>
+<td>Customize how <code>transform</code>CSS is generated</td>
+</tr>
+</tbody>
+</table>
+<h1 id="motion-component--layout-props-and-shared-transitions">Motion Component- Layout Props And Shared Transitions</h1>
+<p>The <code>layout</code> prop in <strong>Framer Motion</strong> enables <strong>automatic layout animations</strong> — that is, when a component’s  <strong>position or size changes</strong> , Framer Motion animates it smoothly instead of snapping instantly.</p>
+<p>-- Normally in React, when you update the layout (e.g., resize, reposition, add/remove elements), DOM changes happen  <strong>instantly</strong> .</p>
+<p>Framer Motion’s <code>layout</code>:</p>
+<ul>
+<li>Detects <strong>before and after</strong> positions</li>
+<li>Automatically <strong>animates the difference</strong></li>
+<li>Requires <strong>no manual <code>animate</code> or <code>variants</code></strong></li>
+</ul>
+<p>When you use <code>layout</code>:</p>
+<p><em>--Framer Motion reads the <strong>bounding box (position + size)</strong> before and after the DOM change</em></p>
+<p><em>--Then uses a <code>transform</code> animation to interpolate the change</em></p>
+<p>Example--</p>
+<pre class="hljs"><code><div>&lt;motion.div layout&gt;
+  {isOpen &amp;&amp; <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">motion.p</span> <span class="hljs-attr">layout</span>&gt;</span>Expanded content here<span class="hljs-tag">&lt;/<span class="hljs-name">motion.p</span>&gt;</span></span>}
+&lt;<span class="hljs-regexp">/motion.div&gt;
+
+</span></div></code></pre>
+<p>When <code>isOpen</code> toggles, Framer Motion:</p>
+<ul>
+<li>Measures the size/position <strong>before</strong> the DOM updates</li>
+<li>Applies a transition <strong>between the old and new layout</strong></li>
+</ul>
+<p>Common Use Cases--</p>
+<table>
+<thead>
+<tr>
+<th>Use Case</th>
+<th>What <code>layout</code>Does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Accordion toggle</td>
+<td>Smooth height animation when expanding/collapsing</td>
+</tr>
+<tr>
+<td>Reordering grid or list</td>
+<td>Animates items to new positions</td>
+</tr>
+<tr>
+<td>Dynamic UI resizing</td>
+<td>Smooth transitions as dimensions or content change</td>
+</tr>
+</tbody>
+</table>
+<h2 id="how-to-use-it">-----HOW TO USE IT----</h2>
+<h4 id="on-size-changing-elements">*--  On size-changing elements:</h4>
+<pre class="hljs"><code><div>&lt;motion.div layout&gt;
+  {isExpanded &amp;&amp; <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>More content<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span></span>}
+&lt;<span class="hljs-regexp">/motion.div&gt;
+  
+</span></div></code></pre>
+<h4 id="on-items-that-change-order-or-position">-- On items that change order or position:</h4>
+<pre class="hljs"><code><div>{items.map(<span class="hljs-function"><span class="hljs-params">item</span> =&gt;</span> (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">motion.div</span> <span class="hljs-attr">key</span>=<span class="hljs-string">{item.id}</span> <span class="hljs-attr">layout</span>&gt;</span>
+    {item.text}
+  <span class="hljs-tag">&lt;/<span class="hljs-name">motion.div</span>&gt;</span></span>
+))}
+
+</div></code></pre>
+<h2 id="optional-props">Optional Props</h2>
+<ul>
+<li>**<em>layoutTransition</em> **- To apply transition as the layout change</li>
+<li>**<em>layoutId</em> **- For <strong>shared layout transitions</strong> across routes or components. When two elements with the same <code>layoutId</code> mount/unmount (e.g., modal open/close), Framer Motion animates between them.</li>
+</ul>
+<p>Example 1--</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">const</span> [open, setOpen] = useState(<span class="hljs-literal">false</span>);
+
+<span class="hljs-keyword">return</span> (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">motion.div</span> <span class="hljs-attr">layout</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span> setOpen(!open)}&gt;Toggle<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+    {open &amp;&amp; (
+      <span class="hljs-tag">&lt;<span class="hljs-name">motion.div</span> <span class="hljs-attr">layout</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">background:</span> "#<span class="hljs-attr">eee</span>", <span class="hljs-attr">padding:</span> <span class="hljs-attr">20</span> }}&gt;</span>
+        Expanding content!
+      <span class="hljs-tag">&lt;/<span class="hljs-name">motion.div</span>&gt;</span>
+    )}
+  <span class="hljs-tag">&lt;/<span class="hljs-name">motion.div</span>&gt;</span></span>
+);
+
+</div></code></pre>
+<p>Example 2--</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> React, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<span class="hljs-keyword">import</span> { motion, AnimatePresence } <span class="hljs-keyword">from</span> <span class="hljs-string">"framer-motion"</span>;
+
+<span class="hljs-keyword">const</span> LayoutExample = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">const</span> [selectedId, setSelectedId] = useState(<span class="hljs-literal">null</span>);
+
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+      {/* Card List */}
+      <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">display:</span> "<span class="hljs-attr">flex</span>", <span class="hljs-attr">gap:</span> "<span class="hljs-attr">1rem</span>" }}&gt;</span>
+        {[1, 2, 3].map(id =&gt; (
+          <span class="hljs-tag">&lt;<span class="hljs-name">motion.div</span>
+            <span class="hljs-attr">key</span>=<span class="hljs-string">{id}</span>
+            <span class="hljs-attr">layoutId</span>=<span class="hljs-string">{</span>`<span class="hljs-attr">card-</span>${<span class="hljs-attr">id</span>}`} // <span class="hljs-attr">shared</span> <span class="hljs-attr">layout</span> <span class="hljs-attr">ID</span>
+            <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span> setSelectedId(id)}
+            style={{
+              width: 100,
+              height: 120,
+              background: "lightblue",
+              borderRadius: 16,
+              padding: 10,
+              cursor: "pointer"
+            }}
+          &gt;
+            <span class="hljs-tag">&lt;<span class="hljs-name">motion.h4</span> <span class="hljs-attr">layoutId</span>=<span class="hljs-string">{</span>`<span class="hljs-attr">title-</span>${<span class="hljs-attr">id</span>}`}&gt;</span>Card {id}<span class="hljs-tag">&lt;/<span class="hljs-name">motion.h4</span>&gt;</span>
+          <span class="hljs-tag">&lt;/<span class="hljs-name">motion.div</span>&gt;</span>
+        ))}
+      <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+
+      {/* Modal View */}
+      <span class="hljs-tag">&lt;<span class="hljs-name">AnimatePresence</span>&gt;</span>
+        {selectedId &amp;&amp; (
+          <span class="hljs-tag">&lt;<span class="hljs-name">motion.div</span>
+            <span class="hljs-attr">layoutId</span>=<span class="hljs-string">{</span>`<span class="hljs-attr">card-</span>${<span class="hljs-attr">selectedId</span>}`}
+            <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+              <span class="hljs-attr">position:</span> "<span class="hljs-attr">fixed</span>",
+              <span class="hljs-attr">top:</span> <span class="hljs-attr">50</span>,
+              <span class="hljs-attr">left:</span> "<span class="hljs-attr">25</span>%",
+              <span class="hljs-attr">width:</span> <span class="hljs-attr">300</span>,
+              <span class="hljs-attr">background:</span> "<span class="hljs-attr">white</span>",
+              <span class="hljs-attr">borderRadius:</span> <span class="hljs-attr">20</span>,
+              <span class="hljs-attr">padding:</span> <span class="hljs-attr">20</span>,
+              <span class="hljs-attr">boxShadow:</span> "<span class="hljs-attr">0</span> <span class="hljs-attr">10px</span> <span class="hljs-attr">30px</span> <span class="hljs-attr">rgba</span>(<span class="hljs-attr">0</span>,<span class="hljs-attr">0</span>,<span class="hljs-attr">0</span>,<span class="hljs-attr">0.2</span>)",
+              <span class="hljs-attr">zIndex:</span> <span class="hljs-attr">10</span>
+            }}
+            <span class="hljs-attr">layout</span>
+            <span class="hljs-attr">layoutTransition</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">duration:</span> <span class="hljs-attr">0.5</span>, <span class="hljs-attr">ease:</span> "<span class="hljs-attr">easeInOut</span>" }}
+            <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span> setSelectedId(null)}
+          &gt;
+            <span class="hljs-tag">&lt;<span class="hljs-name">motion.h2</span> <span class="hljs-attr">layoutId</span>=<span class="hljs-string">{</span>`<span class="hljs-attr">title-</span>${<span class="hljs-attr">selectedId</span>}`}&gt;</span>Card {selectedId}<span class="hljs-tag">&lt;/<span class="hljs-name">motion.h2</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>This is expanded modal content for card {selectedId}.<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span>
+          <span class="hljs-tag">&lt;/<span class="hljs-name">motion.div</span>&gt;</span>
+        )}
+      <span class="hljs-tag">&lt;/<span class="hljs-name">AnimatePresence</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  );
+};
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> LayoutExample;
+
+</div></code></pre>
+<p><em>The above is the shared transition between a <strong>card view</strong> and a <strong>modal view</strong> using  <strong>Framer Motion</strong> .</em></p>
+<p>When you click on a card:</p>
+<ul>
+<li>It opens a modal.</li>
+<li>The image and title smoothly animate from the card to the modal using <code>layoutId</code>. Matches card and modal elements coz of shared transition</li>
+<li>The container size change is animated using <code>layout</code> and <code>layoutTransition</code>.</li>
+</ul>
+<p>Therefore these happens --</p>
+<blockquote>
+<p>Cards animate into a modal with smooth motion + Title and container seamlessly morph using <code>layoutId</code>. + Modal expands/resizes smoothly using <code>layout</code>.</p>
+</blockquote>
+<h2 id="layoutgroup">LayoutGroup</h2>
+<p>The <code>layoutGroup</code> prop in <strong>Framer Motion</strong> is used to group multiple <code>motion</code> components so that  <strong>layout animations are coordinated across them</strong> . It’s especially useful for animations involving <strong>shared layout transitions</strong> — like moving an element from one part of the DOM to another smoothly.</p>
+<p>Use <code>layoutGroup</code> when:</p>
+<ul>
+<li>You want elements in different parts of the DOM to animate smoothly as if they are connected.</li>
+<li>You're using <code>layoutId</code> to animate between components during route/page transitions or component swaps.</li>
+</ul>
+<p>--<strong>Without <code>LayoutGroup</code>, two elements with the same <code>layoutId</code> in different parts of the DOM won't animate smoothly — Framer Motion needs the group to coordinate those transitions.</strong></p>
+<h5 id="example">EXAMPLE</h5>
+<p>Take these accordion items that each handle their own state--</p>
+<pre class="hljs"><code><div><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Item</span>(<span class="hljs-params">{ header, content }</span>) </span>{
+  <span class="hljs-keyword">const</span> [isOpen, setIsOpen] = useState(<span class="hljs-literal">false</span>)
+  
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">motion.div</span>
+      <span class="hljs-attr">layout</span>
+      <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span> setIsOpen(!isOpen)}
+    &gt;
+      <span class="hljs-tag">&lt;<span class="hljs-name">motion.h2</span> <span class="hljs-attr">layout</span>&gt;</span>{header}<span class="hljs-tag">&lt;/<span class="hljs-name">motion.h2</span>&gt;</span>
+      {isOpen ? content : null}
+    <span class="hljs-tag">&lt;/<span class="hljs-name">motion.div</span>&gt;</span></span>
+  )
+}
+</div></code></pre>
+<p>If we arrange these next to each other in an <code>Accordion</code>, when their state updates, their siblings have no way of knowing:If we arrange these next to each other in an <code>Accordion</code>, when their state updates, their siblings have no way of knowing:</p>
+<pre class="hljs"><code><div><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Accordion</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">ToggleContent</span> /&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">ToggleContent</span> /&gt;</span>
+    <span class="hljs-tag">&lt;/&gt;</span></span>  
+  )
+}
+</div></code></pre>
+<p>This can be fixed by grouping both components with <code>LayoutGroup</code>:</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> { LayoutGroup } <span class="hljs-keyword">from</span> <span class="hljs-string">"motion/react"</span>
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Accordion</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">LayoutGroup</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">ToggleContent</span> /&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">ToggleContent</span> /&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">LayoutGroup</span>&gt;</span></span>  
+  )
+}
+</div></code></pre>
+<p>EXAMPLE--</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> { motion, AnimatePresence, LayoutGroup } <span class="hljs-keyword">from</span> <span class="hljs-string">"framer-motion"</span>;
+
+<span class="hljs-keyword">const</span> MyComponent = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">const</span> [selectedId, setSelectedId] = React.useState(<span class="hljs-literal">null</span>);
+
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">LayoutGroup</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">motion.div</span> <span class="hljs-attr">layoutId</span>=<span class="hljs-string">"box"</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span> setSelectedId("box")}&gt;
+        Click me
+      <span class="hljs-tag">&lt;/<span class="hljs-name">motion.div</span>&gt;</span>
+
+      <span class="hljs-tag">&lt;<span class="hljs-name">AnimatePresence</span>&gt;</span>
+        {selectedId &amp;&amp; (
+          <span class="hljs-tag">&lt;<span class="hljs-name">motion.div</span> <span class="hljs-attr">layoutId</span>=<span class="hljs-string">"box"</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span> setSelectedId(null)}&gt;
+            I'm the same box in a different place!
+          <span class="hljs-tag">&lt;/<span class="hljs-name">motion.div</span>&gt;</span>
+        )}
+      <span class="hljs-tag">&lt;/<span class="hljs-name">AnimatePresence</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">LayoutGroup</span>&gt;</span></span>
+  );
+};
+
+</div></code></pre>
+<p>🔁 What Happens Here?</p>
+<ul>
+<li>When you click the first box, it disappears.</li>
+<li>Another box (with the same <code>layoutId</code>) appears.</li>
+<li>Because they are inside a <code>LayoutGroup</code>, Framer Motion animates  <strong>between their layouts</strong> .</li>
+</ul>
+<hr>
+<h1 id="motion-component--custom-prop">Motion Component- Custom Prop</h1>
+<p>In  <strong>Framer Motion</strong> , the <code>custom</code> prop is a powerful way to  <strong>pass dynamic data to your animation variants</strong> , making your animations reusable and more flexible.</p>
+<p>The <code>custom</code> prop allows you to  <strong>pass a value to your variant functions</strong> . This is useful when:</p>
+<ul>
+<li>You want different animations for different components or conditions</li>
+<li>You want to make your variants dynamic instead of hardcoding everything</li>
+</ul>
+<p>Instead of defining variants as  <strong>static objects</strong> , you define them as <strong>functions</strong> that receive the <code>custom</code> value-----Example----</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">const</span> boxVariants = {
+  <span class="hljs-attr">animate</span>: <span class="hljs-function">(<span class="hljs-params">direction</span>) =&gt;</span> ({
+    <span class="hljs-attr">x</span>: direction === <span class="hljs-string">"right"</span> ? <span class="hljs-number">200</span> : <span class="hljs-number">-200</span>,
+    <span class="hljs-attr">opacity</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">transition</span>: { <span class="hljs-attr">duration</span>: <span class="hljs-number">1</span> }
+  })
+};
+
+<span class="hljs-comment">// Then, pass the custom value to the component----</span>
+
+<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">motion.div</span>
+  <span class="hljs-attr">custom</span>=<span class="hljs-string">"right"</span>
+  <span class="hljs-attr">initial</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">opacity:</span> <span class="hljs-attr">0</span> }}
+  <span class="hljs-attr">animate</span>=<span class="hljs-string">"animate"</span>
+  <span class="hljs-attr">variants</span>=<span class="hljs-string">{boxVariants}</span>
+/&gt;</span></span>
+
+<span class="hljs-comment">//Framer Motion will call the variant function with the value "right".</span>
+</div></code></pre>
+<p>FULL EXAMPLE----</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> { motion } <span class="hljs-keyword">from</span> <span class="hljs-string">"framer-motion"</span>;
+
+<span class="hljs-keyword">const</span> slideVariants = {
+  <span class="hljs-attr">animate</span>: <span class="hljs-function">(<span class="hljs-params">direction</span>) =&gt;</span> ({
+    <span class="hljs-attr">x</span>: direction === <span class="hljs-string">"right"</span> ? <span class="hljs-number">200</span> : <span class="hljs-number">-200</span>,
+    <span class="hljs-attr">opacity</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">transition</span>: { <span class="hljs-attr">duration</span>: <span class="hljs-number">0.8</span> }
+  }),
+  <span class="hljs-attr">initial</span>: {
+    <span class="hljs-attr">opacity</span>: <span class="hljs-number">0</span>,
+    <span class="hljs-attr">x</span>: <span class="hljs-number">0</span>
+  }
+};
+
+<span class="hljs-keyword">const</span> SlidingBox = <span class="hljs-function">(<span class="hljs-params">{ direction }</span>) =&gt;</span> (
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">motion.div</span>
+    <span class="hljs-attr">custom</span>=<span class="hljs-string">{direction}</span>
+    <span class="hljs-attr">initial</span>=<span class="hljs-string">"initial"</span>
+    <span class="hljs-attr">animate</span>=<span class="hljs-string">"animate"</span>
+    <span class="hljs-attr">variants</span>=<span class="hljs-string">{slideVariants}</span>
+    <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+      <span class="hljs-attr">width:</span> <span class="hljs-attr">100</span>,
+      <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>,
+      <span class="hljs-attr">backgroundColor:</span> "<span class="hljs-attr">skyblue</span>",
+      <span class="hljs-attr">margin:</span> <span class="hljs-attr">20</span>
+    }}
+  /&gt;</span></span>
+);
+
+<span class="hljs-comment">// Now in jsx, Each box animates differently based on its custom prop ------</span>
+
+<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">SlidingBox</span> <span class="hljs-attr">direction</span>=<span class="hljs-string">"left"</span> /&gt;</span></span>
+<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">SlidingBox</span> <span class="hljs-attr">direction</span>=<span class="hljs-string">"right"</span> /&gt;</span></span>
+</div></code></pre>
+<h1 id="motion-component--onanimationstart-and-onanimationcomplete">Motion Component- onAnimationStart() and onAnimationComplete()</h1>
+<p>In  <strong>Framer Motion</strong> , the props <strong><code>onAnimationStart</code></strong> and <strong><code>onAnimationComplete</code></strong> are <strong>event handlers</strong> that allow you to execute custom logic <strong>when an animation starts or finishes</strong> on a Motion Component.</p>
+<h3 id="onanimationstart"><code>onAnimationStart</code></h3>
+<ul>
+<li>Fires <strong>once</strong> when the animation  <strong>begins</strong> .</li>
+<li>Can be used to trigger things like loading states, logs, or class changes.</li>
+</ul>
+<h3 id="onanimationcomplete"><code>onAnimationComplete</code></h3>
+<ul>
+<li>Fires <strong>once</strong> when the animation  <strong>ends</strong> .</li>
+<li>Great for triggering follow-up animations, callbacks, enabling buttons, etc.</li>
+</ul>
+<h3 id="useful-in">Useful In:</h3>
+<ul>
+<li>Chaining animations</li>
+<li>Tracking animation state</li>
+<li>Syncing UI logic with animation lifecycle</li>
+</ul>
+<p><em><strong>NOTE-- These are not per-property; they fire once for the whole animation block. If you're animating multiple properties (like <code>x</code>, <code>opacity</code>, <code>scale</code>), the event runs when all animations are done.</strong></em></p>
+<p>Example-----</p>
+<pre class="hljs"><code><div>&lt;motion.div
+  initial={{ <span class="hljs-attr">opacity</span>: <span class="hljs-number">0</span> }}
+  animate={{ <span class="hljs-attr">opacity</span>: <span class="hljs-number">1</span> }}
+  transition={{ <span class="hljs-attr">duration</span>: <span class="hljs-number">1</span> }}
+  onAnimationStart={() =&gt; <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Animation started"</span>)}
+  onAnimationComplete={() =&gt; <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Animation completed"</span>)}
+/&gt;
+
+</div></code></pre>
+<h1 id="motion-component--transformtemplate">Motion Component- transformTemplate</h1>
+<p>In  <strong>Framer Motion</strong> , the <code>transformTemplate</code> prop is an <strong>advanced customization tool</strong> that lets you <strong>control the order and structure of the final <code>transform</code> CSS string</strong> applied to a motion component.</p>
+<p>-- It’s a function that lets you  <strong>override how Framer Motion builds the CSS <code>transform</code> property</strong> , which is usually auto-generated from animated values like <code>x</code>, <code>scale</code>, <code>rotate</code>, etc.</p>
+<pre class="hljs"><code><div>&lt;motion.div
+  animate={{ <span class="hljs-attr">scale</span>: <span class="hljs-number">1.2</span> }}
+  transformTemplate={(transformString, transformObject) =&gt; {
+    <span class="hljs-keyword">return</span> <span class="hljs-string">`<span class="hljs-subst">${transformString}</span> perspective(500px)`</span>
+  }}
+/&gt;
+
+</div></code></pre>
+<blockquote>
+<p>^ Here 'transformString' is auto generated wherever needed by Framer motion depending on the way things are animated or layouts or by the way we program it. We are just telling them that whatever be the transformString let it be before perspective(500px). Beacuse order of transform matters in css..</p>
+<p><em>transform: translateX(100px) rotate(45deg);</em> is different and so is this---&gt; <em>transform: rotate(45deg) translateX(100px);</em></p>
+</blockquote>
+<p>We could even tell it to completely leave the transformString let it be replaced by ours. Example--</p>
+<pre class="hljs"><code><div>&lt;motion.div
+  animate={{ <span class="hljs-attr">x</span>: <span class="hljs-number">100</span>, <span class="hljs-attr">rotate</span>: <span class="hljs-number">45</span> }}
+  transformTemplate={(transformString, t) =&gt;
+    <span class="hljs-string">`rotate(<span class="hljs-subst">${t.rotate}</span>deg) translateX(<span class="hljs-subst">${t.x}</span>px)`</span>
+  }
+/&gt;
+
+</div></code></pre>
+<p><strong>Why Use <code>transformTemplate</code>?</strong></p>
+<ol>
+<li><strong>Reorder transforms</strong> (important for rendering performance or effect)</li>
+<li><strong>Add custom transforms</strong> not covered by Framer Motion</li>
+<li><strong>Debug or tweak precision</strong> in complex animations</li>
+</ol>
+<p>EXAMPLE PROGRAM----</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> React, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<span class="hljs-keyword">import</span> { motion } <span class="hljs-keyword">from</span> <span class="hljs-string">"framer-motion"</span>;
+
+<span class="hljs-keyword">const</span> FlipCard = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">const</span> [flipped, setFlipped] = useState(<span class="hljs-literal">false</span>);
+
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>
+      <span class="hljs-attr">onClick</span>=<span class="hljs-string">{()</span> =&gt;</span> setFlipped(!flipped)}
+      style={{
+        perspective: 1000, // for 3D effect
+        width: 200,
+        height: 200,
+        cursor: "pointer",
+      }}
+    &gt;
+      <span class="hljs-tag">&lt;<span class="hljs-name">motion.div</span>
+        <span class="hljs-attr">animate</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">rotateY:</span> <span class="hljs-attr">flipped</span> ? <span class="hljs-attr">180</span> <span class="hljs-attr">:</span> <span class="hljs-attr">0</span> }}
+        <span class="hljs-attr">transition</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">duration:</span> <span class="hljs-attr">0.8</span> }}
+        <span class="hljs-attr">transformTemplate</span>=<span class="hljs-string">{(transformString,</span> <span class="hljs-attr">transform</span>) =&gt;</span> {
+          return `perspective(1000px) ${transformString}`;
+        }}
+        style={{
+          width: "100%",
+          height: "100%",
+          backgroundColor: flipped ? "#f39c12" : "#3498db",
+          color: "#fff",
+          fontSize: "1.5rem",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          borderRadius: "12px",
+          backfaceVisibility: "hidden",
+        }}
+      &gt;
+        {flipped ? "Back" : "Front"}
+      <span class="hljs-tag">&lt;/<span class="hljs-name">motion.div</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  );
+};
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> FlipCard;
+
+</div></code></pre>
+<h3 id="whats-happening-here">What’s happening here?</h3>
+<ul>
+<li><code>rotateY</code> is animated to flip the card on click.</li>
+<li><code>transformTemplate</code> injects <code>perspective(1000px)</code> <strong>before</strong> the default transform values.</li>
+<li>This creates a  <strong>true 3D flipping effect</strong> , which wouldn't be as effective without <code>perspective</code>.</li>
+</ul>
+<h1 id="animatepresence-in-detail">AnimatePresence in detail</h1>
+<p><code>AnimatePresence</code> is a component that enables <strong>exit animations</strong> for components  <strong>when they’re removed from the React tree</strong> .</p>
+<p>-- By default, when a component unmounts in React, it disappears immediately —  <strong>you never get a chance to animate it out</strong> .</p>
+<p><code>AnimatePresence</code> solves this by:</p>
+<ol>
+<li>Keeping the component temporarily &quot;alive&quot; when it should exit.</li>
+<li>Playing the animation defined in the <code>exit</code> prop.</li>
+<li>Actually unmounting it <strong>after</strong> the animation finishes.</li>
+</ol>
+<p>Must Know---</p>
+<ul>
+<li><code>AnimatePresence</code>  <strong>must wrap the conditional component</strong> , not its parent.</li>
+<li>Always use a unique <code>key</code> if rendering a list of animated items.</li>
+</ul>
+<p>Optional Props on <code>AnimatePresence</code>-----</p>
+<table>
+<thead>
+<tr>
+<th>Prop</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>initial</code></td>
+<td>If <code>false</code>, skips  <code>initial </code>animation on first mount</td>
+</tr>
+<tr>
+<td><code>mode</code></td>
+<td>Controls how multiple items exit —<code>&quot;sync&quot;</code>,<code>&quot;wait&quot;</code>, etc.</td>
+</tr>
+</tbody>
+</table>
+<p><em><strong><strong><strong><strong>initial</strong></strong></strong></strong></em>-- Set to <code>false</code> if you <strong>only</strong> want enter/exit animations when something  <strong>is added or removed</strong> , not on the initial mount. DEFAULT - true</p>
+<p>mode-- Controls <strong>how</strong> components are animated when  <strong>multiple components enter/exit simultaneously</strong> . VALUES---</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&quot;sync&quot;</code>(default)</td>
+<td>Enter and exit animations play at the<strong>same time</strong> .</td>
+</tr>
+<tr>
+<td><code>&quot;wait&quot;</code></td>
+<td><strong>Wait</strong> for exit animation to complete <strong>before</strong>  animating the new component in.</td>
+</tr>
+<tr>
+<td><code>&quot;popLayout&quot;</code></td>
+<td>When layout animations are involved, it handles transitions more intuitively between components.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>With <code>mode=&quot;wait&quot;</code>, the second component won’t start its animation until the first finishes  <strong>exiting</strong> .</p>
+</blockquote>
+<p>EXAMPLE---</p>
+<pre class="hljs"><code><div>&lt;AnimatePresence mode=<span class="hljs-string">"wait"</span>&gt;
+  {isToggled ? (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">motion.div</span>
+      <span class="hljs-attr">key</span>=<span class="hljs-string">"a"</span>
+      <span class="hljs-attr">initial</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">opacity:</span> <span class="hljs-attr">0</span> }}
+      <span class="hljs-attr">animate</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">opacity:</span> <span class="hljs-attr">1</span> }}
+      <span class="hljs-attr">exit</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">opacity:</span> <span class="hljs-attr">0</span> }}
+    /&gt;</span></span>
+  ) : (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">motion.div</span>
+      <span class="hljs-attr">key</span>=<span class="hljs-string">"b"</span>
+      <span class="hljs-attr">initial</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">opacity:</span> <span class="hljs-attr">0</span> }}
+      <span class="hljs-attr">animate</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">opacity:</span> <span class="hljs-attr">1</span> }}
+      <span class="hljs-attr">exit</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">opacity:</span> <span class="hljs-attr">0</span> }}
+    /&gt;</span></span>
+  )}
+&lt;<span class="hljs-regexp">/AnimatePresence&gt;
+
+
+</span></div></code></pre>
+<p>Example----</p>
+<pre class="hljs"><code><div>&lt;AnimatePresence initial={<span class="hljs-literal">false</span>}&gt;
+  {show &amp;&amp; (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">motion.div</span>
+      <span class="hljs-attr">initial</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">opacity:</span> <span class="hljs-attr">0</span> }}
+      <span class="hljs-attr">animate</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">opacity:</span> <span class="hljs-attr">1</span> }}
+      <span class="hljs-attr">exit</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">opacity:</span> <span class="hljs-attr">0</span> }}
+    /&gt;</span></span>
+  )}
+&lt;<span class="hljs-regexp">/AnimatePresence&gt;
+
+</span></div></code></pre>
+<p><strong>➡️ On first load:</strong> the component appears <strong>without fading in coz of</strong></p>
+<p>➡️ <strong>On toggle:</strong> it <strong>does fade in and out</strong> as expected coz of initial in &lt;motion.div&gt;</p>
+<h1 id="motionconfig-in-detail">MotionConfig in detail</h1>
+<p>MotionConfig is a <strong>context provider</strong> component that lets you define <strong>global settings</strong> for all motion components (<code>motion.div</code>, <code>motion.button</code>, etc.) inside it.</p>
+<blockquote>
+<p><code>&lt;MotionConfig&gt;</code> component in <strong>Framer Motion</strong> can configure  <strong>more than just the <code>transition</code> property</strong> . It acts as a <strong>context provider</strong> that passes default settings down to all nested motion components.</p>
+</blockquote>
+<p>✅ What You Can Control with <code>MotionConfig</code>:</p>
+<ul>
+<li>Global <code>transition</code> settings (duration, easing, etc.)</li>
+<li><code>reducedMotion</code> preferences</li>
+<li><code>layoutTransition</code> settings</li>
+<li><code>dragTransition</code></li>
+<li><code>transformPagePoint</code> (for advanced gesture/control scenarios)</li>
+</ul>
+<p>📦 Common Props of <code>MotionConfig</code></p>
+<table>
+<thead>
+<tr>
+<th>Prop</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>transition</code></td>
+<td>Default transition applied to all children motion components.</td>
+</tr>
+<tr>
+<td><code>reducedMotion</code></td>
+<td><code>&quot;always&quot;</code>/<code>&quot;never&quot;</code>/<code>&quot;user&quot;</code>– for accessibility (prefers-reduced-motion).</td>
+</tr>
+<tr>
+<td><code>layoutTransition</code></td>
+<td>Default layout transition for <code>layout</code>animations.</td>
+</tr>
+<tr>
+<td><code>dragTransition</code></td>
+<td>Default transition for drag behavior.</td>
+</tr>
+<tr>
+<td><code>transformPagePoint</code></td>
+<td>Used in custom gesture handling.</td>
+</tr>
+</tbody>
+</table>
+<p>When to Use <code>MotionConfig------</code></p>
+<ul>
+<li>You want consistent animation behavior across multiple motion components.</li>
+<li>You’re tired of writing <code>transition={{ ... }}</code> everywhere.</li>
+<li>You want to respect system-level reduced motion settings.</li>
+</ul>
+<blockquote>
+<p>NOTE---- You can override any of these settings locally inside an individual <code>motion</code> component if needed.</p>
+</blockquote>
+<p>EXAMPLE---</p>
+<pre class="hljs"><code><div>&lt;MotionConfig reducedMotion=<span class="hljs-string">"user"</span>&gt;
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">motion.div</span>
+    <span class="hljs-attr">initial</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">scale:</span> <span class="hljs-attr">0</span> }}
+    <span class="hljs-attr">animate</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">scale:</span> <span class="hljs-attr">1</span> }}
+    <span class="hljs-attr">transition</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">duration:</span> <span class="hljs-attr">1</span> }}
+  /&gt;</span></span>
+&lt;<span class="hljs-regexp">/MotionConfig&gt;
+
+</span></div></code></pre>
+<blockquote>
+<p>If the user has <strong>&quot;prefers reduced motion&quot;</strong> enabled in their OS, this will auto-disable the animation.</p>
+</blockquote>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<span class="hljs-keyword">import</span> { motion, MotionConfig } <span class="hljs-keyword">from</span> <span class="hljs-string">"framer-motion"</span>;
+
+<span class="hljs-keyword">const</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">MotionConfig</span>
+      <span class="hljs-attr">transition</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">duration:</span> <span class="hljs-attr">1</span>, <span class="hljs-attr">ease:</span> "<span class="hljs-attr">easeInOut</span>" }}
+      <span class="hljs-attr">layoutTransition</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">type:</span> "<span class="hljs-attr">spring</span>", <span class="hljs-attr">stiffness:</span> <span class="hljs-attr">300</span> }}
+      <span class="hljs-attr">dragTransition</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">bounceStiffness:</span> <span class="hljs-attr">100</span>, <span class="hljs-attr">bounceDamping:</span> <span class="hljs-attr">8</span> }}
+      <span class="hljs-attr">transformPagePoint</span>=<span class="hljs-string">{(point)</span> =&gt;</span> ({
+        x: point.x + 10, // shift all gesture coordinates by 10px
+        y: point.y + 10,
+      })}
+    &gt;
+      <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">padding:</span> <span class="hljs-attr">40</span> }}&gt;</span>
+        {/* Motion with transition from MotionConfig */}
+        <span class="hljs-tag">&lt;<span class="hljs-name">motion.div</span>
+          <span class="hljs-attr">initial</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">opacity:</span> <span class="hljs-attr">0</span>, <span class="hljs-attr">scale:</span> <span class="hljs-attr">0.5</span> }}
+          <span class="hljs-attr">animate</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">opacity:</span> <span class="hljs-attr">1</span>, <span class="hljs-attr">scale:</span> <span class="hljs-attr">1</span> }}
+          <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+            <span class="hljs-attr">width:</span> <span class="hljs-attr">100</span>,
+            <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>,
+            <span class="hljs-attr">backgroundColor:</span> "<span class="hljs-attr">salmon</span>",
+            <span class="hljs-attr">marginBottom:</span> <span class="hljs-attr">30</span>,
+          }}
+        /&gt;</span>
+
+        {/* Layout animation with layoutTransition from MotionConfig */}
+        <span class="hljs-tag">&lt;<span class="hljs-name">motion.div</span>
+          <span class="hljs-attr">layout</span>
+          <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+            <span class="hljs-attr">width:</span> <span class="hljs-attr">200</span>,
+            <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>,
+            <span class="hljs-attr">backgroundColor:</span> "<span class="hljs-attr">skyblue</span>",
+            <span class="hljs-attr">marginBottom:</span> <span class="hljs-attr">30</span>,
+          }}
+        /&gt;</span>
+
+        {/* Draggable with dragTransition from MotionConfig */}
+        <span class="hljs-tag">&lt;<span class="hljs-name">motion.div</span>
+          <span class="hljs-attr">drag</span>
+          <span class="hljs-attr">dragConstraints</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">left:</span> <span class="hljs-attr">0</span>, <span class="hljs-attr">right:</span> <span class="hljs-attr">300</span> }}
+          <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+            <span class="hljs-attr">width:</span> <span class="hljs-attr">100</span>,
+            <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>,
+            <span class="hljs-attr">backgroundColor:</span> "<span class="hljs-attr">lightgreen</span>",
+            <span class="hljs-attr">cursor:</span> "<span class="hljs-attr">grab</span>",
+          }}
+        /&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">MotionConfig</span>&gt;</span></span>
+  );
+};
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> App;
+
+</div></code></pre>
+<h1 id="transition-properties">Transition Properties</h1>
+<h5 id="%F0%9F%A7%A9-common-transition-properties">🧩 <strong>Common Transition Properties</strong></h5>
+<p>These work with both <code>tween</code> and <code>spring</code> where applicable:</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>type</code></td>
+<td><code>&quot;tween&quot;</code>,<code>&quot;spring&quot;</code>,<code>&quot;inertia&quot;</code></td>
+<td>Defines the type of animation</td>
+</tr>
+<tr>
+<td><code>delay</code></td>
+<td><code>number</code></td>
+<td>Delay before animation starts</td>
+</tr>
+<tr>
+<td><code>duration</code></td>
+<td><code>number</code></td>
+<td>How long the animation runs (used in <code>tween</code>)</td>
+</tr>
+<tr>
+<td><code>ease</code></td>
+<td><code>string</code>or <code>[number, number, number, number]</code></td>
+<td>Controls speed curve for <code>tween</code></td>
+</tr>
+<tr>
+<td><code>repeat</code></td>
+<td><code>number</code></td>
+<td>Number of times to repeat</td>
+</tr>
+<tr>
+<td><code>repeatType</code></td>
+<td><code>&quot;loop&quot;</code>,<code>&quot;reverse&quot;</code>,<code>&quot;mirror&quot;</code></td>
+<td>Direction/style of repeating</td>
+</tr>
+<tr>
+<td><code>repeatDelay</code></td>
+<td><code>number</code></td>
+<td>Delay between repeats</td>
+</tr>
+<tr>
+<td><code>times</code></td>
+<td><code>number[]</code></td>
+<td>Array of keyframe progress values (<code>[0, 0.5, 1]</code>)</td>
+</tr>
+</tbody>
+</table>
+<h5 id="%F0%9F%A7%AE-spring-specific-properties-type-%22spring%22-only">🧮 <strong>Spring-specific Properties</strong> (<code>type: &quot;spring&quot;</code> only)</h5>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>stiffness</code></td>
+<td><code>number</code></td>
+<td>Higher = faster bounce back</td>
+</tr>
+<tr>
+<td><code>damping</code></td>
+<td><code>number</code></td>
+<td>Higher = less oscillation</td>
+</tr>
+<tr>
+<td><code>mass</code></td>
+<td><code>number</code></td>
+<td>-Affects inertia/momentum.<br />-A <strong>higher mass</strong> makes the animation feel heavier — moves slower and takes longer to settle.<br />-Combined with <code>stiffness</code> and <code>damping</code>, it affects the realism of the motion.<br /><code>transition={{ type: &quot;spring&quot;, mass: 2 }}</code></td>
+</tr>
+<tr>
+<td><code>bounce</code></td>
+<td><code>number</code></td>
+<td>Value between 0 and 1 for bounciness.<code>1</code> = maximum bounce (lots of overshooting/oscillation).<br /><code>transition={{ type: &quot;spring&quot;, bounce: 0.5 }}</code></td>
+</tr>
+<tr>
+<td><code>restSpeed</code></td>
+<td><code>number</code></td>
+<td>Speed below which spring is considered &quot;at rest&quot;</td>
+</tr>
+<tr>
+<td><code>restDelta</code></td>
+<td><code>number</code></td>
+<td>Distance threshold for stopping</td>
+</tr>
+<tr>
+<td><code>velocity</code></td>
+<td><code>number</code></td>
+<td>-Initial velocity of the spring - The<strong>initial speed</strong> at which the object starts moving (pixels per second).<br />-Gives the animation a &quot;kick&quot; from the start.<br />-Used mostly when animating between dynamic values (like drag or gesture-based animations).<br /><code>transition={{ type: &quot;spring&quot;, velocity: 100 }}</code></td>
+</tr>
+</tbody>
+</table>
+<p>🔧 <code>stiffness</code> (default: <code>100</code>)</p>
+<ul>
+<li><strong>Defines</strong> : How strong or tight the spring is — higher = faster, snappier motion.</li>
+<li><strong>Range</strong> :</li>
+<li>🔹 <code>10–50</code>: Very loose spring — slow, soft movement</li>
+<li>🔸 <code>100</code> (default): Balanced feel</li>
+<li>🔺 <code>200–500</code>: Very stiff, fast snap</li>
+<li>🔻 <code>&gt;500</code>: Extremely stiff — practically instant movement</li>
+</ul>
+<p>🔧 <code>damping</code> (default: <code>10</code>)</p>
+<ul>
+<li><strong>Defines</strong> : How much resistance (friction) the spring has — higher = less bounce</li>
+<li><strong>Range</strong> :</li>
+<li>🔹 <code>1–5</code>: Very bouncy (low damping)</li>
+<li>🔸 <code>10</code> (default): Light bounce</li>
+<li>🔺 <code>20–40</code>: Heavily damped, almost no bounce</li>
+<li>🔻 <code>&gt;50</code>: Overdamped, slow to rest, sluggish</li>
+</ul>
+<p>EXAMPLE--- This will create a smooth bounce-back effect that feels realistic and dynamic.</p>
+<pre class="hljs"><code><div>&lt;motion.div
+  animate={{ <span class="hljs-attr">y</span>: <span class="hljs-number">0</span> }}
+  initial={{ <span class="hljs-attr">y</span>: <span class="hljs-number">300</span> }}
+  transition={{
+    <span class="hljs-attr">type</span>: <span class="hljs-string">"spring"</span>,
+    <span class="hljs-attr">mass</span>: <span class="hljs-number">1.5</span>,
+    <span class="hljs-attr">bounce</span>: <span class="hljs-number">0.6</span>,
+    <span class="hljs-attr">velocity</span>: <span class="hljs-number">50</span>,
+    <span class="hljs-attr">damping</span>: <span class="hljs-number">10</span>,
+    <span class="hljs-attr">stiffness</span>: <span class="hljs-number">100</span>
+  }}
+/&gt;
+
+</div></code></pre>
+<h5 id="%F0%9F%A7%B2-inertia-specific-properties-type-%22inertia%22-only">🧲 <strong>Inertia-specific Properties</strong> (<code>type: &quot;inertia&quot;</code> only)</h5>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>velocity</code></td>
+<td><code>number</code></td>
+<td>Initial speed (px/s) — how fast it starts moving.<code>0.8</code>.</td>
+</tr>
+<tr>
+<td><code>power</code></td>
+<td><code>number</code></td>
+<td>How much momentum is generated from velocity. Default is <code>0.8</code>.</td>
+</tr>
+<tr>
+<td><code>timeConstant</code></td>
+<td><code>number</code></td>
+<td>Controls deceleration rate</td>
+</tr>
+<tr>
+<td><code>bounceStiffness</code></td>
+<td><code>number</code></td>
+<td>Spring back stiffness. Spring stiffness when bouncing off a boundary.</td>
+</tr>
+<tr>
+<td><code>bounceDamping</code></td>
+<td><code>number</code></td>
+<td>Damping when bouncing. How much resistance is applied when bouncing.</td>
+</tr>
+<tr>
+<td><code>min</code>/<code>max</code></td>
+<td><code>number</code></td>
+<td>Boundaries for animation</td>
+</tr>
+<tr>
+<td><code>modifyTarget</code></td>
+<td><code>fn</code></td>
+<td>Function to alter animation endpoint. How much resistance is applied when bouncing.</td>
+</tr>
+</tbody>
+</table>
+<p>EXAMPLE--- (Manual inertia animation)</p>
+<pre class="hljs"><code><div>&lt;motion.div
+  animate={{ <span class="hljs-attr">x</span>: <span class="hljs-number">500</span> }}
+  transition={{
+    <span class="hljs-attr">type</span>: <span class="hljs-string">"inertia"</span>,
+    <span class="hljs-attr">velocity</span>: <span class="hljs-number">200</span>,
+    <span class="hljs-attr">min</span>: <span class="hljs-number">0</span>,
+    <span class="hljs-attr">max</span>: <span class="hljs-number">500</span>,
+    <span class="hljs-attr">bounceStiffness</span>: <span class="hljs-number">200</span>,
+    <span class="hljs-attr">bounceDamping</span>: <span class="hljs-number">15</span>
+  }}
+/&gt;
+
+</div></code></pre>
+<p>EXAMPLE-- (Free glide with boundaries)--- using <code>dragTransition</code></p>
+<pre class="hljs"><code><div>&lt;motion.div
+  animate={{ <span class="hljs-attr">x</span>: <span class="hljs-number">0</span> }}
+  drag=<span class="hljs-string">"x"</span>
+  dragConstraints={{ <span class="hljs-attr">left</span>: <span class="hljs-number">-200</span>, <span class="hljs-attr">right</span>: <span class="hljs-number">200</span> }}
+  dragTransition={{
+    <span class="hljs-attr">bounceStiffness</span>: <span class="hljs-number">300</span>,
+    <span class="hljs-attr">bounceDamping</span>: <span class="hljs-number">20</span>
+  }}
+/&gt;
+
+</div></code></pre>
+<p>EXAMPLE-- Snap to grid using <code>modifyTarget</code></p>
+<pre class="hljs"><code><div>&lt;motion.div
+  animate={{ <span class="hljs-attr">x</span>: <span class="hljs-number">0</span> }}
+  transition={{
+    <span class="hljs-attr">type</span>: <span class="hljs-string">"inertia"</span>,
+    <span class="hljs-attr">velocity</span>: <span class="hljs-number">120</span>,
+    <span class="hljs-attr">modifyTarget</span>: <span class="hljs-function">(<span class="hljs-params">target</span>) =&gt;</span> <span class="hljs-built_in">Math</span>.round(target / <span class="hljs-number">100</span>) * <span class="hljs-number">100</span>
+  }}
+/&gt;
+
+</div></code></pre>
+<h2 id="type-property">type property</h2>
+<p>The <code>type</code> property in a Framer Motion <code>transition</code> defines <strong>how</strong> the animation progresses — like whether it behaves like a spring, tween, or inertia animation.</p>
+<pre class="hljs"><code><div>transition={{ <span class="hljs-attr">type</span>: <span class="hljs-string">"spring"</span> | <span class="hljs-string">"tween"</span> | <span class="hljs-string">"inertia"</span>, ...otherOptions }}
+
+</div></code></pre>
+<h4 id="1-%E2%9C%85-type-%22tween%22-default-for-most-properties">1. ✅ <code>type: &quot;tween&quot;</code> (default for most properties)</h4>
+<ul>
+<li>Uses <strong>easing functions</strong> (like <code>easeInOut</code>, <code>linear</code>)</li>
+<li>Best for  <strong>opacity</strong> ,  <strong>colors</strong> , or precise timing</li>
+</ul>
+<pre class="hljs"><code><div>&lt;motion.div
+  animate={{ <span class="hljs-attr">opacity</span>: <span class="hljs-number">1</span> }}
+  transition={{ <span class="hljs-attr">type</span>: <span class="hljs-string">"tween"</span>, <span class="hljs-attr">duration</span>: <span class="hljs-number">0.5</span>, <span class="hljs-attr">ease</span>: <span class="hljs-string">"easeOut"</span> }}
+/&gt;
+
+</div></code></pre>
+<ol start="2">
+<li>✅ <code>type: &quot;spring&quot;</code></li>
+</ol>
+<ul>
+<li>Physics-based spring animation</li>
+<li>Good for  <strong>scale</strong> ,  <strong>position</strong> , or bouncy UI effects</li>
+<li>
+<blockquote>
+<p>Ignores <code>duration</code>, instead uses <code>stiffness</code>, <code>damping</code>, etc.</p>
+</blockquote>
+</li>
+</ul>
+<pre class="hljs"><code><div>&lt;motion.div
+  animate={{ <span class="hljs-attr">x</span>: <span class="hljs-number">100</span> }}
+  transition={{ <span class="hljs-attr">type</span>: <span class="hljs-string">"spring"</span>, <span class="hljs-attr">stiffness</span>: <span class="hljs-number">200</span>, <span class="hljs-attr">damping</span>: <span class="hljs-number">20</span> }}
+/&gt;
+
+</div></code></pre>
+<ul>
+<li><code>stiffness</code>: how fast it tries to reach the target</li>
+<li><code>damping</code>: how much it resists bouncing</li>
+<li><code>mass</code>: affects momentum</li>
+</ul>
+<h4 id="3-%E2%9C%85-type-%22inertia%22">3. ✅ <code>type: &quot;inertia&quot;</code></h4>
+<ul>
+<li>Animates with <strong>momentum</strong> (used mostly with gestures like <code>drag</code>)</li>
+<li>Best for  <strong>scroll</strong> ,  <strong>pan</strong> , or <strong>swipe-style</strong> interactions</li>
+</ul>
+<pre class="hljs"><code><div>&lt;motion.div
+  drag=<span class="hljs-string">"x"</span>
+  dragConstraints={{ <span class="hljs-attr">left</span>: <span class="hljs-number">0</span>, <span class="hljs-attr">right</span>: <span class="hljs-number">300</span> }}
+  dragTransition={{
+    <span class="hljs-attr">type</span>: <span class="hljs-string">"inertia"</span>,
+    <span class="hljs-attr">bounceStiffness</span>: <span class="hljs-number">200</span>,
+    <span class="hljs-attr">bounceDamping</span>: <span class="hljs-number">10</span>
+  }}
+/&gt;
+
+</div></code></pre>
+<blockquote>
+<p>Used primarily inside <code>dragTransition</code>, not <code>transition</code></p>
+</blockquote>
+<h2 id="ease-property">ease Property</h2>
+<p>The <code>ease</code> property in a <code>transition</code> defines <strong>how the animation progresses over time</strong> — whether it starts slowly, ends slowly, or moves linearly.</p>
+<p>-- It's only used with <code>type: &quot;tween&quot;</code> transitions. It’s ignored in <code>spring</code> or <code>inertia</code>.</p>
+<p>✅ Common Predefined Easing Options</p>
+<table>
+<thead>
+<tr>
+<th>Ease Type</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&quot;linear&quot;</code></td>
+<td>Constant speed (no acceleration)</td>
+</tr>
+<tr>
+<td><code>&quot;easeIn&quot;</code></td>
+<td>Starts slow, ends fast</td>
+</tr>
+<tr>
+<td><code>&quot;easeOut&quot;</code></td>
+<td>Starts fast, ends slow</td>
+</tr>
+<tr>
+<td><code>&quot;easeInOut&quot;</code></td>
+<td>Starts and ends slow, fast in the middle</td>
+</tr>
+<tr>
+<td><code>&quot;circInOut&quot;</code></td>
+<td>Circular easing (very smooth start and end)</td>
+</tr>
+<tr>
+<td><code>&quot;backInOut&quot;</code></td>
+<td>Slight overshoot in and out</td>
+</tr>
+</tbody>
+</table>
+<h5 id="you-can-define-custom-easing-using-cubic-bezier-values"><strong>You can define custom easing using cubic bezier values:</strong></h5>
+<pre class="hljs"><code><div>ease: [<span class="hljs-number">0.42</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0.58</span>, <span class="hljs-number">1</span>] <span class="hljs-comment">// same as easeInOut</span>
+
+</div></code></pre>
+<blockquote>
+<h5 id="can-also-be-set-individually-per-animated-property">Can also be set individually per animated property:</h5>
+</blockquote>
+<pre class="hljs"><code><div>transition={{
+  <span class="hljs-attr">x</span>: { <span class="hljs-attr">duration</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">ease</span>: <span class="hljs-string">"easeOut"</span> },
+  <span class="hljs-attr">opacity</span>: { <span class="hljs-attr">duration</span>: <span class="hljs-number">0.5</span>, <span class="hljs-attr">ease</span>: <span class="hljs-string">"easeIn"</span> }
+}}
+
+</div></code></pre>
+<h2 id="repeattype-property">repeatType property</h2>
+<p>The <code>repeatType</code> controls <strong>how</strong> the animation repeats. You can use it along with the <code>repeat</code> prop to define repeat behavior</p>
+<p>Options:</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&quot;loop&quot;</code></td>
+<td>Repeats from start to end over and over again (like a loop)</td>
+</tr>
+<tr>
+<td><code>&quot;reverse&quot;</code></td>
+<td>Repeats in reverse direction (end to start, then start to end, etc.)</td>
+</tr>
+<tr>
+<td><code>&quot;mirror&quot;</code></td>
+<td>Mirrors the animation like <code>reverse</code>, but preserves easing and direction</td>
+</tr>
+</tbody>
+</table>
+<h2 id="repeatdelay-property">repeatDelay Property</h2>
+<p>The <code>repeatDelay</code> adds a <strong>pause</strong> between repeats — whether you're using <code>loop</code>, <code>reverse</code>, or <code>mirror</code>.</p>
+<pre class="hljs"><code><div>&lt;motion.div
+  animate={{ <span class="hljs-attr">rotate</span>: [<span class="hljs-number">0</span>, <span class="hljs-number">360</span>] }}
+  transition={{
+    <span class="hljs-attr">duration</span>: <span class="hljs-number">2</span>,
+    <span class="hljs-attr">repeat</span>: <span class="hljs-literal">Infinity</span>,
+    <span class="hljs-attr">repeatType</span>: <span class="hljs-string">"loop"</span>,
+    <span class="hljs-attr">repeatDelay</span>: <span class="hljs-number">1</span>  <span class="hljs-comment">// 1 second delay between loops</span>
+  }}
+/&gt;
+
+</div></code></pre>
+<h1 id="gesture-event-callbacks">Gesture Event Callbacks</h1>
+<p>Framer Motion also gives  <strong>gesture event callbacks</strong> :</p>
+<ul>
+<li><code>onHoverStart</code>, <code>onHoverEnd</code></li>
+<li><code>onTapStart</code>, <code>onTapCancel</code>, <code>onTap</code></li>
+<li><code>onDragStart</code>, <code>onDragEnd</code>, <code>onDrag</code></li>
+</ul>
+<pre class="hljs"><code><div>&lt;motion.div
+  onTap={() =&gt; <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Tapped!"</span>)}
+  whileTap={{ <span class="hljs-attr">scale</span>: <span class="hljs-number">0.95</span> }}
+/&gt;
+
+</div></code></pre>
+<h1 id="all-drag-related-properties-transition-options-and-callbacks"><strong>All drag-related properties, transition options, and callbacks</strong></h1>
+<p>Enables drag behavior----  <code>&lt;motion.div drag /&gt;</code></p>
+<ul>
+<li><code>drag</code> → enables dragging on both axes.</li>
+<li><code>drag=&quot;x&quot;</code> or <code>drag=&quot;y&quot;</code> → restricts drag to a single axis.</li>
+</ul>
+<h2 id="%E2%9A%99%EF%B8%8F-drag-related-props"><strong>⚙️ Drag-related Props</strong></h2>
+<table>
+<thead>
+<tr>
+<th>Prop</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dragConstraints</code></td>
+<td><code>object</code>or <code>ref</code></td>
+<td>Limits dragging within a box (<code>{ left, right, top, bottom }</code>) or a DOM element (<code>ref</code>).</td>
+</tr>
+<tr>
+<td><code>dragDirectionLock</code></td>
+<td><code>boolean</code></td>
+<td>Locks drag direction after a short movement (x or y).</td>
+</tr>
+<tr>
+<td><code>dragElastic</code></td>
+<td><code>boolean</code>or <code>number</code></td>
+<td>Controls &quot;stretchiness&quot; beyond constraints.<code>0</code>= no stretch;<code>1</code>= full elastic.</td>
+</tr>
+<tr>
+<td><code>dragMomentum</code></td>
+<td><code>boolean</code></td>
+<td>Whether inertia is applied after drag ends. Default:<code>true</code>.</td>
+</tr>
+<tr>
+<td><code>dragTransition</code></td>
+<td><code>object</code></td>
+<td>Configures how it behaves during momentum/bounce. Uses inertia-specific properties.</td>
+</tr>
+<tr>
+<td><code>dragSnapToOrigin</code></td>
+<td><code>boolean</code></td>
+<td>If true, snaps back to the original position after dragging.</td>
+</tr>
+</tbody>
+</table>
+<p>EXAMPLE----</p>
+<pre class="hljs"><code><div>&lt;motion.div
+  drag
+  dragConstraints={{ <span class="hljs-attr">left</span>: <span class="hljs-number">-100</span>, <span class="hljs-attr">right</span>: <span class="hljs-number">100</span>, <span class="hljs-attr">top</span>: <span class="hljs-number">-50</span>, <span class="hljs-attr">bottom</span>: <span class="hljs-number">50</span> }}
+  dragElastic={<span class="hljs-number">0.2</span>}
+  dragMomentum={<span class="hljs-literal">true</span>}
+  style={{ <span class="hljs-attr">width</span>: <span class="hljs-number">100</span>, <span class="hljs-attr">height</span>: <span class="hljs-number">100</span>, <span class="hljs-attr">background</span>: <span class="hljs-string">"skyblue"</span> }}
+/&gt;
+
+</div></code></pre>
+<h2 id="%F0%9F%8E%9B%EF%B8%8F-dragtransition-inertia--bounce">🎛️ <code>dragTransition</code> (inertia / bounce)</h2>
+<p>--A sub-property used to customize how the element behaves  <strong>after drag ends</strong> .</p>
+<p><strong>Common <code>dragTransition</code> options:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>bounceStiffness</code></td>
+<td>Spring stiffness when bouncing at edge</td>
+</tr>
+<tr>
+<td><code>bounceDamping</code></td>
+<td>Damping (resistance) applied when bouncing</td>
+</tr>
+<tr>
+<td><code>power</code></td>
+<td>Momentum power (higher = longer glide)</td>
+</tr>
+<tr>
+<td><code>timeConstant</code></td>
+<td>Time constant for exponential decay</td>
+</tr>
+<tr>
+<td><code>modifyTarget</code></td>
+<td>Function to change final resting point (e.g., snap)</td>
+</tr>
+</tbody>
+</table>
+<pre class="hljs"><code><div>&lt;motion.div
+  drag
+  dragTransition={{
+    <span class="hljs-attr">bounceStiffness</span>: <span class="hljs-number">400</span>,
+    <span class="hljs-attr">bounceDamping</span>: <span class="hljs-number">20</span>
+  }}
+/&gt;
+
+</div></code></pre>
+<h2 id="%F0%9F%8E%A3-drag-event-callbacks">🎣 Drag <strong>Event Callbacks</strong></h2>
+<p>You can use these to track drag lifecycle events---</p>
+<table>
+<thead>
+<tr>
+<th>Callback</th>
+<th>Triggered When...</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>onDragStart</code></td>
+<td>Drag begins</td>
+</tr>
+<tr>
+<td><code>onDrag</code></td>
+<td>While dragging</td>
+</tr>
+<tr>
+<td><code>onDragEnd</code></td>
+<td>Drag is released</td>
+</tr>
+<tr>
+<td><code>onDirectionLock</code></td>
+<td>When direction gets locked (x or y)</td>
+</tr>
+</tbody>
+</table>
+<pre class="hljs"><code><div>&lt;motion.div
+  drag
+  onDragStart={() =&gt; <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Start dragging"</span>)}
+  onDrag={(event, info) =&gt; <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Dragging"</span>, info.point)}
+  onDragEnd={() =&gt; <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Drag ended"</span>)}
+  onDirectionLock={(axis) =&gt; <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Locked to"</span>, axis)}
+/&gt;
+
+</div></code></pre>
+<h2 id="%F0%9F%A7%A0-extra-notes">🧠 Extra Notes</h2>
+<ul>
+<li>Combine drag with <code>animate</code> or <code>variants</code> for complex interactions.</li>
+<li>Use <code>useAnimationControls()</code> with <code>onDragEnd</code> to trigger custom effects.</li>
+<li>You can use <code>ref</code> for <code>dragConstraints</code> to dynamically define the container.</li>
+</ul>
+<pre class="hljs"><code><div>&lt;motion.div
+  drag
+  dragConstraints={{ <span class="hljs-attr">left</span>: <span class="hljs-number">-100</span>, <span class="hljs-attr">right</span>: <span class="hljs-number">100</span> }}
+  dragElastic={<span class="hljs-number">0.5</span>}
+  dragTransition={{ <span class="hljs-attr">bounceStiffness</span>: <span class="hljs-number">300</span>, <span class="hljs-attr">bounceDamping</span>: <span class="hljs-number">20</span> }}
+  onDragEnd={(e, info) =&gt; {
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Velocity"</span>, info.velocity);
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Offset"</span>, info.offset);
+  }}
+  style={{
+    <span class="hljs-attr">width</span>: <span class="hljs-number">100</span>,
+    <span class="hljs-attr">height</span>: <span class="hljs-number">100</span>,
+    <span class="hljs-attr">borderRadius</span>: <span class="hljs-number">10</span>,
+    <span class="hljs-attr">background</span>: <span class="hljs-string">"salmon"</span>
+  }}
+/&gt;
+
+</div></code></pre>
+<h1 id="animate-props-of-motion-component--note">Animate props of Motion Component--Note</h1>
+<ul>
+<li><code>animate</code> overrides <code>whileHover</code>, <code>whileTap</code>, etc. if they conflict.</li>
+<li>It should always be used with <code>initial</code> for entrance animations.</li>
+</ul>
+<p>Framer Motion <strong>automatically builds the <code>transform</code> property</strong> for you from values like:</p>
+<ul>
+<li><code>x</code>, <code>y</code> → <code>translateX</code>, <code>translateY</code></li>
+<li><code>scale</code>, <code>scaleX</code>, <code>scaleY</code></li>
+<li><code>rotate</code>, <code>rotateX</code>, <code>rotateY</code></li>
+<li><code>skewX</code>, <code>skewY</code></li>
+<li><code>perspective</code>, etc.</li>
+</ul>
+<p>This keeps the syntax clean and declarative, and also allows <strong>fine-grained animation control</strong> over individual transform properties.</p>
+<h1 id="reorder">Reorder</h1>
+<p>The <code>Reorder</code> components can be used to create drag-to-reorder lists, like reorderable tabs or todo items.</p>
+<p>--Reorder refers to a <strong>specialized way of animating the reordering of a list</strong> when the order of items changes — especially useful for things like drag-to-reorder lists or sortable grids.</p>
+<p><code>reorder</code> is a feature from Framer Motion's <code>framer-motion</code> package that helps:</p>
+<ul>
+<li>Animate <strong>position changes</strong> when items move in the DOM.</li>
+<li>Handle <strong>drag-and-drop reordering</strong> smoothly.</li>
+<li>Reduce the boilerplate for managing animated lists.</li>
+</ul>
+<p>It works in conjunction with:</p>
+<ul>
+<li><code>&lt;Reorder.Group&gt;</code>: the container for reorderable items.</li>
+<li><code>&lt;Reorder.Item&gt;</code>: each item in the list.</li>
+</ul>
+<h3 id="example">EXAMPLE--</h3>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> React, { useState } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<span class="hljs-keyword">import</span> { Reorder } <span class="hljs-keyword">from</span> <span class="hljs-string">"framer-motion"</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">ReorderExample</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">const</span> [items, setItems] = useState([<span class="hljs-string">"🍎"</span>, <span class="hljs-string">"🍌"</span>, <span class="hljs-string">"🍇"</span>, <span class="hljs-string">"🍑"</span>]);
+
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Reorder.Group</span> <span class="hljs-attr">axis</span>=<span class="hljs-string">"y"</span> <span class="hljs-attr">values</span>=<span class="hljs-string">{items}</span> <span class="hljs-attr">onReorder</span>=<span class="hljs-string">{setItems}</span>&gt;</span>
+      {items.map((item) =&gt; (
+        <span class="hljs-tag">&lt;<span class="hljs-name">Reorder.Item</span> <span class="hljs-attr">key</span>=<span class="hljs-string">{item}</span> <span class="hljs-attr">value</span>=<span class="hljs-string">{item}</span>&gt;</span>
+          {item}
+        <span class="hljs-tag">&lt;/<span class="hljs-name">Reorder.Item</span>&gt;</span>
+      ))}
+    <span class="hljs-tag">&lt;/<span class="hljs-name">Reorder.Group</span>&gt;</span></span>
+  );
+}
+
+</div></code></pre>
+<table>
+<thead>
+<tr>
+<th>Prop / Component</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Reorder.Group</code></td>
+<td>A wrapper that enables drag-to-reorder for its children</td>
+</tr>
+<tr>
+<td><code>axis=&quot;y&quot;</code></td>
+<td>Constrains drag to vertical (use <code>x</code>for horizontal)</td>
+</tr>
+<tr>
+<td><code>values</code></td>
+<td>The array of items representing order</td>
+</tr>
+<tr>
+<td><code>onReorder={setItems}</code></td>
+<td>Callback that updates the list order after reordering</td>
+</tr>
+<tr>
+<td><code>Reorder.Item</code></td>
+<td>The draggable item component with <code>value</code>representing its identity</td>
+</tr>
+</tbody>
+</table>
+<h3 id="%F0%9F%9B%A0-how-it-works">🛠 How It Works</h3>
+<ol>
+<li>You provide a list of items with <code>values</code>.</li>
+<li>Framer Motion tracks the order of <code>Reorder.Item</code>s.</li>
+<li>When you drag an item, it:
+<ul>
+<li>Automatically updates the layout.</li>
+<li>Animates the position of items as they move.</li>
+</ul>
+</li>
+<li><code>onReorder</code> is called with the new order, which you apply using <code>setItems</code>.</li>
+</ol>
+<h3 id="%F0%9F%A7%A9-use-cases">🧩 Use Cases</h3>
+<ul>
+<li>Drag-to-reorder lists (e.g. task managers, kanban boards)</li>
+<li>Animated sort transitions</li>
+<li>Playlists or any ordered collections with user interaction</li>
+</ul>
+<p><strong>++ By default, this is rendered as a <code>&lt;ul&gt;</code>, but this can be changed with the <code>as</code> prop.</strong></p>
+<p><code>&lt;Reorder.Group as=&quot;ol&quot;&gt;</code></p>
+<h3 id="scrollable-list">Scrollable List</h3>
+<p>If <code>Reorder.Item</code> components are within a scrollable container, that container needs a <code>layoutScroll</code> prop so Framer Motion can correctly measure its scroll offset.</p>
+<pre class="hljs"><code><div>&lt;Reorder.Group
+  axis=<span class="hljs-string">"y"</span>
+  onReorder={setItems}
+  layoutScroll
+  style={{ <span class="hljs-attr">overflowY</span>: <span class="hljs-string">"scroll"</span> }}
+&gt;
+  {items.map(<span class="hljs-function">(<span class="hljs-params">item</span>) =&gt;</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">Item</span> <span class="hljs-attr">key</span>=<span class="hljs-string">{item}</span> <span class="hljs-attr">item</span>=<span class="hljs-string">{item}</span> /&gt;</span></span>
+  ))}
+&lt;<span class="hljs-regexp">/Reorder.Group&gt;
+</span></div></code></pre>
+<h1 id="reducedmotion">reducedMotion</h1>
+<p>In  <strong>Framer Motion</strong> , <code>reducedMotion</code> is a feature that <strong>respects the user's system preferences</strong> for reduced motion (like in accessibility settings). It's useful for creating inclusive animations that <strong>automatically disable or simplify motion</strong> for users who prefer less animation.</p>
+<h3 id="%F0%9F%94%A7-two-ways-to-use-reducedmotion">🔧 Two Ways to Use <code>reducedMotion</code>:</h3>
+<ol>
+<li><strong>Using the <code>useReducedMotion()</code> Hook</strong></li>
+</ol>
+<p>EXAMPLE---</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> { useReducedMotion, motion } <span class="hljs-keyword">from</span> <span class="hljs-string">"framer-motion"</span>;
+
+<span class="hljs-keyword">const</span> MyComponent = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">const</span> shouldReduceMotion = useReducedMotion();
+
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">motion.div</span>
+      <span class="hljs-attr">animate</span>=<span class="hljs-string">{{</span>
+        <span class="hljs-attr">x:</span> <span class="hljs-attr">shouldReduceMotion</span> ? <span class="hljs-attr">0</span> <span class="hljs-attr">:</span> <span class="hljs-attr">100</span>,
+        <span class="hljs-attr">opacity:</span> <span class="hljs-attr">shouldReduceMotion</span> ? <span class="hljs-attr">1</span> <span class="hljs-attr">:</span> [<span class="hljs-attr">0</span>, <span class="hljs-attr">1</span>],
+      }}
+      <span class="hljs-attr">transition</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">duration:</span> <span class="hljs-attr">shouldReduceMotion</span> ? <span class="hljs-attr">0</span> <span class="hljs-attr">:</span> <span class="hljs-attr">1</span> }}
+    &gt;</span>
+      I respect your motion preferences!
+    <span class="hljs-tag">&lt;/<span class="hljs-name">motion.div</span>&gt;</span></span>
+  );
+};
+
+</div></code></pre>
+<ol start="2">
+<li><strong>Using <code>&lt;MotionConfig reducedMotion=&quot;user&quot; /&gt;</code></strong></li>
+</ol>
+<p>EXAMPLE--</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> { MotionConfig, motion } <span class="hljs-keyword">from</span> <span class="hljs-string">"framer-motion"</span>;
+
+<span class="hljs-keyword">const</span> App = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">MotionConfig</span> <span class="hljs-attr">reducedMotion</span>=<span class="hljs-string">"user"</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">motion.div</span>
+        <span class="hljs-attr">animate</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">x:</span> <span class="hljs-attr">200</span> }}
+        <span class="hljs-attr">transition</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">duration:</span> <span class="hljs-attr">1</span> }}
+      &gt;</span>
+        Will skip animation if reduced motion is on.
+      <span class="hljs-tag">&lt;/<span class="hljs-name">motion.div</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">MotionConfig</span>&gt;</span></span>
+  );
+};
+
+</div></code></pre>
+<p>You can also pass:</p>
+<ul>
+<li><code>&quot;always&quot;</code> → always reduce motion (even if user didn’t request it)</li>
+<li><code>&quot;never&quot;</code> → always allow full motion (ignores user settings)</li>
+<li><code>&quot;user&quot;</code> → default; respect system preference</li>
+</ul>
+<h3 id="%F0%9F%94%8D-why-it-matters">🔍 Why It Matters</h3>
+<p>Some users experience motion sickness or discomfort from excessive or complex animations. <code>reducedMotion</code> helps  <strong>gracefully degrade animations</strong> , improving <strong>accessibility</strong> without you needing to write separate animation logic.</p>
+<hr>
+<h1 id="other-concepts">OTHER CONCEPTS</h1>
+<h2 id="1-lazymotion">1. LazyMotion</h2>
+<p><code>LazyMotion</code> is a <strong>performance optimization</strong> tool that lets you  <strong>lazy-load only the parts of Framer Motion you need</strong> , instead of shipping the full animation runtime (which includes a lot of extra features like SVG path animation, layout animations, etc.).</p>
+<h2 id="2-transformpagepoint-prop-of-motionconfig">2. transformPagePoint() prop of MotionConfig</h2>
+<p><code>transformPagePoint</code> is an <strong>optional function</strong> you can provide to customize how pointer coordinates (like mouse/touch positions) are transformed before Framer Motion uses them—for example, when dragging.</p>
+<p>Example---</p>
+<pre class="hljs"><code><div>&lt;MotionConfig
+  transformPagePoint={(point) =&gt; {
+    <span class="hljs-keyword">return</span> {
+      <span class="hljs-attr">x</span>: point.x - <span class="hljs-built_in">window</span>.scrollX,
+      <span class="hljs-attr">y</span>: point.y - <span class="hljs-built_in">window</span>.scrollY
+    };
+  }}
+&gt;
+  <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">motion.div</span> <span class="hljs-attr">drag</span> /&gt;</span></span>
+&lt;<span class="hljs-regexp">/MotionConfig&gt;
+
+</span></div></code></pre>
+<hr>
+<h1 id="hooks">HOOKS</h1>
+<h2 id="1useanimationcontrols">1.useAnimationControls()</h2>
+<p>The <code>useAnimationControls</code> hook gives you <strong>full programmatic control</strong> over animations. Instead of relying only on <code>initial</code> / <code>animate</code> props, this hook lets you <strong>start, stop, or change animations manually</strong> from within your component logic.</p>
+<p>Use <code>useAnimationControls</code> when:</p>
+<ul>
+<li>You want to trigger animations based on user actions (e.g., onClick, onScroll).</li>
+<li>You need <strong>fine-grained control</strong> over what animates and when.</li>
+<li>You're orchestrating complex animations across components.</li>
+</ul>
+<p>For <strong>simple interaction-based animations</strong> like <code>whileHover</code>, <code>whileTap</code>, etc., you  <strong>don't need <code>useAnimationControls</code></strong> . You can just define a <code>variant</code> and let Framer Motion handle it declaratively.</p>
+<p>Use <code>useAnimationControls</code> when:</p>
+<ol>
+<li>You need to trigger animations imperatively  - e.g., on a button click, scroll event, data load, or timeout.</li>
+<li>The animation depends on external logic or state- Example: animation only after fetching data from an API</li>
+<li>You're coordinating multiple components programmatically- An entire page or multiple elements animating sequentially ie Animation orchestration</li>
+</ol>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> { motion, useAnimationControls } <span class="hljs-keyword">from</span> <span class="hljs-string">"framer-motion"</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">MyComponent</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">const</span> controls = useAnimationControls();
+
+  <span class="hljs-keyword">const</span> handleClick = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    controls.start({
+      <span class="hljs-attr">x</span>: <span class="hljs-number">100</span>,
+      <span class="hljs-attr">opacity</span>: <span class="hljs-number">1</span>,
+      <span class="hljs-attr">transition</span>: { <span class="hljs-attr">duration</span>: <span class="hljs-number">0.5</span> }
+    });
+  };
+
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">motion.div</span>
+        <span class="hljs-attr">animate</span>=<span class="hljs-string">{controls}</span> // <span class="hljs-attr">Hook</span> <span class="hljs-attr">is</span> <span class="hljs-attr">connected</span> <span class="hljs-attr">here</span>
+        <span class="hljs-attr">initial</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">x:</span> <span class="hljs-attr">0</span>, <span class="hljs-attr">opacity:</span> <span class="hljs-attr">0</span> }}
+        <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">width:</span> <span class="hljs-attr">100</span>, <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>, <span class="hljs-attr">background:</span> '<span class="hljs-attr">blue</span>' }}
+      /&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{handleClick}</span>&gt;</span>Animate<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+    <span class="hljs-tag">&lt;/&gt;</span></span>
+  );
+}
+
+</div></code></pre>
+<ul>
+<li>If you already hava a variant you could use that inside controls.start()--- controls.start(&quot;visible&quot;)</li>
+<li>To stop current animation-- controls.stop();</li>
+<li>Immediately set values (without animation)-- controls.set({ x: 0, opacity: 1 });</li>
+</ul>
+<h5 id="another-example-using-start-set-stop-and-pssing-variants-insidestart">Another Example USING .start(), .set(), .stop() and pssing variants inside.start()</h5>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<span class="hljs-keyword">import</span> { motion, useAnimationControls } <span class="hljs-keyword">from</span> <span class="hljs-string">"framer-motion"</span>;
+
+<span class="hljs-keyword">const</span> boxVariants = {
+  <span class="hljs-attr">hidden</span>: { <span class="hljs-attr">x</span>: <span class="hljs-number">0</span>, <span class="hljs-attr">opacity</span>: <span class="hljs-number">0</span> },
+  <span class="hljs-attr">visible</span>: {
+    <span class="hljs-attr">x</span>: <span class="hljs-number">300</span>,
+    <span class="hljs-attr">opacity</span>: <span class="hljs-number">1</span>,
+    <span class="hljs-attr">transition</span>: { <span class="hljs-attr">duration</span>: <span class="hljs-number">2</span> }
+  }
+};
+
+<span class="hljs-keyword">const</span> AnimationControlExample = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">const</span> controls = useAnimationControls();
+
+  <span class="hljs-keyword">const</span> startAnimation = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    controls.start(<span class="hljs-string">"visible"</span>); <span class="hljs-comment">// Triggering the variant</span>
+  };
+
+  <span class="hljs-keyword">const</span> stopAnimation = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    controls.stop();
+  };
+
+  <span class="hljs-keyword">const</span> setPosition = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    controls.set({
+      <span class="hljs-attr">x</span>: <span class="hljs-number">50</span>,
+      <span class="hljs-attr">opacity</span>: <span class="hljs-number">0.5</span>
+    });
+  };
+
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">padding:</span> <span class="hljs-attr">20</span> }}&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">motion.div</span>
+        <span class="hljs-attr">variants</span>=<span class="hljs-string">{boxVariants}</span>         // <span class="hljs-attr">Apply</span> <span class="hljs-attr">variants</span>
+        <span class="hljs-attr">initial</span>=<span class="hljs-string">"hidden"</span>               // <span class="hljs-attr">Start</span> <span class="hljs-attr">from</span> <span class="hljs-attr">hidden</span>
+        <span class="hljs-attr">animate</span>=<span class="hljs-string">{controls}</span>             // <span class="hljs-attr">Controlled</span> <span class="hljs-attr">by</span> <span class="hljs-attr">useAnimationControls</span>
+        <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+          <span class="hljs-attr">width:</span> <span class="hljs-attr">100</span>,
+          <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>,
+          <span class="hljs-attr">backgroundColor:</span> "<span class="hljs-attr">skyblue</span>",
+          <span class="hljs-attr">marginBottom:</span> <span class="hljs-attr">20</span>
+        }}
+      /&gt;</span>
+
+      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{startAnimation}</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">marginRight:</span> <span class="hljs-attr">10</span> }}&gt;</span>
+        Start Animation (Variant)
+      <span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{stopAnimation}</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">marginRight:</span> <span class="hljs-attr">10</span> }}&gt;</span>
+        Stop Animation
+      <span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{setPosition}</span>&gt;</span>Set Position Instantly<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  );
+};
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> AnimationControlExample;
+
+</div></code></pre>
+<h2 id="2usescroll">* 2.useScroll()</h2>
+<p>The <code>useScroll()</code> hook in <strong>Framer Motion</strong> lets you <strong>track scroll progress</strong> of either:</p>
+<ul>
+<li>the  <strong>whole page</strong> , or</li>
+<li>a specific <strong>element</strong> (when used with a <code>ref</code>).</li>
+</ul>
+<p>This is especially useful for building scroll-based animations, progress indicators, or triggering transitions at different scroll positions.</p>
+<p>The Values returned by the hook</p>
+<blockquote>
+<p>scrollX,           // motionValue <code>&lt;number&gt;</code> for horizontal scroll (pixels)
+scrollY,           // motionValue <code>&lt;number&gt;</code> for vertical scroll (pixels)
+scrollXProgress,   // motionValue <code>&lt;number&gt;</code> from 0 to 1
+scrollYProgress    // motionValue <code>&lt;number&gt;</code> from 0 to 1</p>
+</blockquote>
+<p>Optional paramter of useScroll---</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">const</span> { scrollYProgress } = useScroll({
+  <span class="hljs-attr">container</span>: ref,       <span class="hljs-comment">// optional scroll container</span>
+  <span class="hljs-attr">target</span>: targetRef,    <span class="hljs-comment">// optional tracking target within container</span>
+  <span class="hljs-attr">offset</span>: [<span class="hljs-string">"start end"</span>, <span class="hljs-string">"end start"</span>]  <span class="hljs-comment">// customize trigger points. Offset lets you define when the progress should start/end</span>
+});
+
+</div></code></pre>
+<p>Best Use Cases</p>
+<ul>
+<li>Scroll-based progress bars</li>
+<li>Animating elements as they scroll into view</li>
+<li>Pinning sections</li>
+<li>Parallax effects</li>
+</ul>
+<p>Tracking Scroll Within an Element using optional &quot;container&quot; of the hook---</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> { useRef } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<span class="hljs-keyword">import</span> { useScroll } <span class="hljs-keyword">from</span> <span class="hljs-string">"framer-motion"</span>;
+
+<span class="hljs-keyword">const</span> ScrollInElement = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">const</span> containerRef = useRef(<span class="hljs-literal">null</span>);
+  <span class="hljs-keyword">const</span> { scrollYProgress } = useScroll({ <span class="hljs-attr">container</span>: containerRef });
+
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">{containerRef}</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">height:</span> <span class="hljs-attr">300</span>, <span class="hljs-attr">overflowY:</span> "<span class="hljs-attr">scroll</span>" }}&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">motion.div</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">scaleY:</span> <span class="hljs-attr">scrollYProgress</span>, <span class="hljs-attr">height:</span> "<span class="hljs-attr">100</span>%" }}&gt;</span>
+        Scrolling inside a div
+      <span class="hljs-tag">&lt;/<span class="hljs-name">motion.div</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  );
+};
+
+</div></code></pre>
+<h5 id="target-and-offset-in-usescroll">--<code>target</code> and <code>offset</code> in <code>useScroll()</code></h5>
+<h6 id="target"><code>-target</code></h6>
+<ul>
+<li>A <strong>ref</strong> to an element whose scroll position (relative to its container or viewport) you're tracking.</li>
+<li>Used when you want to track <strong>how far</strong> an element has entered/exited the viewport or container.</li>
+</ul>
+<h6 id="offset">-<code>offset</code></h6>
+<ul>
+<li>
+<p>Defines <strong>when</strong> scroll progress should  <strong>start and end</strong> .</p>
+</li>
+<li>
+<p>Accepts two values (start and end points), e.g.:</p>
+</li>
+<li>
+<p>It's like saying:</p>
+<ul>
+<li><strong>&quot;Start when the top of target hits the bottom of viewport/container&quot;</strong> (<code>start end</code>)</li>
+<li><strong>&quot;End when the bottom of target hits the top of viewport/container&quot;</strong> (<code>end start</code>)</li>
+</ul>
+</li>
+</ul>
+<p>Example---</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> { useRef } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<span class="hljs-keyword">import</span> { useScroll, motion, useTransform } <span class="hljs-keyword">from</span> <span class="hljs-string">"framer-motion"</span>;
+
+<span class="hljs-keyword">const</span> ScrollSection = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">const</span> targetRef = useRef(<span class="hljs-literal">null</span>);
+  <span class="hljs-keyword">const</span> { scrollYProgress } = useScroll({
+    <span class="hljs-attr">target</span>: targetRef,
+    <span class="hljs-attr">offset</span>: [<span class="hljs-string">"start end"</span>, <span class="hljs-string">"end start"</span>]
+  });
+
+  <span class="hljs-keyword">const</span> scale = useTransform(scrollYProgress, [<span class="hljs-number">0</span>, <span class="hljs-number">1</span>], [<span class="hljs-number">0.5</span>, <span class="hljs-number">1</span>]);
+
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">height:</span> "<span class="hljs-attr">200vh</span>", <span class="hljs-attr">paddingTop:</span> "<span class="hljs-attr">100vh</span>" }}&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">motion.div</span>
+        <span class="hljs-attr">ref</span>=<span class="hljs-string">{targetRef}</span>
+        <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+          <span class="hljs-attr">background:</span> "<span class="hljs-attr">lightgreen</span>",
+          <span class="hljs-attr">height:</span> <span class="hljs-attr">300</span>,
+          <span class="hljs-attr">scale</span>
+        }}
+      &gt;</span>
+        I scale while being scrolled into view
+      <span class="hljs-tag">&lt;/<span class="hljs-name">motion.div</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  );
+};
+
+</div></code></pre>
+<h2 id="3-useinview">* 3. useInview()</h2>
+<p>See View Based Animation</p>
+<h2 id="4-usetransform">* 4. useTransform()</h2>
+<p>The <code>useTransform()</code> hook in <strong>Framer Motion</strong> is a powerful utility that lets you map one <code>MotionValue</code> to another — transforming a value from one range into another, often used in scroll or animation contexts.</p>
+<p>-- One of the most powerful tools for creating  <strong>smooth, scroll-based or reactive animations</strong> .</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">const</span> output = useTransform(input, inputRange, outputRange);
+</div></code></pre>
+<table>
+<thead>
+<tr>
+<th>Argument</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>input</code></td>
+<td>A <code>MotionValue</code>(like <code>scrollY</code>,<code>scrollYProgress</code>,<code>x</code>, etc.)</td>
+</tr>
+<tr>
+<td><code>inputRange</code></td>
+<td>An array defining the range of the input (e.g.<code>[0, 1]</code>, or <code>[0, 100]</code>)</td>
+</tr>
+<tr>
+<td><code>outputRange</code></td>
+<td>An array defining how the output should map to the input (e.g.<code>[0, 100]</code>)</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>The value returned by <code>useTransform()</code> is a  <strong>live MotionValue</strong> , so it updates automatically as the input changes.</li>
+<li>You can use it directly in styles or pass it to other Framer components.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Use Case</th>
+<th>What to Transform</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Scroll progress bar</td>
+<td><code>scaleX</code></td>
+</tr>
+<tr>
+<td>Parallax scrolling</td>
+<td><code>y</code>,<code>x</code>,<code>opacity</code>,<code>scale</code></td>
+</tr>
+<tr>
+<td>Changing background color on scroll</td>
+<td><code>backgroundColor</code></td>
+</tr>
+<tr>
+<td>Rotate or move elements on drag</td>
+<td><code>x</code>,<code>rotate</code>,<code>scale</code></td>
+</tr>
+<tr>
+<td>Dynamic blur or box-shadow</td>
+<td><code>filter</code>,<code>boxShadow</code></td>
+</tr>
+</tbody>
+</table>
+<p>EXAMPLE---</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> { motion, useScroll, useTransform } <span class="hljs-keyword">from</span> <span class="hljs-string">"framer-motion"</span>;
+
+<span class="hljs-keyword">const</span> ScrollFade = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">const</span> { scrollYProgress } = useScroll(); <span class="hljs-comment">// 0 to 1</span>
+
+  <span class="hljs-keyword">const</span> opacity = useTransform(scrollYProgress, [<span class="hljs-number">0</span>, <span class="hljs-number">1</span>], [<span class="hljs-number">0.2</span>, <span class="hljs-number">1</span>]);
+  <span class="hljs-keyword">const</span> scale = useTransform(scrollYProgress, [<span class="hljs-number">0</span>, <span class="hljs-number">1</span>], [<span class="hljs-number">0.8</span>, <span class="hljs-number">1</span>]);
+
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">motion.div</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">opacity</span>, <span class="hljs-attr">scale</span>, <span class="hljs-attr">height:</span> "<span class="hljs-attr">100vh</span>", <span class="hljs-attr">background:</span> "<span class="hljs-attr">teal</span>" }}&gt;</span>
+      Scroll to Animate Me
+    <span class="hljs-tag">&lt;/<span class="hljs-name">motion.div</span>&gt;</span></span>
+  );
+};
+
+</div></code></pre>
+<p>EXAMPLE (Link a drag value to a rotate value)---</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">const</span> x = useMotionValue(<span class="hljs-number">0</span>);
+<span class="hljs-keyword">const</span> rotate = useTransform(x, [<span class="hljs-number">-200</span>, <span class="hljs-number">200</span>], [<span class="hljs-number">-45</span>, <span class="hljs-number">45</span>]);
+
+<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">motion.div</span> <span class="hljs-attr">drag</span>=<span class="hljs-string">"x"</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">x</span>, <span class="hljs-attr">rotate</span> }} /&gt;</span></span>
+
+</div></code></pre>
+<h2 id="5-usespring">5. useSpring()</h2>
+<p>The <code>useSpring</code> hook in <strong>Framer Motion</strong> lets you create a <strong>smooth, physics-based animated value</strong> that follows another <code>MotionValue</code> — like a spring attached to it.</p>
+<h5 id="%E2%9C%85-what-it-does">✅ What it does</h5>
+<p>It creates a new <code>MotionValue</code> that:</p>
+<ul>
+<li>Tracks a <strong>source MotionValue</strong></li>
+<li>Animates smoothly toward it using <strong>spring physics</strong></li>
+<li>Automatically responds to changes in the source</li>
+</ul>
+<p>-- If you want to  <strong>smooth out a jerky or abrupt animation</strong> , <code>useSpring</code> gives it a <strong>natural, bouncy feel</strong> — like how real objects move due to inertia and resistance.</p>
+<h5 id="example">EXAMPLE---</h5>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> { motion, useMotionValue, useSpring } <span class="hljs-keyword">from</span> <span class="hljs-string">"framer-motion"</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">SpringExample</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">const</span> x = useMotionValue(<span class="hljs-number">0</span>);
+  <span class="hljs-keyword">const</span> springX = useSpring(x, {
+    <span class="hljs-attr">stiffness</span>: <span class="hljs-number">100</span>,
+    <span class="hljs-attr">damping</span>: <span class="hljs-number">10</span>,
+  });
+
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">motion.div</span>
+      <span class="hljs-attr">drag</span>=<span class="hljs-string">"x"</span>
+      <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+        <span class="hljs-attr">x:</span> <span class="hljs-attr">springX</span>, // <span class="hljs-attr">smoother</span> <span class="hljs-attr">version</span> <span class="hljs-attr">of</span> <span class="hljs-attr">x</span>
+        <span class="hljs-attr">width:</span> <span class="hljs-attr">100</span>,
+        <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>,
+        <span class="hljs-attr">background:</span> "<span class="hljs-attr">hotpink</span>",
+        <span class="hljs-attr">borderRadius:</span> <span class="hljs-attr">20</span>,
+      }}
+    /&gt;</span></span>
+  );
+}
+
+</div></code></pre>
+<blockquote>
+<p><strong>THE OPTION OBJECT CAN HAVE SAME PROPERTIES AS THAT OF when type: 'spring' is used in any motion component</strong></p>
+</blockquote>
+<h5 id="%F0%9F%8E%AF-real-use-cases">🎯 Real Use Cases</h5>
+<ul>
+<li>Smooth scrolling indicators</li>
+<li>Follow-the-cursor effects with damping</li>
+<li>Sticky UI elements with realistic delay</li>
+</ul>
+<h5 id="%F0%9F%94%84-you-can-also-create-a-spring-manually">🔄 You can also create a spring manually:</h5>
+<pre class="hljs"><code><div><span class="hljs-keyword">const</span> smoothOpacity = useSpring(initialValue, springOptions);
+
+</div></code></pre>
+<p>And then update it manually:       <code>smoothOpacity.set(1); // triggers a spring animation to 1</code></p>
+<h2 id="6-usemotionvalue">6. useMotionValue()</h2>
+<p>The <code>useMotionValue</code> hook in <strong>Framer Motion</strong> is a powerful tool that lets you create <strong>reactive values</strong> tied to animation. These values are not part of React’s normal state system, which allows for  <strong>high-performance updates</strong> —ideal for fluid motion.</p>
+<h5 id="%F0%9F%94%A7-what-is-usemotionvalue">🔧 What is <code>useMotionValue</code>?</h5>
+<p><code>useMotionValue</code> creates a special value that can:</p>
+<ul>
+<li>Be animated directly (e.g. via <code>animate</code>, <code>drag</code>, <code>set</code>, or <code>spring</code>)</li>
+<li>Be read and updated efficiently (<em><strong>without triggering React re-renders</strong></em>)</li>
+<li>Be tracked in real-time (e.g. to link scroll or gestures to style)</li>
+</ul>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<span class="hljs-keyword">import</span> { motion, useMotionValue } <span class="hljs-keyword">from</span> <span class="hljs-string">"framer-motion"</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">MotionValueExample</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">const</span> x = useMotionValue(<span class="hljs-number">0</span>);
+
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">motion.div</span>
+      <span class="hljs-attr">drag</span>=<span class="hljs-string">"x"</span>
+      <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">x</span>, <span class="hljs-attr">width:</span> <span class="hljs-attr">100</span>, <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>, <span class="hljs-attr">background:</span> "<span class="hljs-attr">tomato</span>" }}
+    /&gt;</span></span>
+  );
+}
+
+</div></code></pre>
+<p><strong>Explanation:</strong></p>
+<ul>
+<li><code>x</code> is a motion value.</li>
+<li>You pass it into <code>style</code> as <code>x: x</code>.</li>
+<li>When the user drags the element, Framer Motion updates <code>x</code> in real time  <strong>without re-rendering</strong> .</li>
+</ul>
+<p><strong>SYNTAX ------ <code>const motionValue = useMotionValue(initialValue);</code></strong></p>
+<h5 id="%F0%9F%94%81-common-uses">🔁 Common Uses</h5>
+<table>
+<thead>
+<tr>
+<th>Use Case</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>drag</code>values</td>
+<td>Capture real-time drag position (e.g.,<code>x</code>,<code>y</code>)</td>
+</tr>
+<tr>
+<td>Custom animation controls</td>
+<td>Animate values manually using <code>motionValue.set()</code>or <code>.animate()</code></td>
+</tr>
+<tr>
+<td>Derived animations</td>
+<td>Use <code>useTransform()</code>to reactively map values (e.g., scroll position to scale or color)</td>
+</tr>
+<tr>
+<td>Sync with DOM styles</td>
+<td>Apply live styles like blur, opacity, etc., without rerenders</td>
+</tr>
+</tbody>
+</table>
+<p>EXAMPLE----- Changing Background with Drag----</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<span class="hljs-keyword">import</span> { motion, useMotionValue, useTransform } <span class="hljs-keyword">from</span> <span class="hljs-string">"framer-motion"</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">DragColorChange</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">const</span> x = useMotionValue(<span class="hljs-number">0</span>);
+  <span class="hljs-keyword">const</span> background = useTransform(x, [<span class="hljs-number">-200</span>, <span class="hljs-number">0</span>, <span class="hljs-number">200</span>], [<span class="hljs-string">"#f00"</span>, <span class="hljs-string">"#fff"</span>, <span class="hljs-string">"#0f0"</span>]);
+
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">motion.div</span>
+      <span class="hljs-attr">drag</span>=<span class="hljs-string">"x"</span>
+      <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+        <span class="hljs-attr">x</span>,
+        <span class="hljs-attr">background</span>,
+        <span class="hljs-attr">width:</span> <span class="hljs-attr">100</span>,
+        <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>,
+        <span class="hljs-attr">borderRadius:</span> <span class="hljs-attr">20</span>
+      }}
+    /&gt;</span></span>
+  );
+}
+
+</div></code></pre>
+<p><strong>NOTE---</strong></p>
+<ul>
+<li>It avoids React's rendering cycle for smooth animation.</li>
+<li>Can be combined with <code>useTransform</code>, <code>scroll</code>, <code>drag</code>, or manual updates.</li>
+</ul>
+<h2 id="7-usemotiontemplate">7. useMotionTemplate</h2>
+<p>The <code>useMotionTemplate</code> hook in <strong>Framer Motion</strong> is used to <strong>create dynamic CSS strings</strong> from <code>MotionValue</code>s — especially helpful for styles that can’t be passed as plain objects like <code>transform</code>, <code>filter</code>, <code>background</code>, etc.</p>
+<p>--Same like useMotionValues(), but that cannot generate a string dynamically without triggering re-renders which then can be passed in properties lke rotate, filter, background, etc where it expects string value</p>
+<p>SYNTAX---- <code>const template = useMotionTemplate `rotate(${rotate}deg) scale(${scale})`;</code></p>
+<p>In the above,</p>
+<ul>
+<li><code>${rotate}</code> and <code>${scale}</code> are <code>MotionValue</code>s.</li>
+<li><code>template</code> is a derived <code>MotionValue&lt;string&gt;</code> that updates automatically.</li>
+</ul>
+<h5 id="example---dynamic-filter-with-drag">EXAMPLE-- Dynamic <code>filter</code> with drag</h5>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> React <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+<span class="hljs-keyword">import</span> { motion, useMotionValue, useMotionTemplate } <span class="hljs-keyword">from</span> <span class="hljs-string">"framer-motion"</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">BlurOnDrag</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">const</span> x = useMotionValue(<span class="hljs-number">0</span>);
+  <span class="hljs-keyword">const</span> blur = useMotionTemplate<span class="hljs-string">`blur(<span class="hljs-subst">${x}</span>px)`</span>;
+
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">motion.div</span>
+      <span class="hljs-attr">drag</span>=<span class="hljs-string">"x"</span>
+      <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+        <span class="hljs-attr">x</span>,
+        <span class="hljs-attr">filter:</span> <span class="hljs-attr">blur</span>,
+        <span class="hljs-attr">width:</span> <span class="hljs-attr">150</span>,
+        <span class="hljs-attr">height:</span> <span class="hljs-attr">150</span>,
+        <span class="hljs-attr">backgroundColor:</span> "<span class="hljs-attr">skyblue</span>",
+        <span class="hljs-attr">borderRadius:</span> <span class="hljs-attr">20</span>
+      }}
+    /&gt;</span></span>
+  );
+}
+
+</div></code></pre>
+<p>In the above,</p>
+<ul>
+<li>As you drag, <code>x</code> updates.</li>
+<li>The <code>blur</code> value becomes <code>blur(0px)</code>, <code>blur(20px)</code>, etc. — depending on drag.</li>
+<li>The element  <strong>gets blurrier as you drag it</strong> .</li>
+</ul>
+<h5 id="%F0%9F%A7%A9-good-use-cases">🧩 Good Use Cases</h5>
+<ul>
+<li><code>filter</code>: e.g. <code>blur</code>, <code>brightness</code>, <code>hue-rotate</code></li>
+<li><code>transform</code>: advanced custom transforms</li>
+<li><code>background</code>: e.g., <code>linear-gradient(${x}px, red, blue)</code></li>
+</ul>
+<h5 id="%F0%9F%9A%80-benefits">🚀 Benefits</h5>
+<ul>
+<li>Reactive</li>
+<li>Efficient (no re-render)</li>
+<li>Works with <code>MotionValue</code> seamlessly</li>
+<li>Great for performance-sensitive UI</li>
+</ul>
+<h2 id="8-usemotionvalueevent">8. useMotionValueEvent()</h2>
+<p>The <code>useMotionValueEvent</code> hook in <strong>Framer Motion</strong> lets you <strong>subscribe to changes in a <code>MotionValue</code></strong> (like <code>x</code>, <code>opacity</code>, <code>scrollY</code>) and <strong>run side effects</strong> when it changes —  <strong>without causing re-renders</strong> .</p>
+<h3 id="%F0%9F%A7%A0-why-use-it">🧠 Why use it?</h3>
+<p>Normally, if you use <code>useEffect</code> with <code>.on(&quot;change&quot;)</code>, you have to manage subscriptions manually.</p>
+<p><code>useMotionValueEvent</code> simplifies this by:</p>
+<ul>
+<li>Automatically subscribing and cleaning up</li>
+<li>Letting you run a <strong>callback function</strong> on each value update</li>
+<li>Keeping your component performant (no re-renders unless <strong>you</strong> trigger one)</li>
+</ul>
+<p>SYNTAX---</p>
+<pre class="hljs"><code><div>useMotionValueEvent(motionValue, <span class="hljs-string">"change"</span>, (latest) =&gt; {
+  <span class="hljs-comment">// Do something with the updated value</span>
+});
+
+</div></code></pre>
+<h5 id="example----logging-drag-position">EXAMPLE--- Logging drag position</h5>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> { motion, useMotionValue, useMotionValueEvent } <span class="hljs-keyword">from</span> <span class="hljs-string">"framer-motion"</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">MotionValueEventExample</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">const</span> x = useMotionValue(<span class="hljs-number">0</span>);
+
+  useMotionValueEvent(x, <span class="hljs-string">"change"</span>, (latest) =&gt; {
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"x changed to:"</span>, latest);
+  });
+
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">motion.div</span>
+      <span class="hljs-attr">drag</span>=<span class="hljs-string">"x"</span>
+      <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span>
+        <span class="hljs-attr">x</span>,
+        <span class="hljs-attr">width:</span> <span class="hljs-attr">100</span>,
+        <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span>,
+        <span class="hljs-attr">background:</span> "<span class="hljs-attr">salmon</span>",
+        <span class="hljs-attr">borderRadius:</span> <span class="hljs-attr">20</span>,
+      }}
+    /&gt;</span></span>
+  );
+}
+
+</div></code></pre>
+<p>🟢 As you drag the box, it logs the current <code>x</code> value in real-time — without re-rendering the component.</p>
+<blockquote>
+<p><strong>You can do the same with useEffect(), but wont be clean and has certain drawbacks.</strong></p>
+</blockquote>
+<pre class="hljs"><code><div>useEffect(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-keyword">const</span> unsubscribe = x.on(<span class="hljs-string">"change"</span>, (latest) =&gt; {
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"x changed to:"</span>, latest);
+  });
+  <span class="hljs-keyword">return</span> unsubscribe;
+}, [x]);
+
+</div></code></pre>
+<h5 id="%E2%9D%97-so-why-use-usemotionvalueevent">❗ So why use <code>useMotionValueEvent()</code>?</h5>
+<p>Because it's <strong>purpose-built</strong> for MotionValue subscriptions and gives you:</p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th><code>useEffect()</code>with <code>.on(&quot;change&quot;)</code></th>
+<th><code>useMotionValueEvent()</code>✅</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cleaner, declarative syntax</td>
+<td>❌ More manual setup</td>
+<td>✅ Yes</td>
+</tr>
+<tr>
+<td>Auto cleanup</td>
+<td>✅ (but you write it)</td>
+<td>✅ (handled internally)</td>
+</tr>
+<tr>
+<td>Supports <code>animationStart</code>&amp;<code>animationComplete</code></td>
+<td>❌ No</td>
+<td>✅ Yes</td>
+</tr>
+<tr>
+<td>No need to track <code>motionValue</code>deps</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Tailored for Framer Motion use case</td>
+<td>❌ General-purpose</td>
+<td>✅ Purpose-built</td>
+</tr>
+</tbody>
+</table>
+<p>HENCE---</p>
+<ul>
+<li>For  <strong>simple one-off cases</strong> , <code>useEffect</code> + <code>.on(&quot;change&quot;)</code> is fine.</li>
+<li>For  <strong>cleaner, readable, and Framer-native code</strong> , especially when using more than one event type or multiple <code>MotionValue</code>s — use <code>useMotionValueEvent</code>.</li>
+</ul>
+<h5 id="%F0%9F%8E%AF-real-world-use-cases">🎯 Real-World Use Cases</h5>
+<ul>
+<li>Sync motion values with <strong>external libraries</strong> (e.g., <code>gsap</code>, audio, custom DOM animations)</li>
+<li>Show/hide UI based on scroll position (e.g., navbar hiding on scroll)</li>
+<li>Trigger analytics/events at thresholds (e.g., <code>if (x &gt; 200) fireEvent()</code>)</li>
+</ul>
+<h5 id="%F0%9F%94%81-supported-events">🔁 Supported Events</h5>
+<table>
+<thead>
+<tr>
+<th>Event</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&quot;change&quot;</code></td>
+<td>Fires on every value change</td>
+</tr>
+<tr>
+<td><code>&quot;animationStart&quot;</code></td>
+<td>Fires when an animation begins</td>
+</tr>
+<tr>
+<td><code>&quot;animationComplete&quot;</code></td>
+<td>Fires when animation ends</td>
+</tr>
+</tbody>
+</table>
+<h2 id="9-useanimate">9. useAnimate()</h2>
+<p>The <code>useAnimate</code> hook in <strong>Framer Motion v7+</strong> is a <strong>powerful and low-level</strong> way to trigger animations directly on DOM elements using <strong>imperative code</strong> — like calling <code>element.animate(...)</code>, but with Framer Motion's powerful animation engine.</p>
+<h5 id="%E2%9C%85-what-is-useanimate">✅ What is <code>useAnimate</code>?</h5>
+<p>It's a React hook that gives you:</p>
+<ol>
+<li>A <strong>ref</strong> to attach to any DOM element.</li>
+<li>A <strong><code>animate()</code> function</strong> to trigger animations on that element (or its children).</li>
+<li>A <strong><code>scope</code> object</strong> to target child elements easily by selector.</li>
+</ol>
+<h5 id="%F0%9F%A7%A0-when-to-use-it">🧠 When to use it?</h5>
+<p>Use <code>useAnimate</code> when:</p>
+<ul>
+<li>You need <strong>fine-grained control</strong> over when/how things animate (e.g., after a button click).</li>
+<li>You want to <strong>animate multiple elements together</strong> imperatively.</li>
+<li>You don’t want to tie animation to React state/props.</li>
+</ul>
+<p>SYNTAX------ <code>const [scope, animate] = useAnimate();</code></p>
+<ul>
+<li><code>scope</code> → attach to the element (via <code>ref</code>)</li>
+<li><code>animate()</code> → call to trigger animation</li>
+</ul>
+<h5 id="example">EXAMPLE---</h5>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> { useAnimate } <span class="hljs-keyword">from</span> <span class="hljs-string">"framer-motion"</span>;
+<span class="hljs-keyword">import</span> { useEffect } <span class="hljs-keyword">from</span> <span class="hljs-string">"react"</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Example</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">const</span> [scope, animate] = useAnimate();
+
+  useEffect(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    animate(scope.current, { <span class="hljs-attr">opacity</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">x</span>: <span class="hljs-number">100</span> }, { <span class="hljs-attr">duration</span>: <span class="hljs-number">1</span> });
+  }, []);
+
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">{scope}</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">opacity:</span> <span class="hljs-attr">0</span>, <span class="hljs-attr">background:</span> "<span class="hljs-attr">lightblue</span>", <span class="hljs-attr">width:</span> <span class="hljs-attr">100</span>, <span class="hljs-attr">height:</span> <span class="hljs-attr">100</span> }} /&gt;</span></span>
+  );
+}
+
+</div></code></pre>
+<p>EXAMPLE-- With button and Staggered Children</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> { useAnimate } <span class="hljs-keyword">from</span> <span class="hljs-string">"framer-motion"</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">StaggerExample</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">const</span> [scope, animate] = useAnimate();
+
+  <span class="hljs-keyword">const</span> handleClick = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    animate(
+      <span class="hljs-string">"li"</span>, <span class="hljs-comment">// target all &lt;li&gt; inside scope</span>
+      { <span class="hljs-attr">opacity</span>: <span class="hljs-number">1</span>, <span class="hljs-attr">x</span>: <span class="hljs-number">0</span> },
+      { <span class="hljs-attr">delay</span>: stagger(<span class="hljs-number">0.2</span>), <span class="hljs-attr">duration</span>: <span class="hljs-number">0.5</span> }
+    );
+  };
+
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">ul</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">{scope}</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">li</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">opacity:</span> <span class="hljs-attr">0</span>, <span class="hljs-attr">transform:</span> "<span class="hljs-attr">translateX</span>(<span class="hljs-attr">-20px</span>)" }}&gt;</span>Item 1<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">li</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">opacity:</span> <span class="hljs-attr">0</span>, <span class="hljs-attr">transform:</span> "<span class="hljs-attr">translateX</span>(<span class="hljs-attr">-20px</span>)" }}&gt;</span>Item 2<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">li</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">opacity:</span> <span class="hljs-attr">0</span>, <span class="hljs-attr">transform:</span> "<span class="hljs-attr">translateX</span>(<span class="hljs-attr">-20px</span>)" }}&gt;</span>Item 3<span class="hljs-tag">&lt;/<span class="hljs-name">li</span>&gt;</span>
+      <span class="hljs-tag">&lt;/<span class="hljs-name">ul</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{handleClick}</span>&gt;</span>Animate<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  );
+}
+</div></code></pre>
+<p>In the above program-- About <code>stagger</code>--</p>
+<blockquote>
+<p><code>stagger(delay, options)</code> is a helper function from Framer Motion used to <strong>programmatically apply staggered delays</strong> to multiple elements during animation (especially with <code>useAnimate()</code> or <code>animate()</code> calls).</p>
+<p>Syntax------ <code>stagger(delay, { startDelay, from, ease })</code></p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>startDelay</code></td>
+<td>Delay before the first element starts</td>
+</tr>
+<tr>
+<td><code>from</code></td>
+<td>Where to start the stagger from:<code>&quot;first&quot;</code>,<code>&quot;last&quot;</code>,<code>&quot;center&quot;</code>, or an index</td>
+</tr>
+<tr>
+<td><code>ease</code></td>
+<td>Optional easing function</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<h5 id="there-is-a-timeline-feature-with-which-e-coul-orchestrate-the-animations">There is a timeline feature with which e coul orchestrate the animations--</h5>
+<p>--In  <strong>Framer Motion's <code>useAnimate()</code></strong> , the <strong>timeline</strong> is a way to define <strong>sequential or overlapping animations</strong> using an  <strong>array of steps</strong> . It’s similar to animation libraries like GSAP, where you can choreograph animations with precision — controlling when each starts, how long it lasts, and whether animations overlap.</p>
+<h6 id="%F0%9F%A7%A0-why-use-timeline">🧠 Why Use Timeline?</h6>
+<p>Because <code>animate()</code> supports timelines, you can:</p>
+<ul>
+<li>Animate multiple elements in order or in parallel.</li>
+<li>Control the <strong>exact timing</strong> using the <code>at</code> key (like <code>+0.2</code>, <code>-0.1</code>, or a specific time).</li>
+<li>Avoid messy nested promises or <code>setTimeout</code>s.</li>
+</ul>
+<p>SYNTAX---</p>
+<pre class="hljs"><code><div>animate([
+  [target, keyframes, options],
+  [target, keyframes, options],
+  ...
+])
+
+</div></code></pre>
+<p>Here each array element represents a step:</p>
+<ul>
+<li><code>target</code> → selector (string), DOM node, or <code>scope.current</code></li>
+<li><code>keyframes</code> → animation values (<code>{ opacity: 1, x: 100 }</code>)</li>
+<li><code>options</code> → transition settings (<code>{ duration: 0.5, at: &quot;+0.2&quot; }</code>)</li>
+</ul>
+<p>EXAMPLE----</p>
+<pre class="hljs"><code><div><span class="hljs-keyword">import</span> { useAnimate } <span class="hljs-keyword">from</span> <span class="hljs-string">"framer-motion"</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">TimelineExample</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">const</span> [scope, animate] = useAnimate();
+
+  <span class="hljs-keyword">const</span> handleClick = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    animate([
+      [<span class="hljs-string">"#box1"</span>, { <span class="hljs-attr">x</span>: <span class="hljs-number">100</span> }, { <span class="hljs-attr">duration</span>: <span class="hljs-number">0.5</span> }],
+      [<span class="hljs-string">"#box2"</span>, { <span class="hljs-attr">y</span>: <span class="hljs-number">50</span> }, { <span class="hljs-attr">duration</span>: <span class="hljs-number">0.5</span>, <span class="hljs-attr">at</span>: <span class="hljs-string">"+0.2"</span> }],
+      [<span class="hljs-string">"#box3"</span>, { <span class="hljs-attr">scale</span>: <span class="hljs-number">1.5</span> }, { <span class="hljs-attr">duration</span>: <span class="hljs-number">0.5</span>, <span class="hljs-attr">at</span>: <span class="hljs-string">"&lt;"</span> }],
+    ]);
+  };
+
+  <span class="hljs-keyword">return</span> (
+    <span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">ref</span>=<span class="hljs-string">{scope}</span>&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"box1"</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">width:</span> <span class="hljs-attr">50</span>, <span class="hljs-attr">height:</span> <span class="hljs-attr">50</span>, <span class="hljs-attr">background:</span> "<span class="hljs-attr">red</span>", <span class="hljs-attr">marginBottom:</span> <span class="hljs-attr">10</span> }} /&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"box2"</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">width:</span> <span class="hljs-attr">50</span>, <span class="hljs-attr">height:</span> <span class="hljs-attr">50</span>, <span class="hljs-attr">background:</span> "<span class="hljs-attr">green</span>", <span class="hljs-attr">marginBottom:</span> <span class="hljs-attr">10</span> }} /&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">id</span>=<span class="hljs-string">"box3"</span> <span class="hljs-attr">style</span>=<span class="hljs-string">{{</span> <span class="hljs-attr">width:</span> <span class="hljs-attr">50</span>, <span class="hljs-attr">height:</span> <span class="hljs-attr">50</span>, <span class="hljs-attr">background:</span> "<span class="hljs-attr">blue</span>" }} /&gt;</span>
+      <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">onClick</span>=<span class="hljs-string">{handleClick}</span>&gt;</span>Start Timeline<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></span>
+  );
+}
+
+</div></code></pre>
+<h5 id="%E2%8F%B1%EF%B8%8F-what-does-at-mean">⏱️ What does <code>at</code> mean?</h5>
+<table>
+<thead>
+<tr>
+<th><code>at</code>value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&quot;+0.2&quot;</code></td>
+<td>Start 0.2s<strong>after</strong>the previous animation finishes</td>
+</tr>
+<tr>
+<td><code>&quot;&lt;&quot;</code></td>
+<td>Start<strong>at the same time</strong>as the previous animation</td>
+</tr>
+<tr>
+<td><code>0.5</code></td>
+<td>Start<strong>at an absolute time</strong>(0.5 seconds from the timeline start)</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="10-other-hooks">10. Other Hooks</h2>
+<h5 id="usevelocity">useVelocity()</h5>
+<p>The <code>useVelocity</code> hook in <strong>Framer Motion</strong> is used to <strong>track the velocity (speed and direction)</strong> of a <code>MotionValue</code></p>
+<p><strong>It lets you:</strong></p>
+<ul>
+<li>React to how <strong>fast</strong> a value is changing — for example, the speed of a drag.</li>
+<li>Create effects based on speed — like momentum, fling animations, or dynamic UI reactions.</li>
+</ul>
+<h5 id="usetime">useTime()</h5>
+<p>The <code>useTime</code> hook in <strong>Framer Motion</strong> provides a continuously updating timestamp — essentially a <strong>live timer</strong> that tells you how much time (in milliseconds) has passed since the component mounted.</p>
+<p><strong>🧠 What it does:</strong></p>
+<p>It gives you a <strong>timestamp</strong> that keeps increasing in real-time. Useful for creating effects that change over time, such as:</p>
+<ul>
+<li>Animating without <code>animate</code></li>
+<li>Creating custom oscillations (like sine waves)</li>
+<li>Driving animations based on time elapsed</li>
+</ul>
+<h5 id="useanimationframe">useAnimationFrame()</h5>
+<p>The <code>useAnimationFrame</code> hook lets you run <strong>custom logic on every animation frame</strong> — it's like <code>requestAnimationFrame</code>, but <strong>React-safe</strong> and integrated with Framer Motion's render cycle.</p>
+<p><strong>🧠 What it's for:</strong></p>
+<p>Use it when you want to:</p>
+<ul>
+<li>Run frame-by-frame logic (e.g., time-based movement).</li>
+<li>Animate things manually without using <code>motion.div</code> props.</li>
+<li>Create custom visual effects based on elapsed time.</li>
+</ul>
+<h2 id="usedragcontrols">useDragControls()</h2>
+<p>The <code>useDragControls</code> hook gives you <strong>manual control over when a drag gesture starts</strong> — instead of dragging the element immediately when the user touches it, you can  <strong>trigger drag manually</strong> , like from a button or a specific region.</p>
+<p><strong>🔍 Why use <code>useDragControls</code>?</strong></p>
+<table>
+<thead>
+<tr>
+<th>Use Case</th>
+<th>Why it Helps</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Drag should only start from a handle</td>
+<td>You can trigger drag from any element</td>
+</tr>
+<tr>
+<td>Prevent accidental drag</td>
+<td>Only start drag on explicit user action</td>
+</tr>
+<tr>
+<td>Fine-grained drag UX</td>
+<td>Lets you control when &amp; how drag begins</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<hr>
+
+</body>
+</html>
