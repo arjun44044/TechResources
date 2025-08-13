@@ -142,7 +142,7 @@ These are for getting started with the shell, navigation, and exploring the syst
 9. Check current network connections.
 10. Find the hostname and domain name of the system.
 
---------------------------------------------------------------------------------------------------------------------------------------
+---
 
 ## 🧮 **"How to count the number of files and folders in your home directory?"**
 
@@ -281,4 +281,48 @@ while [[ $num -le 20 ]]; do
 done
 
 ```
-andkanslkdnlksndcknksdncskcdksdck
+
+............................................................................................................................................................................................................................................
+
+## 🧮 "List all users on the system."
+
+To  **list all users on the system** , you can check the `/etc/passwd` file — it contains an entry for every user account.
+
+✅ Command:
+
+```bash
+cat /etc/passwd
+```
+
+#### 📌 How it works:
+
+Each line in `/etc/passwd` looks like:
+
+```
+username:x:UID:GID:comment:home_directory:shell
+```
+
+Example:
+
+```
+root:x:0:0:root:/root:/bin/bash
+aruns:x:1000:1000:Arun S:/home/aruns:/bin/bash
+```
+
+* **username** → the login name
+* **x** → password placeholder (real password is stored in `/etc/shadow`)
+* **UID** → user ID
+* **GID** → primary group ID
+* **comment** → usually full name
+* **home_directory** → user’s home folder
+* **shell** → default shell
+
+#### 🧠 Just usernames:
+
+If you only want the usernames:
+
+```bash
+cut -d: -f1 /etc/passwd
+```
+
+---
