@@ -2665,6 +2665,22 @@ Activate nvm by typing the following at the command line.
 > export NVM_DIR="$HOME/.nvm"
 > [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 > ```
+>
+> **OR**
+>
+> Since you’re using  **root** , the NVM installer already added these lines at the bottom of `/root/.bashrc`.
+>
+> You just need to reload:
+>
+> ```bash
+> source ~/.bashrc
+> ```
+>
+> Then check:
+>
+> ```bash
+> nvm --version
+> ```
 
 Use nvm to install the latest version of Node.js by typing the following at the command line.
 
@@ -5443,6 +5459,84 @@ sudo certbot renew --dry-run
 
 This confirms that the renewal process is working.
 
+> #### 📌 Some Important Details
+>
+> **1. Install Certbot and its Nginx plugin**
+>
+> ```bash
+> sudo apt -y install certbot python3-certbot-nginx
+> ```
+>
+> * `python3-certbot-nginx` → installs the **Nginx plugin** for Certbot, which allows Certbot to directly edit your **Nginx config files** to enable HTTPS.
+>
+> ✅ After this step, you now have Certbot installed and ready to issue SSL certificates.
+>
+> **2. Generate & Install the SSL Certificate**
+>
+> ```bash
+> sudo certbot --nginx -d api.fitlab.com --agree-tos -m you@domain.com --redirect
+> ```
+>
+> * `sudo certbot` → run Certbot as administrator.
+> * `--nginx` → tells Certbot to use the Nginx plugin.
+>
+>   🔹 It will:
+>
+>   * Verify domain ownership via Nginx (HTTP-01 challenge).
+>   * Automatically configure Nginx to use the new certificate.
+> * `-d api.fitlab.com` → specifies the domain name for the SSL certificate.
+>
+>   * The certificate will only be valid for this domain (you can add more `-d` flags if needed, e.g. `-d api.fitlab.com -d www.fitlab.com`).
+>   * > 
+>     > **For Multiple Subdomains**
+>     >
+>     > 2. You should include **all subdomains that need HTTPS certificates** in the same command.
+>     >
+>     > * If you only run your backend at `api.fitlab.com`, then only that is needed.
+>     > * If your frontend is served at `www.fitlab.com` (or even at the root `fitlab.com`), you should also add them:
+>     >
+>     > ```bash
+>     > sudo certbot --nginx -d api.fitlab.com -d www.fitlab.com -d fitlab.com --agree-tos -m yourname@gmail.com --redirect
+>     > ```
+>     >
+>     > That way, one certificate will cover **all the domains/subdomains** you specify.
+>     >
+> * `--agree-tos` → automatically agree to Let’s Encrypt’s Terms of Service (otherwise it will ask).
+> * `-m you@domain.com` → email address where Let’s Encrypt will send:
+>
+>   * Renewal notices
+>   * Expiry warnings
+>   * Security announcements
+> * `--redirect` → after issuing the certificate, Certbot will **modify your Nginx config** to:
+>
+>   * Redirect all HTTP (`http://api.fitlab.com`) traffic → HTTPS (`https://api.fitlab.com`).
+>
+> ##### ✅ What happens after running it
+>
+> 1. Certbot contacts Let’s Encrypt servers.
+> 2. Let’s Encrypt verifies you **own the domain** by checking Nginx can serve a temporary challenge file at `http://api.fitlab.com/.well-known/acme-challenge/...`.
+> 3. If verification passes:
+>    * SSL certificate files get stored at `/etc/letsencrypt/live/api.fitlab.com/`.
+>    * Nginx config is updated to use those certs.
+>    * HTTP → HTTPS redirection is set up.
+> 4. You can now access your API securely via  **[https://api.fitlab.com](https://api.fitlab.com)** .
+>
+> Yes 👍
+>
+> 1. **Email (`-m`)** → You should provide your **real email address** (like your Gmail). Certbot only uses it for expiry notices and urgent security updates. Example:
+>
+> ```bash
+> sudo certbot --nginx -d api.fitlab.com --agree-tos -m yourname@gmail.com --redirect
+> ```
+>
+> 2. **Domain names (`-d`)** →
+>
+> 👉 Question for you:
+>
+> * Is your frontend (`www.fitlab.com`) also hosted on the **same server** as your API (`api.fitlab.com`), or on a different one (like Netlify, Vercel, etc.)?
+>
+>   Because if it’s on a different host, you’ll need to request certificates there separately.
+
 ##### 📁 Certificate File Locations (after Certbot)
 
 Certbot stores them typically in:
@@ -7248,9 +7342,9 @@ Here's a **detailed explanation** of how to host:
 
 **🔸 Step 4: Make Files Public (for access via browser)**
 
-1. Go to **Permissions** >  **Block public access**  and  disable block public access
+1. Go to **Permissions** >  **Block public access**  and  disable "block public access""
 2. Go to **Permissions** >  **Bucket Policy** .
-3. Paste a policy like below, Or you can you can cret this in the Policy Generator (Type of policy- S3, Principal- *, Effect- allow, Actions- getObject,)
+3. Paste a policy like below, Or you can you can create this in the Policy Generator (Type of policy- S3, Principal- *, Effect- allow, Actions- getObject,)
    > Get ARN just below Bucket policy, **"Bucket ARN"**
    >
 
@@ -10068,8 +10162,6 @@ As a MERN developer, you interact with DNS when:
 >>
 
 ---
-
-
 
 ## ----DNS basics
 

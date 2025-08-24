@@ -1005,6 +1005,179 @@ Use a plugin like [`vim-macrobatics`](https://github.com/jesseleite/vim-macrobat
 
 ---
 
+# Nano Editor
+
+### 👉 What nano is
+
+* A  **modeless** , easy editor for terminals (inspired by Pico).
+* Shows a **help bar** with the most important shortcuts.
+* Uses **Ctrl (^)** and **Meta/Alt (M-)** key chords.
+  * `^X` means  **Ctrl+X** .
+  * `M-X` means **Alt+X** (or press  **Esc** , then `x` if Alt doesn’t work).
+
+### 🔑 Open / Save / Exit
+
+```bash
+nano file.txt           # open (creates a new file if it doesn’t exist)
+sudo nano /etc/hosts    # edit system files (as root)
+```
+
+* **Save (write out)** : `^O` → confirm filename → **Enter**
+* **Exit** : `^X` (nano will ask to save if needed)
+* **Save As** : `^O` then change the name
+* **Insert another file into the buffer** : `^R` (Read File)
+
+### 🧍 Navigation
+
+* Start/end of line: `^A` / `^E`
+* Prev/next page: `^Y` / `^V`
+* Go to line/column: `^_` (Ctrl+Shift+- on many keyboards), then `LINE, COLUMN`
+* Show cursor position: `^C`
+* Arrows/Home/End/PgUp/PgDn also work
+
+### 🛠️ Edit, Undo, Cut/Copy/Paste
+
+* **Type** to insert, **Backspace** / `^D` (delete under cursor) to delete
+* **Undo / Redo** : `M-U` / `M-E`
+* **Set mark (start selection)** : `^6` (Ctrl+6)
+* **Cut selection / current line** : `^K`
+
+  (If no selection, it cuts the  **whole line** )
+
+* **Copy selection** : `M-6`
+* **Paste** : `^U`
+* **Indent / Unindent** current line or marked block: `M-}` / `M-{`
+* **Reflow (justify) paragraph** : `^J`
+
+> Tip: nano’s own “cutbuffer” is separate from your terminal/OS clipboard.
+>
+> To use the terminal clipboard, select with the mouse and use your terminal’s copy/paste (often  **Ctrl+Shift+C/V** ).
+
+### 🔁 Search & Replace
+
+* **Search** : `^W` (“Where Is”) → type term → **Enter**
+
+  Toggles at the search prompt:
+
+* **Case sensitive** : `M-C`
+* **Regex** : `M-R`
+* **Backward** : `M-B`
+* **Whole word** : `M-W`
+* **Repeat last search** : `^W` then  **Enter** , or sometimes `M-W`
+* **Replace** : `^\` → enter search term → answer prompts (`Y/N/A` for all)
+
+### 📄 Read File option
+
+In Nano, the **Read File** option is used to **insert the contents of another file** into the current file you’re editing.
+
+* Instead of closing Nano and copying text manually, you can pull in another file’s text directly.
+* This is useful if you want to merge files, add templates, or reuse content.
+
+**How to use it**
+
+1. Open any file in Nano:
+
+   ```bash
+   nano myfile.txt
+   ```
+2. Press:
+
+   ```
+   Ctrl + R
+   ```
+
+   (This means  **hold `Ctrl` and press `R`** )
+3. At the bottom of the Nano screen, you’ll see a prompt:
+
+   ```
+   File to insert [from ./] :
+   ```
+
+   * Nano is now asking you which file you want to read (insert).
+4. Type the path of the file you want to insert, e.g.:
+
+   ```
+   notes.txt
+   ```
+
+   and press  **Enter** .
+5. Nano will immediately insert the entire content of `notes.txt` into `myfile.txt` at the  **current cursor position** .
+
+### 🔸 Multiple files & buffers
+
+* Open many: `nano file1 file2 file3`
+* **Next / Previous buffer** : `M->` / `M-<`
+* Insert a file into current buffer: `^R`
+
+### 🔸 Useful runtime toggles
+
+(Some builds show these in the help bar as you press keys.)
+
+* **Line numbers** : many distros map to `M-N` (best to enable via config—see below)
+* **Soft wrap (don’t hard-break lines)** : `M-L`
+* **Mouse on/off** : `M-M`
+
+### 🔸 Command-line options you’ll actually use
+
+```bash
+nano -l file           # show line numbers
+nano -m file           # enable mouse
+nano -i file           # autoindent new lines
+nano -w file           # no soft-wrapping (show long lines)
+nano -r 80 file        # hard wrap at column 80 (with justify)
+nano -T 4 file         # tab size = 4
+nano -B file           # keep backups as filename~
+nano -Y sh script.sh   # force a syntax (e.g., “sh”, “python”, “json”)
+```
+
+### 🔸 Configure nano permanently (~/.nanorc)
+
+Create/edit `~/.nanorc`:
+
+```nanorc
+set linenumbers
+set autoindent
+set tabsize 4
+set tabstospaces
+set softwrap
+set mouse
+set constantshow       # show cursor pos in the status bar
+set minibar            # compact title/status
+set backup             # keep file~ backups on write
+include "/usr/share/nano/*.nanorc"   # enable all bundled syntaxes
+```
+
+Reload by reopening nano.
+
+### 🔸 Extras you’ll be glad to know
+
+* **Spell check / linter** : `^T` (uses `spell`/`aspell`/`hunspell` or a linter if configured)
+* **Comment/uncomment** selection or line: `M-3` (depends on syntax rules)
+* **Suspend to shell** : `^Z` (return with `fg`) — may be disabled in some builds
+* **Restricted mode** (safer): `nano -R file` (limits file writes/exec, etc.)
+* **Crash/backup** : enable `set backup` or use `-B` to keep `file~` copies on save
+
+### 📌Tiny cheat sheet (most-used)
+
+```
+^G Help      ^O Write Out    ^X Exit        ^R Read File
+^W Search    ^\ Replace      ^K Cut         ^U Paste
+^6 Mark      M-6 Copy        M-U Undo       M-E Redo
+^_ Go to     ^Y Prev Pg      ^V Next Pg     ^J Justify
+```
+
+### ⚡ Common gotchas
+
+* **“Why doesn’t Ctrl+S work?”** It may pause XON/XOFF flow control in some terminals. Use `^O` to save. If needed, disable flow control in your terminal or remap keys.
+* **“I can’t type `^_` (Go To Line)”** Try **Ctrl+Shift+-** or  **Ctrl+_** ; keyboards differ.
+* **Editing system files** : prefer `sudoedit /etc/…` (safer), or `sudo nano /etc/…`.
+
+---
+
+---
+
+
+
 # 🗺️ Shell Scripting
 
 **Shell scripting** is the process of writing a series of commands for a Unix-based shell (like  **bash** ,  **sh** ,  **zsh** , etc.) to automate tasks that you would otherwise execute manually in a terminal. These commands are written in a plain text file, typically with a `.sh` extension, and can be executed by the shell interpreter.
@@ -6312,4 +6485,3 @@ echo "long_task is done"
 ```
 
 ---
-
