@@ -5487,8 +5487,7 @@ This confirms that the renewal process is working.
 > * `-d api.fitlab.com` → specifies the domain name for the SSL certificate.
 >
 >   * The certificate will only be valid for this domain (you can add more `-d` flags if needed, e.g. `-d api.fitlab.com -d www.fitlab.com`).
->   * > 
->     > **For Multiple Subdomains**
+>   * > **For Multiple Subdomains**
 >     >
 >     > 2. You should include **all subdomains that need HTTPS certificates** in the same command.
 >     >
@@ -7344,7 +7343,7 @@ Here's a **detailed explanation** of how to host:
 
 1. Go to **Permissions** >  **Block public access**  and  disable "block public access""
 2. Go to **Permissions** >  **Bucket Policy** .
-3. Paste a policy like below, Or you can you can create this in the Policy Generator (Type of policy- S3, Principal- *, Effect- allow, Actions- getObject,)
+3. Paste a policy like below, Or you can you can create this in the Policy Generator (Type of policy- S3, Principal- *, Effect- allow, Actions- getObject, putObject)
    > Get ARN just below Bucket policy, **"Bucket ARN"**
    >
 
@@ -11245,6 +11244,87 @@ If your domain is  **registered outside AWS** :
 
 ---
 
+## ----Integration of S3 with Route 53
+
+#### 🔹 1. Why integrate S3 with Route 53?
+
+* By default, when you host a static website on S3, AWS gives you a URL like:
+  ```
+  http://your-bucket-name.s3-website-us-east-1.amazonaws.com
+  ```
+* If you own a domain (e.g., `fitlab.com`), you’d prefer to access the site as:
+  ```
+  https://www.fitlab.com
+  ```
+* **Amazon Route 53** (AWS’s DNS service) helps map your **domain** to your  **S3 bucket website endpoint** .
+
+#### 🔹 2. Requirements
+
+1. An **S3 bucket** with static website hosting enabled.
+   * Bucket name must match your domain name (e.g., `fitlab.com` or `www.fitlab.com`).
+2. A **domain name** purchased from:
+   * Route 53, or
+   * Any other registrar (GoDaddy, Namecheap, etc.), but DNS should point to Route 53 if you want to manage records there.
+3. A **hosted zone in Route 53** for your domain.
+
+#### 🔹 3. Integration Steps
+
+**Step 1: Create an S3 bucket**
+
+* Name it exactly as your domain (`fitlab.com`) or subdomain (`www.fitlab.com`).
+* Enable **static website hosting** in the properties.
+* Upload your `build` folder content (React frontend build).
+
+**Step 2: Configure Bucket Policy**
+
+* Make objects publicly readable (unless you’re using CloudFront with OAI).
+* Example bucket policy:
+  ```json
+  {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Principal": "*",
+        "Action": "s3:GetObject",
+        "Resource": "arn:aws:s3:::fitlab.com/*"
+      }
+    ]
+  }
+  ```
+
+**Step 3: Set Up Route 53 Hosted Zone**
+
+* In  **Route 53** , create a **hosted zone** for `fitlab.com`.
+* This will give you  **Name Servers (NS records)** .
+
+👉 If your domain is from another registrar, update its **NS records** to these Route 53 servers.
+
+**Step 4: Create DNS Records in Route 53**
+
+* Go to your hosted zone → Create a record.
+* Choose  **A record (Alias)** .
+* For value/target:
+  * Select  **Alias to S3 website endpoint** .
+  * Pick your S3 bucket’s website endpoint (e.g., `s3-website-us-east-1.amazonaws.com`).
+
+Now, when someone visits `fitlab.com`, Route 53 points it to your S3-hosted website.
+
+**🔹 4. Optional: Use CloudFront + SSL (HTTPS)**
+
+* S3 website endpoints only support HTTP.
+* If you want  **HTTPS (secure, required for modern browsers)** :
+  * Set up a **CloudFront distribution** in front of your S3 bucket.
+  * Request an **SSL certificate** from AWS Certificate Manager.
+  * Route 53 → Alias record → Point to  **CloudFront distribution** .
+
+✅ **In short:**
+
+* Create S3 bucket → Enable website hosting → Upload frontend build.
+* Route 53 hosted zone → Point domain/subdomain → Alias → S3 website endpoint (or CloudFront for HTTPS).
+
+---
+
 ## ----Using Latency based Routing in Route 53
 
 #### 🌍 What is Latency-Based Routing (LBR)?
@@ -11774,5 +11854,287 @@ With DNSSEC:
 ```
 User → DNS Resolver → Validates Signature → (Invalid?) reject → (Valid?) continue
 ```
+
+---
+
+# -----------------------------------------------------------------------------------------------------------------
+
+# --------AWS Ceritificate Manager-----------------------
+
+## ----Introduction
+
+#### 🧠 What ACM is
+
+ACM is AWS’s managed service for  **provisioning, validating, deploying, and auto-renewing TLS/SSL certificates** . It removes the pain of private-key management and renewals when your certs are used  **on AWS services** .
+
+#### 📜 Types of certificates
+
+* **Public certificates (free)**
+
+  Issued by Amazon’s public CAs for Internet-facing names (e.g., `api.example.com`).  **Can’t be exported** ; use only on integrated AWS services.
+* **Private certificates (paid, via ACM Private CA)**
+
+  For internal names (e.g., `db.corp.local`) and  **mTLS** . These **can be exported** for use on servers, devices, etc. Running a Private CA incurs hourly + per-cert costs.
+* **Imported certificates**
+
+  Bring your own cert + private key (PFX/PEM) to use on AWS services.
+
+#### 🌍 Regional scope & special case
+
+* Certificates are  **regional** : create them in the **same Region** as the AWS service (e.g., ALB in `ap-south-1` → cert in `ap-south-1`).
+* **CloudFront is global** but requires the cert to be in  **us-east-1 (N. Virginia)** .
+
+#### ✅ Domain validation methods
+
+* **DNS validation (recommended)**
+
+  ACM gives you a  **CNAME** ; add it in DNS (Route 53 can be auto-created). Renewals remain hands-off.
+* **Email validation**
+
+  Approve links sent to WHOIS/standard hostmaster emails. Renewals may need re-approval.
+* **CAA awareness**
+
+  If you set **CAA** records, ensure they allow Amazon to issue (`amazon.com`, `amazontrust.com`, or `awstrust.com`).
+
+#### 🃏 Wildcards & SANs
+
+* Supports **wildcards** like `*.example.com` (not multi-level `*.*.example.com`).
+* One cert can cover **multiple names** (SANs), e.g., `api.example.com`, `admin.example.com`, `*.static.example.com`.
+
+#### 🔁 Renewal & rotation
+
+* ACM auto-renews  **~60 days before expiry** .
+* With  **DNS validation** , renewals are automatic. With  **email** , you might need to re-approve.
+
+#### 🔗 Where you can use ACM certs
+
+* **ALB / NLB (TLS listener)**
+* **CloudFront** (custom domains; cert must be in  **us-east-1** )
+* **API Gateway** (REST & HTTP APIs custom domains)
+* **App Runner, Elastic Beanstalk, Lightsail load balancers**
+* **IoT Core** ,  **OpenSearch** , some AWS-managed endpoints
+
+> 📝 **S3 static website** endpoints don’t support HTTPS directly. Use **CloudFront** in front of S3 with an ACM cert.
+
+#### 🚫 Where you can’t use public ACM certs
+
+* **Directly on EC2/Nginx/Node** : ACM won’t let you download the private key for public certs.
+
+  Options:
+* Put an **ALB** or **CloudFront** in front and terminate TLS there, **or**
+* Use **Let’s Encrypt/Certbot** (or a commercial cert) on the instance, **or**
+* Use **ACM Private CA** and issue an **exportable private certificate** (internal use).
+
+#### 💰 Pricing at a glance
+
+* **Public ACM certs** :  **Free** .
+* **Private CA** : paid (CA hourly charge + per-cert).
+* You still pay for the AWS resources that **use** the cert (ALB, CloudFront, data transfer, etc.).
+
+#### 🧭 Typical flows
+
+###### 🚦 ALB + custom domain
+
+1. In ACM (same Region as ALB): **Request certificate** → add `api.example.com` → **DNS validation** (auto-create CNAME in Route 53).
+2. In ALB: add an **HTTPS (443) listener** →  **choose the ACM cert** .
+3. Point your **Route 53 A/ALIAS** record for `api.example.com` to the ALB.
+
+###### 🌐 CloudFront + S3 static site
+
+1. In **us-east-1** ACM: request `www.example.com` (DNS validate).
+2. Create CloudFront distribution → **attach the ACM cert** → set **Alternate Domain Names** to `www.example.com`.
+3. Route 53 **A/ALIAS** `www` → CloudFront distribution.
+
+###### 🔏 mTLS / internal services (ACM Private CA)
+
+1. Create a  **Private CA** , issue  **private server & client certs** .
+2. Export server cert (if needed) for on-prem/EC2; configure **mutual TLS** on your proxy/LB.
+
+#### 🧰 Useful AWS CLI snippets
+
+```bash
+# Request a public cert (DNS validation + SANs)
+aws acm request-certificate \
+  --domain-name api.example.com \
+  --subject-alternative-names admin.example.com \
+  --validation-method DNS
+
+# List issued certs
+aws acm list-certificates --certificate-statuses ISSUED
+
+# Describe and get validation options (CNAMEs to add)
+aws acm describe-certificate --certificate-arn <ARN>
+
+# Delete a cert (must be detached everywhere)
+aws acm delete-certificate --certificate-arn <ARN>
+```
+
+> For CloudFront, run the `request-certificate` in `us-east-1` (`--region us-east-1` or configure your profile).
+
+#### 🧯 Common gotchas & fixes
+
+* **Pending validation** : CNAME missing or wrong. Use exact **name/value** from ACM; don’t add your zone name twice.
+* **Wrong Region** : CloudFront cert must be in  **us-east-1** .
+* **CAA blocked** : Add/adjust CAA to allow Amazon issuance.
+* **Mixed content warnings** : Your app must load assets via  **HTTPS** .
+* **S3 website + HTTPS** : Not supported; use CloudFront.
+* **Trying to download public cert’s private key** : Not possible by design.
+
+#### ✅ Best practices
+
+* Prefer **DNS validation** for zero-touch renewals.
+* Use **separate certs** for unrelated domains; use **SANs** for close siblings.
+* Rotate to **TLS 1.2/1.3** and modern ciphers (handled by AWS LBs/CloudFront defaults).
+* Keep **least-privilege** on who can request/attach/delete certs (IAM).
+* For EC2 backends, consider **ALB termination** + **internal HTTP** to simplify cert ops.
+
+---
+
+## ----Why does **AWS Certificate Manager (ACM)** need a CNAME
+
+#### 🔹 What is a  **CNAME** ?
+
+* **CNAME (Canonical Name record)** is a type of DNS record.
+* It maps one domain (or subdomain) to another domain.
+* For example:
+  ```
+  www.example.com  →  example.com
+  images.example.com  →  cdn.provider.com
+  ```
+* Unlike an **A record** (which points directly to an IP address), a CNAME points to another domain name.
+
+#### 🔹 Why does **AWS Certificate Manager (ACM)** need a CNAME?
+
+When you request an **SSL/TLS certificate** in ACM (for securing HTTPS on CloudFront, ALB, etc.), AWS must verify that  **you own the domain** .
+
+There are two ways AWS can verify ownership:
+
+1. **Email validation** (not recommended, slower and manual).
+2. **DNS validation (CNAME)** ✅ (recommended, automatic, and renewal-friendly).
+
+#### 🔹 How DNS Validation with CNAME works
+
+* AWS gives you a special **CNAME record** like this:
+  ```
+  Name: _abc123.www.fitlab.co.in
+  Type: CNAME
+  Value: _xyz456.acm-validations.aws
+  ```
+* You add this CNAME to your domain’s DNS configuration.
+* What happens:
+  * When ACM checks domain ownership, it queries DNS.
+  * It sees that your domain (`www.fitlab.co.in`) has this special CNAME pointing to AWS’s validation domain.
+  * That proves  **you control the domain** .
+* After validation, ACM issues the certificate.
+* The best part: ACM **automatically renews** certificates later as long as the CNAME stays in DNS.
+
+#### 🔹 Use Cases of CNAME in Certificates
+
+1. **Domain ownership verification** – proving to AWS that you own/control the domain.
+2. **Auto-renewal** – no manual step needed for future certificate renewals.
+3. **No downtime** – DNS validation works silently in the background.
+
+#### ✅  **In short** :
+
+CNAME in ACM is not for redirecting traffic, but to let AWS verify domain ownership via DNS. It’s like a “digital signature” in your DNS records. Once added, AWS can trust that you are the legitimate owner of `www.fitlab.co.in` and keep renewing your certificate automatically.
+
+---
+
+## ----Get a Certificate Using ACM + Route 53
+
+#### 🔹 Why CNAME is Needed for Validation
+
+When you request a certificate for a domain (e.g., `www.fitlab.co.in`):
+
+* ACM must verify that  **you own or control that domain** .
+* One way is by adding a **CNAME record** in your DNS (Route 53).
+* That CNAME tells ACM:
+
+  👉 “This person has control over DNS for the domain, so the request is legitimate.”
+
+For example, ACM might tell you:
+
+```
+Name: _1234567890abcdef.www.fitlab.co.in
+Type: CNAME
+Value: _abcdef1234567890.acm-validations.aws
+```
+
+Once you add that to Route 53, ACM checks it, validates ownership, and issues the certificate.
+
+#### 🔹 Steps to Get a Certificate Using ACM + Route 53 (GUI)
+
+I’ll break this down into  **AWS Console GUI steps** :
+
+**Step 1: Open ACM**
+
+1. Sign in to AWS Console.
+2. Go to  **Certificate Manager (ACM)** .
+3. Make sure you are in the correct AWS Region:
+   * For  **CloudFront** , always request in `us-east-1`.
+   * For  **Elastic Load Balancer** , use the region where the ELB exists.
+
+**Step 2: Request a Public Certificate**
+
+1. Click  **Request a certificate** .
+2. Choose **Request a public certificate** →  **Next** .
+3. Enter your domain name(s):
+   * Example: `fitlab.co.in` and `www.fitlab.co.in` (add both if you want root + subdomain covered).
+4. Click  **Next** .
+
+**Step 3: Select Validation Method**
+
+1. Choose **DNS Validation** (easier with Route 53).
+2. Click  **Next** .
+
+**Step 4: Add Tags (Optional)**
+
+* You can add tags like `Project: FitLab`, then  **Next** .
+
+**Step 5: Review & Confirm**
+
+1. Review details.
+2. Click  **Confirm and request** .
+
+**Step 6: Add DNS CNAME Record**
+
+Now ACM will show you a **CNAME record** for each domain.
+
+Example:
+
+* **Name** : `_1234567890abcdef.www.fitlab.co.in`
+* **Type** : `CNAME`
+* **Value** : `_abcdef1234567890.acm-validations.aws`
+
+**Options:**
+
+✅ If your domain is hosted in  **Route 53** :
+
+* Click **"Create record in Route 53"** → ACM will add the CNAME automatically.
+* Wait a few minutes until validation is complete.
+
+❌ If your domain is hosted elsewhere:
+
+* Manually copy this CNAME and add it in your domain’s DNS provider.
+
+**Step 7: Validation & Issuance**
+
+* ACM will periodically check for the CNAME.
+* Once it finds it, certificate status changes from **Pending validation** →  **Issued** .
+* Now you can use it in CloudFront, ELB, or API Gateway.
+
+#### 🔹 Example Use Cases
+
+* If you’re hosting a  **website in S3 + CloudFront** , attach this certificate to CloudFront.
+* If you’re using  **ALB/ELB** , select this certificate in Load Balancer’s HTTPS listener.
+* If using  **API Gateway** , select this certificate for your custom domain.
+
+#### ⚡ **In short:**
+
+CNAME = proof of domain ownership.
+
+ACM + Route 53 integration = one-click validation.
+
+GUI process = very simple once DNS is in Route 53.
 
 ---

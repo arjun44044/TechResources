@@ -3772,6 +3772,20 @@ This way you  **separate concerns** :
 
 ............................................................................................................................................................................................................................................
 
+### ----Do we need PM2 when EC2 running with Elastic IP ?
+
+You **still need PM2 (or a similar process manager like Supervisor, systemd, or Docker)** even if you’re using an **Elastic IP** for your EC2 instance.
+
+Here’s why:
+
+1. **Elastic IP only solves the static IP problem**
+
+* Without an Elastic IP, every time your EC2 instance restarts, the public IP changes.
+* With Elastic IP, your backend always has the same IP.
+* But Elastic IP does **not** keep your Node.js server running — it just makes sure the server can always be reached at the same address.
+
+............................................................................................................................................................................................................................................
+
 ### ----S3 Hosting in Detail
 
 ##### **1. Build folder for S3**
@@ -3824,18 +3838,744 @@ When uploading to S3:
 * You don’t upload `Frontend/`, you upload the  **`dist/` build** .
 * You don’t upload `.env`, you just use it during the build step.
 
+............................................................................................................................................................................................................................................
+
+### ----GitLab CI/CD — pipelines for FE + BE (CODE EXPLAINED)
+
+**.gitlab-ci.yml (starter, no Docker daemon needed):**
+
+```yaml
+stages: [test, build_frontend, deploy_frontend, build_backend, deploy_backend, invalidate_cdn]
+
+default:
+  image: node:18
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths: [node_modules/]
+
+variables:
+  AWS_DEFAULT_REGION: "ap-south-1"   # change to yours
+
+before_script:
+  - node -v && npm -v
+
+# 1) Tests (optional)
+test:
+  stage: test
+  script:
+    - npm ci
+    - npm run test --if-present
+
+# 2) Build FE
+build_frontend:
+  stage: build_frontend
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  script:
+    - cd frontend
+    - npm ci
+    - npm run build
+  artifacts:
+    paths: [frontend/build]
+    expire_in: 1 week
+
+# 3) Deploy FE to S3
+deploy_frontend:
+  stage: deploy_frontend
+  image: amazon/aws-cli:2.15.0
+  needs: [build_frontend]
+  script:
+    - aws s3 sync frontend/build/ s3://$S3_BUCKET/ --delete
+  only: [main]
+
+# 4) Build BE
+build_backend:
+  stage: build_backend
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  script:
+    - cd backend
+    - npm ci
+    - npm run build
+  artifacts:
+    paths: [backend/dist, backend/package.json, backend/package-lock.json, backend/ecosystem.config.js]
+    expire_in: 1 week
+
+# 5) Deploy BE to EC2 (SSH)
+deploy_backend:
+  stage: deploy_backend
+  image: alpine:3.19
+  needs: [build_backend]
+  before_script:
+    - apk add --no-cache openssh-client rsync
+    - eval $(ssh-agent -s)
+    - echo "$EC2_SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh && chmod 700 ~/.ssh
+    - ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts
+  script:
+    - rsync -avz --delete backend/ $EC2_USER@$EC2_HOST:/var/www/fitlab-api/
+    - ssh $EC2_USER@$EC2_HOST "cd /var/www/fitlab-api && npm ci --omit=dev && pm2 reload ecosystem.config.js --update-env"
+  only: [main]
+
+# 6) Invalidate CDN
+invalidate_cdn:
+  stage: invalidate_cdn
+  image: amazon/aws-cli:2.15.0
+  needs: [deploy_frontend]
+  script:
+    - aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DISTRIBUTION_ID --paths "/*"
+  only: [main]
+```
+
+> Store all secrets in **GitLab CI variables** (masked/protected). Never commit `.env` to Git.
+
+##### 🔹Job -- `deploy_backend` (Changed image to ubuntu)
+
+```yaml
+deploy_backend:
+  stage: deploy_backend
+  image: ubuntu:22.04
+  needs: [build_backend]
+  before_script:
+    - apt-get update && apt-get install -y openssh-client rsync
+    - eval $(ssh-agent -s)
+    - echo "$EC2_SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh && chmod 700 ~/.ssh
+    - ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts
+  script:
+    - rsync -avz --delete backend/ $EC2_USER@$EC2_HOST:/var/www/fitlab-api/
+    - ssh $EC2_USER@$EC2_HOST "cd /var/www/fitlab-api && npm ci --omit=dev && pm2 reload ecosystem.config.js --update-env"
+  only:
+    - main
+```
+
+###### 🔹 `before_script`
+
+This runs  **before the main `script` commands** . It prepares the runner so it can connect securely to your EC2 server.
+
+1. **Install required packages**
+
+   ```bash
+   apk add --no-cache openssh-client rsync
+   ```
+
+   * `apk` is Alpine’s package manager.
+   * Installs `openssh-client` (needed for SSH) and `rsync` (needed to copy files efficiently).
+2. **Start SSH agent**
+
+   ```bash
+   eval $(ssh-agent -s)
+   ```
+
+   * Starts an `ssh-agent` process.
+   * Manages SSH keys during this CI job.
+3. **Load your private key**
+
+   ```bash
+   echo "$EC2_SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+   ```
+
+   * Takes the private key stored in GitLab CI/CD variable `EC2_SSH_PRIVATE_KEY`.
+   * `tr -d '\r'` removes any Windows-style carriage returns (important if key was pasted from Windows).
+   * `ssh-add -` adds the key into the agent.
+   * > ###### 🔹 Where to set `EC2_SSH_PRIVATE_KEY`
+     >
+     > 1. Go to your project in GitLab.
+     > 2. Navigate to:
+     >
+     >    **Settings → CI/CD → Variables**
+     > 3. Add a new variable:
+     >
+     >    * **Key** : `EC2_SSH_PRIVATE_KEY`
+     >    * **Value** : paste the content of your `.pem` key file (the one you downloaded from AWS when creating the EC2 key pair).
+     >    * Mark it as **Protected** (so it only runs on protected branches like `main`).
+     >    * Mark it as **Masked** (so the raw value never shows up in CI/CD logs).
+     >
+4. **Prepare `.ssh` folder**
+
+   ```bash
+   mkdir -p ~/.ssh && chmod 700 ~/.ssh
+   ```
+
+   * Creates the `.ssh` folder (if not already present).
+   * `chmod 700` → makes sure only the owner can read/write/execute (SSH requires strict perms).
+5. **Add EC2 host to known_hosts**
+
+   ```bash
+   ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts
+   ```
+
+   * Fetches the public key fingerprint of your EC2 server.
+   * Adds it to `~/.ssh/known_hosts` so SSH won’t ask “Are you sure you want to connect?”.
+   * `$EC2_HOST`  is an **environment variable** holding the hostname or IP address of your EC2 instance you set in GitLab
+
+✅ After these steps, the runner can securely SSH into your EC2 without manual prompts.
+
+###### 🔹 `script`
+
+This is the actual  **deployment logic** .
+
+1. **Sync backend files to EC2**
+
+   ```bash
+   rsync -avz --delete backend/ $EC2_USER@$EC2_HOST:/var/www/fitlab-api/
+   ```
+
+   * Uses `rsync` to copy the local `backend/` directory to `/var/www/fitlab-api/` on the EC2 server.
+   * Flags:
+     * `-a` → archive mode (preserves permissions, symlinks, etc.)
+     * `-v` → verbose output
+     * `-z` → compress files during transfer (faster over network)
+     * `--delete` → removes files on server that no longer exist locally (keeps directories in sync).
+   * `$EC2_USER` and `$EC2_HOST` are environment variables for your EC2 login credentials.
+2. **Install dependencies + restart app**
+
+   ```bash
+   ssh $EC2_USER@$EC2_HOST "cd /var/www/fitlab-api && npm ci --omit=dev && pm2 reload ecosystem.config.js --update-env"
+   ```
+
+   * SSHs into the EC2 server.
+   * Goes to the app directory.
+   * Runs:
+     * `npm ci --omit=dev` → installs dependencies exactly from lockfile, but **skips devDependencies** (saves space, faster, only production deps installed).
+     * `pm2 reload ecosystem.config.js --update-env` → reloads your Node.js app with **PM2** (process manager).
+       * `ecosystem.config.js` defines how your app runs (entry file, env vars, scaling).
+       * `--update-env` ensures any updated environment variables are reloaded too.
+
+✅ At this point, the backend code is updated on the EC2, production dependencies are installed, and your Node app is restarted gracefully via PM2.
+
+###### 🔹 Flow Summary
+
+1. Prepare Alpine container with SSH + Rsync.
+2. Load EC2 private key (from GitLab CI/CD variables).
+3. Ensure server fingerprint is trusted.
+4. Copy backend files → EC2.
+5. Install fresh prod deps (`npm ci --omit=dev`).
+6. Reload app with PM2.
+
+............................................................................................................................................................................................................................................
+
+### ----Putting .env file to EC2 during CI/CD using GitLab + Configuration file for PM2 - `ecosystem.config.js`
+
+##### **Best Practice (Recommended ✅) :**
+
+* Put all secrets into  **GitLab CI/CD → Settings → Variables** .
+* Example: create `MONGOURI`, `JWTSECRET`, `STRIPE_SECRET_KEY`, etc. in GitLab UI.
+* Then, inside your pipeline, just generate `.env` dynamically from them:
+
+```yaml
+build_backend:
+  stage: build_backend
+  script:
+    - cd Backend
+    - echo "MONGOURI=$MONGOURI" >> .env
+    - echo "PORT=$PORT" >> .env
+    - echo "JWTSECRET=$JWTSECRET" >> .env
+    - echo "FITLABPASS=$FITLABPASS" >> .env
+    - echo "CLOUDINARY_CLOUD_NAME=$CLOUDINARY_CLOUD_NAME" >> .env
+    - echo "CLOUDINARY_API_KEY=$CLOUDINARY_API_KEY" >> .env
+    - echo "CLOUDINARY_API_SECRET=$CLOUDINARY_API_SECRET" >> .env
+    - echo "RAZORPAY_KEY_ID=$RAZORPAY_KEY_ID" >> .env
+    - echo "RAZORPAY_KEY_SECRET=$RAZORPAY_KEY_SECRET" >> .env
+    - echo "STRIPE_SECRET_KEY=$STRIPE_SECRET_KEY" >> .env
+    - echo "STRIPE_PUBLISHABLE_KEY=$STRIPE_PUBLISHABLE_KEY" >> .env
+    - echo "PAYPAL_CLIENT_ID=$PAYPAL_CLIENT_ID" >> .env
+    - echo "PAYPAL_CLIENT_SECRET=$PAYPAL_CLIENT_SECRET" >> .env
+    - echo "EXCHANGERATE_API_KEY=$EXCHANGERATE_API_KEY" >> .env
+    - echo "WALLET_SECRET_KEY=$WALLET_SECRET_KEY" >> .env
+  artifacts:
+    paths:
+      - FitLab/backend
+      - FitLab/package.json
+      - FitLab/package-lock.json
+```
+
+This way:
+
+* `.gitlab-ci.yml`  **does not contain raw secrets** .
+* GitLab securely injects them as environment variables at runtime.
+* You can rotate secrets without touching the repo → just update them in GitLab UI.
+
+**Now `build_backend`  looked like this **
+
+```yaml
+build_backend:
+  stage: build_backend
+  artifacts:
+    paths:
+      - FitLab/backend
+      - FitLab/package.json
+      - FitLab/package-lock.json
+```
+
+No `npm run build` needed here.
+
+**Then in `deploy_backend` :**
+
+This job connects to your EC2 and runs PM2:
+
+```yaml
+deploy_backend:
+  stage: deploy
+  script:
+    - chmod 600 $EC2_SSH_PRIVATE_KEY_FILE
+    - ssh -o StrictHostKeyChecking=no -i $EC2_SSH_PRIVATE_KEY_FILE ec2-user@$EC2_HOST "
+        cd ~/FitLab/backend &&
+        npm ci &&
+        pm2 start ecosystem.config.js --env production --update-env
+      "
+```
+
+> ##### Why `--env production`?
+>
+> ##### **Why `--update-env`?**
+>
+> Normally, PM2 loads env vars only at `pm2 start`.
+>
+> If later you update env vars in GitLab → runner → EC2, PM2 won’t auto-refresh them.
+>
+> So `--update-env` tells PM2:
+>
+> * Pull environment variables fresh from the shell (in this case, what GitLab runner injected into the `ssh` session).
+> * Update the existing process with the new values.
+>
+> That way, if you change something like `DB_URL` or `JWT_SECRET` in GitLab CI/CD variables, they will propagate to your backend on the next deploy without having to delete and restart the process.
+
+##### Ecosystem.config.js
+
+Your `ecosystem.config.js` should tell PM2 to load `.env` , example::
+
+```js
+module.exports = {
+  apps: [
+    {
+      name: "fitlab-backend",
+      script: "server.js",   // your main entry point
+      instances: 1,
+      autorestart: true,
+      watch: false,
+      env: {
+        NODE_ENV: "development"
+      },
+      env_production: {
+        NODE_ENV: "production"
+      }
+    }
+  ]
+};
+```
+
+**✅ With this approach:**
+
+* You don’t build anything (since MERN backend doesn’t need build).
+* You deploy raw code.
+* PM2 handles restarting + env refresh.
+* GitLab variables (`process.env.*`) are injected automatically at runtime.---
+
+When you deploy:
+
+```bash
+pm2 start ecosystem.config.js --env production
+```
+
+and inside your code, you just use `process.env.VARIABLE_NAME`.
+
+**✅ Benefits of this approach:**
+
+* All secrets are **managed in GitLab CI/CD** (not hardcoded in repo).
+* `.env` is automatically generated during pipeline/deployment.
+* PM2 + dotenv handles environment variable loading cleanly.
+* You don’t clutter your `.gitlab-ci.yml` with 20+ `echo` lines everywhere.
+
+> ##### **1. What is `ecosystem.config.js`?**
+>
+> * It’s a  **configuration file for PM2** , the process manager you’ll typically use to run your backend (Node.js/Express) app in production.
+> * Instead of starting your app with a long `pm2 start server.js --name my-app --env production ...`, you create a **single config file** that defines:
+>   * App name
+>   * Script entry point
+>   * Number of instances (clustering)
+>   * Environment variables (different for `development`, `production`, `staging`)
+>   * Logs and error paths
+>
+> This file is usually named `ecosystem.config.js` and  **lives inside your backend project** .
+>
+> Yes ✅, you should make it locally, commit it to GitHub, and PM2 will use it when you deploy.
+>
+> ##### 2. Example of `ecosystem.config.js`
+>
+> Here’s a typical one for a MERN backend:
+>
+> ```js
+> module.exports = {
+>   apps: [
+>     {
+>       name: "fitlab-backend",            // PM2 app name
+>       script: "server.js",               // Entry file for your backend
+>       instances: 1,                      // Or 'max' for cluster mode
+>       autorestart: true,                 // Restart on crash
+>       watch: false,                      // Don’t use in prod (dev only)
+>       max_memory_restart: "500M",        // Restart if exceeds 500MB
+>       env: {
+>         NODE_ENV: "development",         // Default env
+>         PORT: 5000,
+>       },
+>       env_production: {
+>         NODE_ENV: "production",          // Production env
+>         PORT: 8080,
+>       },
+>     },
+>   ],
+> };
+> ```
+>
+> ✅ With this approach:
+>
+> * You don’t build anything (since MERN backend doesn’t need build).
+> * You deploy raw code.
+> * PM2 handles restarting + env refresh.
+> * GitLab variables (`process.env.*`) are injected automatically at runtime.
+>
+>> ###### **1. `watch` in PM2 (ecosystem.config.js)**
+>>
+>> * **What it does** :
+>>
+>>   When set to `true`, PM2 will **watch your project files** for changes.
+>>
+>>   If a file changes, PM2 automatically restarts your app.
+>>
+>> ```js
+>>   watch: true
+>> ```
+>>
+>> * **Use case** :
+>> * Useful **in development** → auto-restarts when you edit code.
+>> * Not recommended in **production** → unnecessary restarts and CPU overhead.
+>>
+>> 👉  **Conclusion** : For production, set it to `false` (or remove it).
+>>
+>> ###### **2. `max_memory_restart` in PM2**
+>>
+>> * **What it does** :
+>>
+>>   If your app consumes more than the specified memory, PM2 will restart it.
+>>
+>>   Example:
+>>
+>> ```js
+>>   max_memory_restart: '300M'
+>> ```
+>>
+>> → Restarts your app when memory usage exceeds  **300 MB** .
+>>
+>> * **Use case** :
+>> * Protection against **memory leaks** in Node.js apps.
+>> * Good safeguard in production if you don’t want the app to crash due to OOM (Out Of Memory).
+>>
+>> 👉  **Conclusion** : Optional but **recommended** in production (you can set something like `"500M"` depending on your server capacity).
+>>
+>> ###### **3. Port number in `env_production`**
+>>
+>> Example:
+>>
+>> ```js
+>> env_production: {
+>>   NODE_ENV: 'production',
+>>   PORT: 5000
+>> }
+>> ```
+>>
+>> * This defines the port your **Node.js backend** listens on.
+>> * If you’re using  **Nginx as a reverse proxy** , Nginx listens on port `80/443` (public web), then forwards requests internally to your Node app (e.g., port `5000`).
+>> * No clash risk as long as:
+>>   * The port is **not already used** by another service.
+>>   * You configure Nginx correctly with `proxy_pass http://localhost:5000;`.
+>>
+>> 👉  **Conclusion** : Yes, you should set the port in `env_production`, but just make sure it’s consistent with your Nginx config.
+>>
+>> ###### 4. **`instances: "max"`**
+>>
+>> * This tells PM2 how many **Node.js processes (workers)** to run for your app.
+>> * `"max"` means:
+>>   > Run **one instance per available CPU core** on the machine.
+>>   >
+>>
+>> For example:
+>>
+>> * If your server has  **4 CPU cores** , PM2 will spawn  **4 Node.js processes** .
+>> * If it has  **8 cores** , PM2 will spawn  **8 processes** , etc.
+>>
+>> ✅ Benefit: This ensures you’re fully utilizing all CPU cores for better performance under load.
+>>
+>> ⚠️ Caveat: Only useful if your app is **stateless** or can handle multiple workers (e.g., Express apps, APIs). For apps with in-memory session storage, you’d need sticky sessions or Redis.
+>>
+>> ###### 2. **`exec_mode: "cluster"`**
+>>
+>> * Defines how PM2 runs those instances.
+>> * `"cluster"` mode uses Node.js’s **cluster module** to spawn multiple workers behind a single “master” process.
+>> * The master process automatically **load balances** incoming requests across all workers.
+>>
+>> Other mode:
+>>
+>> * `"fork"` → Runs a single instance of your app without clustering.
+>>
+>> ✅ Benefit of `cluster`: Distributes traffic across multiple CPU cores.
+>>
+>> ⚠️ Downside: Some apps may need extra work to share sessions, sockets, or caches between workers.
+>>
+>> **Example Snippet:**
+>>
+>> ```js
+>> module.exports = {
+>>   apps: [
+>>     {
+>>       name: "my-app",
+>>       script: "server.js",
+>>       instances: "max",       // spawn as many as CPU cores
+>>       exec_mode: "cluster",   // cluster load balancing
+>>       env: {
+>>         NODE_ENV: "development"
+>>       },
+>>       env_production: {
+>>         NODE_ENV: "production"
+>>       }
+>>     }
+>>   ]
+>> }
+>> ```
+>>
+>> 🔑 **In short:**
+>>
+>> * `instances: "max"` → Scale to all CPU cores.
+>> * `exec_mode: "cluster"` → Load balance traffic between them.
+>>
+>>
+>
+> ##### 3. Should I put `.env` variables inside `ecosystem.config.js`?
+>
+> * **Option A:** Put all variables directly inside `ecosystem.config.js` (like above).
+>
+>   🔴 Not great if you have many secrets (DB, Cloudinary, JWT keys, etc.), because you’ll commit them.
+> * **Option B (Better):** Keep sensitive variables inside `.env` and tell PM2 to load them.
+>
+> Example:
+>
+> ```js
+> require('dotenv').config(); // Load from .env
+>
+> module.exports = {
+>   apps: [
+>     {
+>       name: "fitlab-backend",
+>       script: "server.js",
+>       instances: 1,
+>       autorestart: true,
+>       watch: false,
+>       env: {
+>         NODE_ENV: process.env.NODE_ENV,
+>         PORT: process.env.PORT,
+>         MONGO_URI: process.env.MONGO_URI,
+>         CLOUDINARY_URL: process.env.CLOUDINARY_URL,
+>         JWT_SECRET: process.env.JWT_SECRET,
+>       },
+>     },
+>   ],
+> };
+> ```
+>
+> Here:
+>
+> * You keep `.env` in the server (not pushed to GitHub).
+> * PM2 loads `.env` and injects them into your app.
+> * Safer + cleaner.
+>
+> ##### 4. Workflow
+>
+> 1. **Locally** → Create `ecosystem.config.js` in your backend folder and push it to GitHub.
+> 2. **On EC2** → Copy your code from GitLab CI/CD → EC2.
+> 3. Place your `.env` file on the EC2 machine manually (`scp` or `nano`).
+> 4. Start app with:
+>
+>    ```bash
+>    pm2 start ecosystem.config.js --env production
+>    ```
+>
+>    (PM2 will pick `env_production` or your `.env` values)
+>
+> ##### ✅ So, in summary:
+>
+> * Yes, create this file locally and push it.
+> * Don’t commit `.env`. Keep that only on your EC2.
+> * Use `ecosystem.config.js` as the "blueprint" for PM2.
+
+............................................................................................................................................................................................................................................
+
+### ----Syncing GitHub and GitLab and Mirroring
+
+GitLab does **not automatically sync** with GitHub unless you explicitly set it up. Since your project is imported from GitHub into GitLab:
+
+#### 🔹 Current situation (one-time import only)
+
+* You used GitLab’s **“Import project from GitHub”** option.
+* This creates a **snapshot** of your GitHub repo inside GitLab at that moment.
+* If you push to GitHub later, GitLab will **not** see those updates automatically.
+* So yes, you’d have to **manually re-import** each time if you stick with this. That’s inefficient.
+
+#### 🔹 Better options (to avoid manual import every time)
+
+1. ##### **Use GitLab CI/CD with GitHub as the source of truth**
+
+   * You can connect GitLab to GitHub via  **GitHub Integration** .
+   * In this setup, GitHub remains your main repo, and GitLab only handles pipelines.
+   * Whenever you push to GitHub, a webhook notifies GitLab → pipeline runs automatically.
+2. ##### **Switch to GitLab as your main remote*** Instead of pushing to GitHub, push directly to GitLab (`git remote set-url origin <gitlab_repo_url>`).
+
+   Then your pipelines will always run when you push. You can also set up a **mirror back to GitHub** if you still want code visible there.
+3. ##### **Mirror your GitHub repo into GitLab**
+
+   * In GitLab, go to:
+
+     `Project → Settings → Repository → Mirroring repositories`
+   * Add your GitHub repo URL.
+   * Choose **Pull** (GitLab pulls changes from GitHub whenever you push).
+   * This way, your GitLab repo always stays in sync.
+   * > ##### 1. Where your code + commit history lives
+     >
+     > * **GitHub repo** → This remains your  **source of truth** . Your commits, branches, pull requests, and full history stay in GitHub.
+     > * **GitLab** → Does  **not copy your code or commit history** . Instead, GitLab simply points to your GitHub repo and pulls the latest commit during each pipeline run.
+     >
+     > So:
+     >
+     > * Your  **code + commit history are visible in GitHub** .
+     > * In  **GitLab** , you’ll see pipeline results, logs, and CI/CD configuration — but not the full commit history like in GitHub. GitLab will show you which commit triggered the pipeline, though.
+     >
+     > ##### 2. CI/CD flow with this setup
+     >
+     > * You push code → **GitHub repo updated** ✅
+     > * Webhook → Tells GitLab → **GitLab pulls the commit + runs your pipeline** ✅
+     >
+     > ##### 3. Benefits
+     >
+     > * Single source of truth for code = GitHub.
+     > * GitLab is just your  **CI/CD runner** .
+     > * No duplication, no need to re-import manually.
+     > * Both GitHub and GitLab show commit information (but GitHub shows full history, GitLab only references commits).
+     >
+
+##### Steps for Mirroring (For Premium Acount as Mirror Direction of Pull would be ENABLED)
+
+**✅ Step 1: Mirror Direction**
+
+* Choose **Pull** (not Push).
+  * Because you want GitLab to **pull** updates from GitHub whenever you push code there.
+  * Push is only if GitLab is your main repo (not the case here).
+
+**✅ Step 2: Repository URL**
+
+* Enter your  **GitHub repo HTTPS URL** , e.g.:
+  ```
+  https://github.com/your-username/your-repo.git
+  ```
+
+**✅ Step 3: Authentication Method**
+
+You have two options:
+
+Option A: **Username + Personal Access Token (recommended)**
+
+* Authentication method:  **Username and Password** .
+* Username: your  **GitHub username** .
+* Password: your **GitHub Personal Access Token (PAT)** (since GitHub stopped allowing password-based HTTPS auth).
+  * Create a PAT in GitHub → Settings → Developer Settings → Personal Access Tokens → Tokens (classic).
+  * Give it `repo` scope (so GitLab can read your repo).
+
+Option B: **SSH Key**
+
+* Use SSH instead of HTTPS.
+* You’d generate an SSH key in GitLab and add its public key to GitHub → Repo → Settings → Deploy Keys.
+
+But **Option A (PAT)** is simpler and works well.
+
+**✅ Step 4: Extra Settings**
+
+* **Keep divergent refs** → Leave unchecked (you want GitLab to always follow GitHub).
+* **Mirror only protected branches** → Leave unchecked, unless you only care about `main`.
+
+**✅ Step 5: Save**
+
+Click  **Mirror repository** .
+
+From now on:
+
+* When you push code to GitHub → GitLab will **auto-pull** the commit and trigger your  **pipeline** .
+* Your commit history stays in GitHub (source of truth).
+* GitLab will show commits that triggered pipelines (with SHA), but won’t keep its own full repo.
+
+##### Workaround Step for Mirroring for Free Accounts
+
+On GitLab Free, the **“pull from remote”** option is disabled — GitLab only allows **push mirroring** (you push to GitLab, and it pushes to GitHub or another GitLab instance).
+
+But you can **work around this limitation** if you want GitLab to **pull automatically from GitHub** (so GitHub is the “source of truth”). Here are the two main methods:
+
+###### 🔹 Workaround 1: Use GitHub → GitLab CI/CD Sync (most common)
+
+1. Keep GitHub as your main repo.
+2. Add a **push mirror** from GitHub → GitLab (instead of GitLab → GitHub).
+
+   * Since GitLab Free can’t “pull”, you instead configure GitHub to push into GitLab.
+   * This can be done with a **GitHub Action** that runs on every push.
+   * You just need to create a `.github/workflows/mirror.yml` file in your repo.
+   * 
+
+   ```
+   your-repo/
+    ├── .github/
+    │    └── workflows/
+    │         └── mirror.yml   <-- your GitHub Actions workflow
+    ├── src/
+    ├── package.json
+    ├── ...
+   ```
+
+   **Explanation:**
+
+   * `.github/` → special directory recognized by GitHub.
+   * `workflows/` → must exist inside `.github/`.
+   * `mirror.yml` (or any `.yml`/`.yaml` file) → defines your GitHub Actions pipeline.
+
+   Once you add and push that file to your  **GitHub repo** , GitHub will automatically pick it up and run it whenever the trigger condition (like `push` or `workflow_dispatch`) is met.
+
+   ⚡ On the GitLab side, you don’t need to add anything extra. Your **GitHub Action will push to GitLab** when you push code to GitHub.
+   **Example GitHub Action:**
+
+   ```yaml
+   name: Mirror to GitLab
+   on: [push]
+   jobs:
+     sync:
+       runs-on: ubuntu-latest
+       steps:
+         - name: Checkout
+           uses: actions/checkout@v3
+         - name: Push to GitLab
+           run: |
+             git remote add gitlab https://oauth2:${{ secrets.GITLAB_TOKEN }}@gitlab.com/USERNAME/REPO.git
+             git push --mirror gitlab
+   ```
+
+   * You’ll need a **GitLab personal access token** (PAT) with write-repo scope, stored in GitHub secrets.
+
+###### 🔹 Workaround 2: Cron Job with `git pull && git push`
+
+* Run a **cron job** on a small VPS or even a GitLab CI/CD pipeline itself.
+* The script would:
+  ```bash
+  git clone --mirror https://github.com/you/repo.git
+  cd repo.git
+  git remote add gitlab https://gitlab.com/you/repo.git
+  git push --mirror gitlab
+  ```
+* This way GitLab always gets the latest commits from GitHub.
+
 ---
-
-
-
-
-
-
-
-
-
-
-
-
 
 ---

@@ -20,7 +20,6 @@ git checkout main
   * **Don’t place any files into the working directory yet.**
 * So after this, you have the repo but no actual files on disk.
 
->
 > `git --no-checkout` isn’t a standalone Git command — it’s actually an **option** used with `git clone`.
 >
 > 👉 Full form:
@@ -77,7 +76,6 @@ git checkout main
 > ✅ In short:
 >
 > `git clone --no-checkout` clones the repository metadata/history but **does not populate the working directory with files** until you explicitly checkout a branch.
->
 
 ##### 2. `cd Project-Fitlab`
 
@@ -204,7 +202,6 @@ git checkout main
 > ```
 >
 > Now, only `backend/` and `frontend/` exist locally. The rest is hidden.
->
 
 ##### 4. `git sparse-checkout set Backend package.json package-lock.json`
 
@@ -240,5 +237,68 @@ Project-Fitlab/
   ├── package.json
   ├── package-lock.json
 ```
+
+---
+
+# ---- npm ci 
+
+`npm ci` is a command in **npm (Node Package Manager)** that’s mainly used in **continuous integration (CI/CD) pipelines** or whenever you want a **clean, repeatable install** of dependencies.
+
+#### 🔹 What `npm ci` Does
+
+1. **Deletes `node_modules/` and `package-lock.json` (optionally, if `--force` used for lock mismatch)**
+
+   → ensures no leftover files cause inconsistencies.
+2. **Installs exactly what’s in `package-lock.json`**
+
+   → no updates, no changes, no version range resolution — just a direct, reproducible install.
+3. **Faster than `npm install`**
+
+   → skips a bunch of steps like dependency resolution since it trusts the lockfile.
+
+#### 🔹 Difference: `npm install` vs `npm ci`
+
+| Feature                       | `npm install`               | `npm ci`                  |
+| ----------------------------- | ----------------------------- | --------------------------- |
+| Reads `package.json`        | ✅ Yes                        | ✅ Yes                      |
+| Uses `package-lock.json`    | ✅ Yes (but may update it)    | ✅ Yes (must match exactly) |
+| Updates `package-lock.json` | ✅ Can update                 | ❌ Never updates            |
+| Deletes `node_modules`first | ❌ No                         | ✅ Yes                      |
+| Speed                         | Slower (resolves deps)        | Faster (strict install)     |
+| Reproducibility               | ❌ May differ across machines | ✅ Always identical         |
+| Use case                      | Local dev                     | CI/CD, production builds    |
+
+#### 🔹 Typical Usage
+
+* **In local dev** → you usually use `npm install` (because you may want new deps).
+* **In CI/CD / Production build** → you use `npm ci` for a  **fresh, predictable environment** .
+
+#### ✅ Example
+
+```bash
+# Clean install from lockfile
+npm ci
+```
+
+```bash
+# Clean install but ignore scripts
+npm ci --ignore-scripts
+```
+
+```bash
+# Run tests in CI
+npm ci && npm test
+```
+
+#### 🔹 When to Use
+
+* Automated environments (CI/CD pipelines like GitHub Actions, GitLab CI, Jenkins, etc.)
+* Docker builds (ensures consistent node_modules in the container)
+* Anywhere you need **deterministic, fast installs**
+
+#### ✅ In short:
+
+* **`npm install`** → flexible, good for development.
+* **`npm ci`** → strict, clean, fast, good for CI/CD and production.
 
 ---

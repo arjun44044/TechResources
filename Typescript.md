@@ -1,4 +1,4 @@
-# Typescript - Introduction
+# ----Typescript - Introduction
 
 TypeScript is a superset of JavaScript that adds extra features like static typing, interfaces, enums, and more.
 
@@ -109,7 +109,7 @@ It will generate a compiled `index.js`.
 
 ---
 
-# Types
+# ----Types
 
 ## 🔹 **1. Primitive Types**
 
@@ -1087,7 +1087,7 @@ type ReadOnlyUser = Readonly<User>;
 
 ---
 
-# Interface
+# ----Interface
 
 An `interface` defines the **shape of an object** — it describes the  **structure** , not the implementation.
 
@@ -1382,7 +1382,7 @@ type Status = "success" | "error" | "loading";
 
 ---
 
-# Warning if Reassigned with different type data
+# ----Warning if Reassigned with different type data
 
 Lets say I'm declaring a variable which always, no matter what happens, is always going to accept the string. Later on, some other programmer who is working on the same project gets this variable and tries to assign it a number as six. This automatically stops him and sends him an error that, hey, the type number is not assignable to type string because it's a number. You cannot do this.
 
@@ -1398,11 +1398,11 @@ Also shows warning if there are typos in the way you have called the built in fu
 
 ![1749376120945](image/Typescript/1749376120945.png)
 
-# If Just declared without any type- type taken is `any`
+# ----If Just declared without any type- type taken is `any`
 
 `let hero;`
 
-# Good Practises-1
+Good Practises-1
 
 ```typescript
 let userId: number
@@ -1415,7 +1415,7 @@ let userId: number = 245178
 
 ---
 
-# Function Returning an Object in Typescript
+# ----Function Returning an Object in Typescript
 
 **✅ Basic Example: Function returning an object**
 
@@ -1576,7 +1576,7 @@ function createCounter(): Counter {
 
 ---
 
-# Bad Behavior of Objects in Typescript
+# ----Bad Behavior of Objects in Typescript
 
 While the below will give you error in Ts, which it should--
 
@@ -1662,7 +1662,7 @@ Or you can relax it with a broader type — but this has tradeoffs (like losing 
 
 ---
 
-# Array Of Objects and 2d Arrays in TypeScript
+# ----Array Of Objects and 2d Arrays in TypeScript
 
 Example--
 
@@ -1691,7 +1691,7 @@ const MLModels: number[][] = [
 
 ---
 
-# Union cavouts and Union of Arrays
+# ----Union cavouts and Union of Arrays
 
 ```typescript
 function getDbId(id: number | string){
@@ -1719,7 +1719,7 @@ const data3: (string | number | boolean)[] = ["1", "2", 3, true]
 
 ---
 
-# Odd Behaviors of Tuples
+# ----Odd Behaviors of Tuples
 
 ```typescript
 type User = [number, string]
@@ -1736,7 +1736,7 @@ So in the above code I use the Array methods and disrupt the type strictness
 
 ---
 
-# Enum vs Const enums
+# ----Enum vs Const enums
 
 #### ✳️ 1. Regular `enum`
 
@@ -1829,7 +1829,7 @@ const enum SeatChoice {
 
 ---
 
-# Extending Type
+# ----Extending Type
 
 In TypeScript, **extending a type** means creating a new type that builds upon an existing one by adding more properties. This is extremely useful for **code reuse** and  **creating more specific types from generic ones** .
 
@@ -1856,7 +1856,7 @@ const admin: Admin = {
 
 ---
 
-# How Setup Typscript for real Projects
+# ----How Setup Typscript for real Projects
 
 Make 2 folders-
 
@@ -1886,7 +1886,7 @@ Then type  `npm start ` Then if wanted put it in watch mode
 
 ---
 
-# Classes in Typescript
+# ----Classes in Typescript
 
 You can't straightaway use access variable using `this ` without first declaring it with its type. Else you will eror. In Js that's btw totally fine, no need to first declare a variable.
 
@@ -2120,7 +2120,7 @@ class Youtube implements TakePhoto, Story{
 
 ---
 
-# Multiple Inheritance in Classes, Abstract Classes and Interfaces
+# ----Multiple Inheritance in Classes, Abstract Classes and Interfaces
 
 **Multiple inheritance is *not* allowed** for **normal classes and abstract classes** in **TypeScript** (and JavaScript) either. But ALLOWED for INTERFACES.
 
@@ -2244,7 +2244,7 @@ duck.swim(); // ✅
 
 ---
 
-# Abstract Classes in Typescript
+# ----Abstract Classes in Typescript
 
 A**bstract classes in TypeScript** , which are a powerful OOP (Object-Oriented Programming) concept used to define a **common structure** for derived classes while preventing direct instantiation.
 
@@ -2542,7 +2542,7 @@ a.run();  // ✅
 
 ---
 
-# Generics
+# ----Generics
 
 To start off, let’s do the “hello world”  identity function. The identity function is a function that will return back whatever is passed in.
 
@@ -3244,7 +3244,7 @@ const name = getProperty(person, "name"); // type is string
 
 ---
 
-# Nested Generics
+# ----Nested Generics
 
 Nested generics in TypeScript refer to using **generic types inside other generic types** — allowing for deep, flexible, and composable data structures.
 
@@ -3389,7 +3389,7 @@ const userResponse: EntityResponse<{ id: string; name: string }> = {
 
 ---
 
-# Generic Promise
+# ----Generic Promise
 
 #### ✅ 1. What Is a Generic Promise?
 
@@ -3528,7 +3528,7 @@ const delayedNumber = new Promise((resolve) => {
 
 ---
 
-# Generics in Async / await
+# ----Generics in Async / await
 
 #### ✅ What Are Generics in `async/await`?
 
@@ -3634,7 +3634,7 @@ const productResponse = await getApiData<Product>('https://api.com/product/1');
 
 ---
 
-# Awaited Utitlity Type
+# ----Awaited Utitlity Type
 
 **`Awaited<T>`** is a **utility type** introduced in **TypeScript 4.5** that recursively unwraps the **resolved type** of a `Promise`.
 
@@ -3840,7 +3840,7 @@ type User = Awaited<ReturnType<typeof getUser>>;
 
 ---
 
-# Narrowing
+# ----Narrowing
 
 #### ✅ What is Type Narrowing?
 
@@ -3999,7 +3999,7 @@ function log(value: string | number) {
 
 ---
 
-# Type Assertions (`as`)
+# ----Type Assertions (`as`)
 
 #### ✅ What is `"as"` in TypeScript?
 
@@ -4216,7 +4216,7 @@ function getArea(shape: Shape) {
 
 ---
 
-# Type Predicates (`is`)
+# ----Type Predicates (`is`)
 
 **📌 What does "predicate" mean?**
 
@@ -4449,7 +4449,7 @@ TypeScript can’t trust the result without `is Fish`.
 
 ---
 
-# typeof  in  Typescript
+# ----typeof  in  Typescript
 
 #### 🔹 1. `typeof` at **runtime** (JavaScript level)
 
@@ -4616,7 +4616,7 @@ const subtract: AddFn = (x, y) => x - y;
 
 ---
 
-# keyof in Typescript
+# ----keyof in Typescript
 
 #### 🔹 What is `keyof`?
 
@@ -4789,7 +4789,7 @@ type ConfigKeys = keyof typeof config;
 
 ---
 
-# Infer
+# ----Infer
 
 infer keyword uh basically is used inside the conditional types to infer the type of a value and it helps to extract the types in the complex scenarios
 
@@ -5068,7 +5068,7 @@ Using `infer` lets you:
 
 ---
 
-# Conditional Types in detail
+# ----Conditional Types in detail
 
 Conditional types in TypeScript are a powerful feature that let you create types that behave like **if/else statements** at the type level.
 
@@ -5167,7 +5167,7 @@ type A = ToArray<string | number>;
 
 ---
 
-# Mapped Types in detail
+# ----Mapped Types in detail
 
 **Mapped types** allow you to iterate over the properties (keys) of an existing type and apply **modifications** — like making properties `optional`, `readonly`, changing value types, etc.
 
@@ -5284,7 +5284,7 @@ Mapped types are the basis for many built-in utility types:
 
 ---
 
-# Utility Types
+# ----Utility Types
 
 Here’s a complete list of **built-in Utility Types** in TypeScript, organized by category, along with a **short description** and **syntax** for each.
 
@@ -5436,9 +5436,9 @@ type Partial<T> = {
 
 ---
 
-# React with Typescript -------------------------------------------------------|||
+# ----React with Typescript -------------------------------------------------------|||
 
-## Introduction
+## ++Introduction
 
 If you hover on the App Component VsCode tells us that App Component is a function which returns a jsx element, and this is called type inference.
 
@@ -5446,7 +5446,7 @@ If you hover on the App Component VsCode tells us that App Component is a functi
 
 ---
 
-## 💻 Typing Props
+## ++💻 Typing Props
 
 Typing props in TypeScript for React components allows you to define exactly **what data** a component expects. Here's a **detailed breakdown with examples** for all common patterns.
 
@@ -5935,7 +5935,7 @@ export default App;
 
 ---
 
-## 💻 JSX.Element vs React.ReactNode vs React.ReactElement
+## ++💻 JSX.Element vs React.ReactNode vs React.ReactElement
 
 | Type                   | Description                                                                                                                                                                                                 | 📌 Common Use                       |
 | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
@@ -6130,7 +6130,7 @@ const el: React.ReactElement = <div>Hello</div>;
 
 ---
 
-## **💻 Typing States**
+## **++💻 Typing States**
 
 ### 🔹 **Basic useState with primitives**
 
@@ -6255,7 +6255,7 @@ Now one can just pass the props or state inside the component as below--
 
 ---
 
-## 💻 Typing Event Handlers
+## ++💻 Typing Event Handlers
 
 ### 🧩 **Typing Synthetic Events**
 
@@ -6406,7 +6406,7 @@ const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
 ---
 
-## 💻 Typing Styles
+## ++💻 Typing Styles
 
 Typing **styles in React with TypeScript** can be handled in multiple ways depending on how you apply the styles: inline, `style` prop, CSS modules, styled-components, Tailwind, etc.
 
@@ -6522,7 +6522,7 @@ interface Styles {
 
 ---
 
-## 💻 Using Seperate File for Types
+## ++💻 Using Seperate File for Types
 
 Use seperate File for wrting types, each for each .tsx file
 
@@ -6534,7 +6534,7 @@ Example -- Here we have   `Person.tsx`  and  `Person.types.ts`
 
 ---
 
-## 💻 useState Type Assertion
+## ++💻 useState Type Assertion
 
 One can completely fix the state if it won't change the value for sure in the future using Type Assertion
 
@@ -6551,7 +6551,7 @@ Hence we don't need the optional chaining now in `user.name ` and `usr.email`
 
 ---
 
-## 💻 Typing Context
+## ++💻 Typing Context
 
 React’s `useContext` hook allows a component to access the value provided by a `Context.Provider`.
 
@@ -6786,7 +6786,7 @@ const ctx = useContext(UserContext); // Properly typed with createContext<User |
 
 ---
 
-## 💻 Using Seperate File for Types
+## ++💻 Using Seperate File for Types
 
 ### 🔍 1. **Refs with DOM Elements**
 

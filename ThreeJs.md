@@ -2023,6 +2023,141 @@ camera.lookAt(0, 0, 0);
 
 ```
 
+> ##### 📐 Understanding `frustumSize` and `aspect`
+>
+> You defined:
+>
+> ```js
+> const aspect = window.innerWidth / window.innerHeight;
+> const frustumSize = 10;
+> ```
+>
+> * `frustumSize` → how *tall* your camera view should be in world units (like meters).
+> * `aspect` → ratio of width to height of your viewport.
+>
+> ##### 🧩 Why Multiply `aspect` Only for Left & Right?
+>
+> ###### The reasoning:
+>
+> The **aspect ratio** affects  **width** , not  **height** .
+>
+> Let’s visualize:
+>
+> ```
+> Screen shape  →  width / height = aspect
+> ```
+>
+> So if the camera’s **height** is `frustumSize`,
+>
+> then the **width** must be `frustumSize * aspect` to match the screen’s proportions.
+>
+> That’s why:
+>
+> ```js
+> left  = -frustumSize * aspect / 2
+> right =  frustumSize * aspect / 2
+> ```
+>
+> This ensures your view’s **width** matches the viewport ratio.
+>
+> ###### For height:
+>
+> You already define it directly as `frustumSize`, so:
+>
+> ```js
+> top    =  frustumSize / 2
+> bottom = -frustumSize / 2
+> ```
+>
+> No aspect correction is needed here because `frustumSize` itself defines the vertical size.
+>
+> ##### 🧮 Visual Analogy
+>
+> Imagine you have a **10-unit tall camera window** (`frustumSize = 10`).
+>
+> If your browser window is  **wider than tall** , say `aspect = 16/9 = 1.77`,
+>
+> you need to stretch the width accordingly to fit the shape of your screen:
+>
+> ```
+> Width = 10 * 1.77 = 17.7 units
+> Height = 10 units
+> ```
+>
+> If you *didn’t* multiply by aspect, your scene would look squashed horizontally on wide screens.
+>
+> ##### 🧮 The Role of `/ 2` in `left` and `right`
+>
+> You’re defining the  **camera’s visible region** , centered around the origin `(0,0)`.
+>
+> You decided that your **total view height** should be `frustumSize`.
+>
+> So, to make the camera see  **from the middle outward** ,
+>
+> you need to go **half above** and **half below** the center.
+>
+> That’s why we divide by `2`.
+>
+> 🔹 Imagine this without division:
+>
+> If you wrote:
+>
+> ```js
+> top = frustumSize
+> bottom = -frustumSize
+> ```
+>
+> then your total height = `frustumSize - (-frustumSize) = 20`
+>
+> → **double** what you intended.
+>
+> So dividing by 2 gives you the *half-extents* of the visible area:
+>
+> ```
+> top = +5
+> bottom = -5
+> ```
+>
+> Now total visible height = 10 (the value you wanted).
+>
+> 🔹 Same logic applies to left and right
+>
+> When you apply `aspect` to adjust the  **width** ,
+>
+> that gives you the *total width* in world units:
+>
+> ```
+> width = frustumSize * aspect
+> ```
+>
+> To center it horizontally around 0, you take  **half to the left and half to the right** :
+>
+> ```js
+> left  = -width / 2
+> right =  width / 2
+> ```
+>
+> or equivalently:
+>
+> ```js
+> left  = -frustumSize * aspect / 2
+> right =  frustumSize * aspect / 2
+> ```
+>
+> ##### 🎨 Visual analogy
+>
+> Think of your camera’s view like a window centered at (0,0):
+>
+> ```
+>            +Y (top)
+>              ↑
+>      left ← [  *camera view*  ] → right
+>              ↓
+>            -Y (bottom)
+> ```
+>
+> To center the window, you extend half the size in each direction.
+
 🔧 What’s going on here?
 
 * `frustumSize`: Controls how large your view is.
@@ -4331,7 +4466,6 @@ Inherits from `THREE.Material`, so it supports:
 * Shiny UI elements (e.g., futuristic panels, buttons)
 * Game objects that need a classic glossy look
 
-
 # Pane (From UI library- TweekPane)
 
 Tweakpane is a **UI library** often used in conjunction with Three.js to build interactive **control panels** (for changing colors, values, toggles, etc.).
@@ -4564,9 +4698,6 @@ animate();
 >
 > * Here, `params.speed` is used every frame.
 > * So even though the slider changes `params.speed`, you don’t need to use `.on('change', ...)` — because the **live value is being read continuously** inside `animate()`.
->
-
-
 
 # MeshStandardMaterial
 
@@ -4679,7 +4810,6 @@ scene.add(light);
 | Specular control      | ❌ No (`metalness`used instead) | ✅ Yes                |
 | Realistic reflections | ✅ Better                         | ❌ Limited            |
 
-
 # MeshPhysicalMaterial
 
 `MeshPhysicalMaterial` is an advanced extension of `MeshStandardMaterial` in Three.js, designed for  **realistic, physically based rendering (PBR)** . It adds more sophisticated optical properties such as  **clearcoat** ,  **transmission** ,  **index of refraction** , and  **sheen** , enabling you to simulate materials like  **glass, car paint, velvet, plastic** , and more with high fidelity.
@@ -4791,7 +4921,6 @@ const carPaint = new THREE.MeshPhysicalMaterial({
 | Index of Refraction       | ❌ No                    | ✅ Yes                   |
 | Iridescence               | ❌ No                    | ✅ Yes                   |
 
-
 # Scene - 2
 
 In Three.js, the `THREE.Scene` class is the container for all your 3D content. Think of it as a **stage** where all objects (meshes, lights, cameras, etc.) are placed. It inherits from `THREE.Object3D`, so it comes with all the standard Object3D methods (like `add()`, `remove()`, `traverse()`), plus its own specific properties and uses.
@@ -4863,7 +4992,6 @@ Example--
 
 ![1749556250172](image/ThreeJs/1749556250172.png)
 
-
 # Loading Texture
 
 In Three.js, the `TextureLoader` is a built-in utility used to **load image files** as textures that can be mapped onto materials (e.g., for wrapping images around meshes like boxes, spheres, etc.).
@@ -4921,7 +5049,8 @@ const textureLoader = new THREE.TextureLoader();
 const texture = textureLoader.load('textures/brick_diffuse.jpg');
 
 const material = new THREE.MeshStandardMaterial({
-  map: texture
+  map: texture 
+  color: new THREE.Color('red') // This color would be blended with the textur. How it looks epends on the texture
 });
 
 const geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -4969,3 +5098,11 @@ You can combine `TextureLoader` with:
 * **Roughness/Metalness maps**
 * **Alpha maps** (`alphaMap`)
 * **Displacement maps**
+
+#### Free Texture Download
+
+You can get lot of free textures to download from the internet
+
+Eg- freepbr.com
+
+---
