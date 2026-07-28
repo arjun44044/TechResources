@@ -1,6 +1,6 @@
 # ----Introduction & Major parts of Antigravity
 
-**Google Antigravity IDE** , which is Google's AI-first IDE built on VS Code. It has many familiar VS Code parts, plus several AI-specific panels and workflows. 
+**Google Antigravity IDE** , which is Google's AI-first IDE built on VS Code. It has many familiar VS Code parts, plus several AI-specific panels and workflows.
 
 Here's a complete breakdown of its major parts.
 
@@ -875,8 +875,32 @@ This setup provides a good balance between productivity and safety while giving 
   - Then finally write- I would like you to design for me an SOP, a maximum of 500 characters which I could then give to an AI to develop a one-page app.
 
     [SOP- Standard Of Procedure]
-- **LAYOUT**- Feed the SOP to Antigravity, with inspiration images of UI from sites like Dribble. Also can add "brand_guidelines.md" (for typography, etc) and "gemini.md" (to tell how to implement, instructions on how to design, etc), can put brand logo. Just add these files in the left files toolbar of Antigravity
+- **LAYOUT**- Feed the SOP to Antigravity, with inspiration images of UI from sites like Dribble. Also can add "brand_guidelines.md" (for typography, etc) and "gemini.md" (to tell how to implement, instructions on how to design, etc), can put brand logo. Just add these files in the left files toolbar of Antigravity. Once done put the prompt that to follow gemini.md to build the application and brand_guidelines for the brand guidelines
 - **ORCHESTRATION**- Can annotate or comment on any of the lines or images(UI snapshots' any small elements too) in the implementation plan provided by Antigravity. Also check the generated "Task list" which also can be commented
   -You can spawn multiple agents for the same workplace in Antigravity(not the IDE but one with white icon) that does different tasks which for example lets say to researh
 
 Can also tell it open in localhost
+
+**-- Make full details for ecah sections of the application, like navigation, header, its menu, hero section, elements inside that section, If bunch of cards then elements each cards, widgets etc. The more explicit the best. All inside "gemini.md"**
+
+    -- ADD json or array, etc input and output explicit too for api, etc
+
+**-- Technical requirements can have Data storage section, Performance**
+
+-- Inside Brand guidelines- 
+
+    Under Brand Name: have Acceptable usage & Unacceptable usage of brand name; Under Logo Usage- have Clear Space, Minimum Size, Logo Donts;
+
+    Under Color Palatte(Evrything here includes 'Use as: '-eg: for Primay color- Use as: primary brand color, headers,  buttons, key UI elements, logo): have Primary Color, Secondary Color, Nuetral Colors(under this, sepcify each- white, light gray, dark gray, blac)
+
+    Under Typography: have Primary Font, Font Weights, Font Sizes, Line Height
+
+    Under UI Elements(Each can have anything: background, border, border-radius, focus-border, shadow, hover, text, etc): have Primary Buttons, Secondary Buttons, Cards, Input Fields,
+
+    Under Iconography: style, size, color
+
+    Tone Of Voice: Can have each point for 'professional', 'approachable', 'concise'
+
+    Contact
+
+**-- MODELS-- Best for Frontend- Gemini, Best for Backend- Claude, General and Productivity- GPT**
