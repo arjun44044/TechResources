@@ -1584,22 +1584,64 @@ It's a foundational layer that other improvements build upon.
 The modern React Native architecture looks roughly like this:
 
 ```text
-React Components
-        │
-        ▼
-JavaScript Runtime (Hermes, for example)
-        │
-        ▼
-JSI
-        │
-        ▼
-TurboModules
-        │
-        ▼
-Native APIs
+Your JavaScript / TypeScript code
+          │
+          │ camera.takePhoto()
+          ▼
+     TurboModule
+          │
+          │ Uses JSI
+          ▼
+         JSI
+          │
+          ▼
+Native C++ / Android / iOS implementation
+          │
+          ▼
+Camera API
 ```
 
-For UI rendering:
+So, architecturally:
+
+> **TurboModules sit above JSI.**
+
+A more accurate view is:
+
+```text
+                 React Native JS
+                       │
+              ┌────────┴────────┐
+              │                 │
+              ▼                 ▼
+         Fabric APIs       TurboModules
+              │                 │
+              └────────┬────────┘
+                       │
+                 built using / exposed through
+                       │
+                       ▼
+                      JSI
+                       │
+                       ▼
+             C++ / Native Platform
+                 │           │
+                 ▼           ▼
+          Android APIs     iOS APIs
+```
+
+Think of JSI as the foundation
+
+A building analogy:
+
+```text
+🏠 TurboModule
+────────────────
+🏗️ JSI foundation
+────────────────
+⚙️ Native/C++ platform code
+```
+
+**For UI rendering:**
 
 ```text
 React Components
@@ -1619,6 +1661,61 @@ Here:
 * **JSI** is the communication layer.
 * **TurboModules** are faster native modules built on JSI.
 * **Fabric** is the modern rendering system that also benefits from JSI.
+  > A better mental model is:
+  >
+  > <pre class="overflow-visible! px-0!" data-start="477" data-end="610"><div class="relative w-full mt-4 mb-1"><div class=""><div class="contents"><div class="relative"><div class="h-full min-h-0 min-w-0"><div class="h-full min-h-0 min-w-0"><div class="border border-token-border-light border-radius-3xl corner-superellipse/1.1 rounded-3xl"><div class="h-full w-full border-radius-3xl bg-(--code-block-surface) corner-superellipse/1.1 overflow-clip rounded-3xl [--code-block-surface:var(--bg-elevated-secondary)] dark:[--code-block-surface:var(--composer-surface-primary)] lxnfua_clipPathFallback"><div class="pointer-events-none absolute end-1.5 top-1 z-2 md:end-2 md:top-1"></div><div class="relative"><div class="pe-11 pt-3"><div class="relative z-0 flex max-w-full"><div id="code-block-viewer" dir="ltr" class="q9tKkq_viewer cm-editor z-10 light:cm-light dark:cm-light flex h-full w-full flex-col items-stretch ͼs ͼ16"><div class="cm-scroller"><pre class="cm-content q9tKkq_readonly m-0"><code><span>React Components
+  >       │
+  >       ▼
+  > React reconciles changes
+  >       │
+  >       ▼
+  > Fabric Renderer
+  >       │
+  >       ▼
+  > Native UI Views</span></code></pre></div></div></div></div></div></div></div></div></div><div class=""><div class=""></div></div></div></div></div></div></pre>
+  >
+  > What happens when you write this?
+  >
+  > <pre class="overflow-visible! px-0!" data-start="654" data-end="747"><div class="relative w-full mt-4 mb-1"><div class=""><div class="contents"><div class="border border-token-border-light border-radius-3xl corner-superellipse/1.1 rounded-3xl"><div class="relative h-full w-full border-radius-3xl bg-(--code-block-surface) corner-superellipse/1.1 overflow-clip rounded-3xl [--code-block-surface:var(--bg-elevated-secondary)] dark:[--code-block-surface:var(--composer-surface-primary)] lxnfua_clipPathFallback"><div class="pointer-events-none absolute inset-x-4 top-12 bottom-4"><div class="pointer-events-none sticky z-40 shrink-0 z-1!"><div class="sticky bg-token-border-light"></div></div></div><div class="relative"><div class="h-full min-h-0 min-w-0"><div class="h-full min-h-0 min-w-0"><div class=""><div class="relative"><div class=""><div class="relative z-0 flex max-w-full"><div id="code-block-viewer" dir="ltr" class="q9tKkq_viewer cm-editor z-10 light:cm-light dark:cm-light flex h-full w-full flex-col items-stretch ͼs ͼ16"><div class="cm-scroller"><pre class="cm-content q9tKkq_readonly m-0"><code><span class="ͼv">function</span><span></span><span class="ͼ11">App</span><span>() {
+  >   </span><span class="ͼv">return</span><span> (
+  >     </span><span class="ͼ13"><View></span><span>
+  >       </span><span class="ͼ13"><Text></span><span>Hello</span><span class="ͼ13"></Text></span><span>
+  >     </span><span class="ͼ13"></View></span><span>
+  >   );
+  > }</span></code></pre></div></div></div></div></div></div></div></div><div class=""><div class=""></div></div></div></div></div></div></div></div></pre>
+  >
+  > The flow is approximately:
+  >
+  > <pre class="overflow-visible! px-0!" data-start="777" data-end="1187"><div class="relative w-full mt-4 mb-1"><div class=""><div class="contents"><div class="relative"><div class="h-full min-h-0 min-w-0"><div class="h-full min-h-0 min-w-0"><div class="border border-token-border-light border-radius-3xl corner-superellipse/1.1 rounded-3xl"><div class="h-full w-full border-radius-3xl bg-(--code-block-surface) corner-superellipse/1.1 overflow-clip rounded-3xl [--code-block-surface:var(--bg-elevated-secondary)] dark:[--code-block-surface:var(--composer-surface-primary)] lxnfua_clipPathFallback"><div class="pointer-events-none absolute end-1.5 top-1 z-2 md:end-2 md:top-1"></div><div class="relative"><div class="pe-11 pt-3"><div class="relative z-0 flex max-w-full"><div id="code-block-viewer" dir="ltr" class="q9tKkq_viewer cm-editor z-10 light:cm-light dark:cm-light flex h-full w-full flex-col items-stretch ͼs ͼ16"><div class="cm-scroller"><pre class="cm-content q9tKkq_readonly m-0"><code><span>Your React Components
+  >         │
+  >         ▼
+  > React figures out what the UI should look like
+  >         │
+  >         ▼
+  > Fabric Renderer
+  >         │
+  >         ├── Creates/manages the UI representation
+  >         ├── Calculates and coordinates updates
+  >         └── Commits changes to the platform
+  >         │
+  >         ▼
+  > Native UI Components
+  >         │
+  >         ├── Android native views
+  >         │
+  >         └── iOS native views</span></code></pre></div></div></div></div></div></div></div></div></div><div class=""><div class=""></div></div></div></div></div></div></pre>
+  >
+  > So:
+  >
+  > <pre class="overflow-visible! px-0!" data-start="1194" data-end="1307"><div class="relative w-full mt-4 mb-1"><div class=""><div class="contents"><div class="relative"><div class="h-full min-h-0 min-w-0"><div class="h-full min-h-0 min-w-0"><div class="border border-token-border-light border-radius-3xl corner-superellipse/1.1 rounded-3xl"><div class="h-full w-full border-radius-3xl bg-(--code-block-surface) corner-superellipse/1.1 overflow-clip rounded-3xl [--code-block-surface:var(--bg-elevated-secondary)] dark:[--code-block-surface:var(--composer-surface-primary)] lxnfua_clipPathFallback"><div class="pointer-events-none absolute end-1.5 top-1 z-2 md:end-2 md:top-1"></div><div class="relative"><div class="pe-11 pt-3"><div class="relative z-0 flex max-w-full"><div id="code-block-viewer" dir="ltr" class="q9tKkq_viewer cm-editor z-10 light:cm-light dark:cm-light flex h-full w-full flex-col items-stretch ͼs ͼ16"><div class="cm-scroller"><pre class="cm-content q9tKkq_readonly m-0"><code><span><View>
+  >    │
+  >    ▼
+  > Fabric
+  >    │
+  >    ├── Android → native Android View
+  >    │
+  >    └── iOS → native iOS UIView</span></code></pre></div></div></div></div></div></div></div></div></div><div class=""><div class=""></div></div></div></div></div></div></pre>
+  >
 
 ### ⚡ Real-World Benefits
 
@@ -8796,7 +8893,169 @@ Line 2...
 
 Remaining text is truncated.
 
-### 📱 Ellipsize Mode
+`numberOfLines` controls  **how many lines of text are allowed to be displayed** .
+
+If the text is longer than the available space, React Native truncates the excess text.
+
+Basic example
+
+```tsx
+<Text numberOfLines={1}>
+  This is a very long piece of text that will not fit on one line.
+</Text>
+```
+
+If the available width is small, it might appear as:
+
+```text
+This is a very long piece of...
+```
+
+The important point is:
+
+> `numberOfLines` is a  **maximum number of lines** , not necessarily an exact number of lines.
+
+For example:
+
+```tsx
+<Text numberOfLines={3}>
+  Some text...
+</Text>
+```
+
+The text can occupy:
+
+```text
+Line 1
+Line 2
+Line 3
+```
+
+but if the actual text only needs two lines, it will use two.
+
+##### `numberOfLines={1}` — single-line text
+
+This is extremely common for things like:
+
+* Product names
+* User names
+* Card titles
+* Navigation labels
+* List items
+
+Example:
+
+```tsx
+<Text numberOfLines={1}>
+  Samsung Galaxy A17 5G Smartphone with 128GB Storage
+</Text>
+```
+
+Could render as:
+
+```text
+Samsung Galaxy A17 5G Smartphone...
+```
+
+instead of allowing:
+
+```text
+Samsung Galaxy A17 5G Smartphone
+with 128GB Storage
+```
+
+##### `numberOfLines={2}`
+
+```tsx
+<Text numberOfLines={2}>
+  Samsung Galaxy A17 5G Smartphone with 128GB Storage and
+  a powerful battery.
+</Text>
+```
+
+Could become:
+
+```text
+Samsung Galaxy A17 5G Smartphone
+with 128GB Storage and a powerful...
+```
+
+Only two lines are allowed.
+
+**-- What determines where the text gets truncated?**
+
+The available width/height and the font determine where React Native has to truncate.
+
+>
+> #### 🧩 Very important: `numberOfLines` does NOT mean "make exactly N lines"
+>
+> For example:
+>
+> ```tsx
+> <Text numberOfLines={3}>
+>   Hello world
+> </Text>
+> ```
+>
+> does **not** force:
+>
+> ```text
+> Hello
+> world
+> (empty)
+> ```
+>
+> It means:
+>
+>> **You may use up to 3 lines.**
+>>
+>
+> So:
+>
+> ```text
+> Hello world
+> ```
+>
+> remains one line if it fits.
+>
+> #### ⚠️ One important difference from CSS
+>
+> Since you've worked with web development, don't think of this as simply:
+>
+> ```css
+> text-overflow: ellipsis;
+> ```
+>
+> React Native gives you:
+>
+> ```tsx
+> numberOfLines={1}
+> ellipsizeMode="tail"
+> ```
+>
+> as the normal mechanism.
+>
+> For the common web-like behavior:
+>
+> ```css
+> overflow: hidden;
+> text-overflow: ellipsis;
+> white-space: nowrap;
+> ```
+>
+> the React Native equivalent is approximately:
+>
+> ```tsx
+> <Text
+>   numberOfLines={1}
+>   ellipsizeMode="tail"
+>>
+>   Long text...
+> </Text>
+> ```
+>
+
+#### 📱 Ellipsize Mode
 
 ```jsx
 <Text
@@ -8819,6 +9078,202 @@ middle
 tail
 clip
 ```
+
+`ellipsizeMode` controls  **where the ellipsis (`...`) is placed when text is truncated** .
+
+However, there is an important platform detail:  **support/behavior differs between Android and iOS** , particularly for multi-line text. In practice, `tail` is the most commonly useful option.
+
+> #### ➡️  `ellipsizeMode="tail"`
+>
+> This puts the ellipsis at the **end** of the visible text.
+>
+> ```tsx
+> <Text
+>   numberOfLines={1}
+>   ellipsizeMode="tail"
+>>
+>   This is a very long piece of text.
+> </Text>
+> ```
+>
+> Result:
+>
+> ```text
+> This is a very long piece...
+> ```
+>
+> Think:
+>
+> ```text
+> START ─────────────── END
+> ██████████████████████...
+>                       ↑
+>                    ellipsis
+> ```
+>
+> This is the normal choice for things such as:
+>
+> ```tsx
+> <Text numberOfLines={1} ellipsizeMode="tail">
+>   Product name
+> </Text>
+> ```
+>
+> #### ⬅️ `ellipsizeMode="head"`
+>
+> The ellipsis is placed at the  **beginning** .
+>
+> ```tsx
+> <Text
+>   numberOfLines={1}
+>   ellipsizeMode="head"
+>>
+>   /products/electronics/samsung/galaxy/a17
+> </Text>
+> ```
+>
+> Conceptually:
+>
+> ```text
+> ...samsung/galaxy/a17
+> ```
+>
+> This can be useful when the **end of the text is more important** than the beginning.
+>
+> For example:
+>
+> ```text
+> .../documents/2026/report.pdf
+> ```
+>
+> instead of:
+>
+> ```text
+> /home/arun/projects/documents...
+> ```
+>
+> #### 🎯 `ellipsizeMode="middle"`
+>
+> The ellipsis is placed approximately in the  **middle** .
+>
+> ```tsx
+> <Text
+>   numberOfLines={1}
+>   ellipsizeMode="middle"
+>>
+>   ABCDEFGHIJKLMNOPQRSTUVWXYZ
+> </Text>
+> ```
+>
+> Conceptually:
+>
+> ```text
+> ABCDEFG...XYZ
+> ```
+>
+> This is useful when you want to preserve both the beginning **and** the end.
+>
+> For example:
+>
+> ```text
+> IMG_2026...final.jpg
+> ```
+>
+> instead of:
+>
+> ```text
+> IMG_2026...
+> ```
+>
+> #### ✂️ `ellipsizeMode="clip"`
+>
+> This simply  **clips the overflowing text without showing `...`** .
+>
+> ```tsx
+> <Text
+>   numberOfLines={1}
+>   ellipsizeMode="clip"
+>>
+>   This is a very long piece of text.
+> </Text>
+> ```
+>
+> Conceptually:
+>
+> ```text
+> This is a very long piece
+> ```
+>
+> There is no:
+>
+> ```text
+> ...
+> ```
+>
+> at the end.
+>
+> So:
+>
+> ```text
+> tail → This is a very long...
+> clip → This is a very long
+> ```
+>
+> #### 🔥 Combining them
+>
+> The two props work together:
+>
+> ```tsx
+> <Text
+>   numberOfLines={1}
+>   ellipsizeMode="tail"
+>>
+>   Samsung Galaxy A17 5G Smartphone
+> </Text>
+> ```
+>
+> means:
+>
+>> Allow  **one line** , and if the text doesn't fit, put `...` at the  **end** .
+>>
+>
+> Another:
+>
+> ```tsx
+> <Text
+>   numberOfLines={2}
+>   ellipsizeMode="tail"
+>>
+>   This is a long description of a product that contains
+>   considerably more information than can fit in two lines.
+> </Text>
+> ```
+>
+> means:
+>
+>> Allow at most  **two lines** , and truncate the remaining text with an ellipsis at the end.
+>>
+>>
+>
+> #### ⭐ Most common combination
+>
+> For UI such as product names, customer names, titles, etc.:
+>
+> ```tsx
+> <Text numberOfLines={1} ellipsizeMode="tail">
+>   Very long product name here
+> </Text>
+> ```
+>
+> For descriptions:
+>
+> ```tsx
+> <Text numberOfLines={2} ellipsizeMode="tail">
+>   Long product description here...
+> </Text>
+> ```
+>
+> Those two patterns will cover a  **large majority of real-world React Native usage** .
 
 ### 👆 Clickable Text
 
@@ -14064,6 +14519,16 @@ Spinner disappears
 
 ### ⭐ Important Props
 
+##### 🔹 `enabled`
+
+Enable or disable pull-to-refresh.
+
+```jsx
+enabled={false}
+```
+
+Now pulling down does nothing.
+
 ##### 🔹 `refreshing` (Required)
 
 Controls whether the spinner is visible.
@@ -14157,16 +14622,6 @@ Changes the background behind the spinner.
 ```jsx
 progressBackgroundColor="#ffffff"
 ```
-
-##### 🔹 `enabled`
-
-Enable or disable pull-to-refresh.
-
-```jsx
-enabled={false}
-```
-
-Now pulling down does nothing.
 
 ### 🌐 Real API Example
 
@@ -15068,5 +15523,4566 @@ Travel
 * Games
 * Immersive image headers
 * Dark mode/light mode transitions
+
+---
+
+# ----FlatList
+
+### 1. Why `FlatList` exists
+
+Imagine you have 10,000 products:
+
+```js
+const products = [
+  { id: "1", name: "iPhone" },
+  { id: "2", name: "Samsung" },
+  ...
+  { id: "10000", name: "..." }
+];
+```
+
+A naïve approach would be:
+
+```jsx
+<ScrollView>
+  {products.map(product => (
+    <ProductCard key={product.id} product={product} />
+  ))}
+</ScrollView>
+```
+
+The problem is that `ScrollView` tries to render the entire list.
+
+```text
+10,000 items
+     ↓
+Create/render 10,000 components
+     ↓
+Large memory usage
+     ↓
+More work for JS/native UI
+     ↓
+Potentially slow
+```
+
+`FlatList` uses  **virtualization** .
+
+```text
+10,000 items
+     ↓
+Only items around the viewport are rendered
+     ↓
+User scrolls
+     ↓
+Old cells can be removed/detached
+     ↓
+New cells are rendered
+```
+
+So conceptually:
+
+```text
+             10,000 items
+                  │
+                  ▼
+        ┌──────────────────┐
+        │ Virtualized list │
+        └──────────────────┘
+                  │
+        ┌──────────────────┐
+        │ Visible window   │
+        │                  │
+        │ Item 48          │
+        │ Item 49          │
+        │ Item 50          │
+        │ Item 51          │
+        │ Item 52          │
+        └──────────────────┘
+```
+
+That's the fundamental reason you use `FlatList` instead of `ScrollView` for large lists.
+
+### 2. Basic `FlatList`
+
+Import it:
+
+```jsx
+import { FlatList, Text, View } from "react-native";
+```
+
+Data:
+
+```jsx
+const users = [
+  { id: "1", name: "Arun" },
+  { id: "2", name: "Rahul" },
+  { id: "3", name: "John" },
+];
+```
+
+Then:
+
+```jsx
+<FlatList
+  data={users}
+  renderItem={({ item }) => (
+    <Text>{item.name}</Text>
+  )}
+/>
+```
+
+Result:
+
+```text
+Arun
+────────────
+Rahul
+────────────
+John
+```
+
+### 3. How `renderItem` works
+
+This is one of the most important things to understand.
+
+```jsx
+renderItem={({ item }) => (
+  <Text>{item.name}</Text>
+)}
+```
+
+React Native calls your function for each item that needs to be rendered.
+
+Conceptually:
+
+```js
+renderItem({
+  item: users[0],
+  index: 0
+});
+
+renderItem({
+  item: users[1],
+  index: 1
+});
+
+renderItem({
+  item: users[2],
+  index: 2
+});
+```
+
+The object passed to `renderItem` contains more information than just `item`.
+
+Commonly:
+
+```js
+{
+  item,
+  index,
+  separators
+}
+```
+
+For example:
+
+```jsx
+renderItem={({ item, index }) => (
+  <Text>
+    {index}: {item.name}
+  </Text>
+)}
+```
+
+### 4. `keyExtractor`
+
+React needs a stable key for every list item.
+
+```jsx
+<FlatList
+  data={users}
+  keyExtractor={(item) => item.id}
+  renderItem={({ item }) => (
+    <Text>{item.name}</Text>
+  )}
+/>
+```
+
+So:
+
+```text
+Arun  → key "1"
+Rahul → key "2"
+John  → key "3"
+```
+
+Prefer a real unique ID:
+
+```jsx
+keyExtractor={(item) => item.id}
+```
+
+rather than:
+
+```jsx
+keyExtractor={(item, index) => index.toString()}
+```
+
+Index keys can cause incorrect component reuse when items are inserted, deleted, or reordered.
+
+### 5. `FlatList` is not just `map()`
+
+This distinction is important.
+
+With:
+
+```jsx
+products.map(...)
+```
+
+you are explicitly creating a component for every product.
+
+With:
+
+```jsx
+<FlatList
+  data={products}
+  renderItem={...}
+/>
+```
+
+you are giving React Native a  **data source and a rendering function** .
+
+The list virtualization system decides which items need to be rendered.
+
+### 6. `ListHeaderComponent`
+
+Adds content before the list.
+
+```jsx
+<FlatList
+  data={users}
+  renderItem={({ item }) => (
+    <Text>{item.name}</Text>
+  )}
+  ListHeaderComponent={
+    <Text style={{ fontSize: 30 }}>
+      Users
+    </Text>
+  }
+/>
+```
+
+Result:
+
+```text
+Users
+══════════
+
+Arun
+
+Rahul
+
+John
+```
+
+You can also provide a component:
+
+```jsx
+ListHeaderComponent={Header}
+```
+
+or:
+
+```jsx
+ListHeaderComponent={() => (
+  <Text>Users</Text>
+)}
+```
+
+### 7. `ListFooterComponent`
+
+Content after the list.
+
+```jsx
+<FlatList
+  data={users}
+  renderItem={({ item }) => (
+    <Text>{item.name}</Text>
+  )}
+  ListFooterComponent={
+    <Text>End of list</Text>
+  }
+/>
+```
+
+Useful for:
+
+* Loading more data
+* Pagination
+* "You've reached the end"
+* Footer information
+
+For example:
+
+```jsx
+ListFooterComponent={
+  loadingMore ? <ActivityIndicator /> : null
+}
+```
+
+### 8. `ListEmptyComponent`
+
+What to show when:
+
+```js
+data = [];
+```
+
+Example:
+
+```jsx
+<FlatList
+  data={users}
+  renderItem={({ item }) => (
+    <Text>{item.name}</Text>
+  )}
+  ListEmptyComponent={
+    <Text>No users found.</Text>
+  }
+/>
+```
+
+Result:
+
+```text
+No users found.
+```
+
+Very useful for search screens.
+
+### 9. `ItemSeparatorComponent`
+
+Adds a separator between items.
+
+```jsx
+<FlatList
+  data={users}
+  renderItem={({ item }) => (
+    <Text>{item.name}</Text>
+  )}
+  ItemSeparatorComponent={() => (
+    <View
+      style={{
+        height: 1,
+        backgroundColor: "#ddd"
+      }}
+    />
+  )}
+/>
+```
+
+Conceptually:
+
+```text
+Arun
+────────────
+Rahul
+────────────
+John
+```
+
+The separator isn't normally rendered before the first item or after the last item.
+
+### 10. Horizontal lists
+
+By default:
+
+```jsx
+<FlatList
+  data={products}
+  renderItem={...}
+/>
+```
+
+is vertical:
+
+```text
+Product 1
+Product 2
+Product 3
+Product 4
+```
+
+Set:
+
+```jsx
+horizontal
+```
+
+```jsx
+<FlatList
+  horizontal
+  data={products}
+  renderItem={({ item }) => (
+    <ProductCard product={item} />
+  )}
+/>
+```
+
+Now:
+
+```text
+Product 1 → Product 2 → Product 3 → Product 4
+```
+
+Great for:
+
+* Categories
+* Stories
+* Recommended products
+* Image carousels
+
+### 11. `numColumns`
+
+You can make a grid.
+
+```jsx
+<FlatList
+  data={products}
+  numColumns={2}
+  renderItem={({ item }) => (
+    <ProductCard product={item} />
+  )}
+/>
+```
+
+Result:
+
+```text
+┌────────┐ ┌────────┐
+│ Product│ │ Product│
+│    1   │ │    2   │
+└────────┘ └────────┘
+
+┌────────┐ ┌────────┐
+│ Product│ │ Product│
+│    3   │ │    4   │
+└────────┘ └────────┘
+```
+
+Important:
+
+`numColumns` works for vertical lists. It isn't the mechanism for a horizontally scrolling grid.
+
+### 12. `columnWrapperStyle`
+
+Useful with `numColumns`.
+
+```jsx
+<FlatList
+  data={products}
+  numColumns={2}
+  columnWrapperStyle={{
+    justifyContent: "space-between",
+  }}
+  renderItem={...}
+/>
+```
+
+This styles the row containing the columns.
+
+### 13. Pull-to-refresh
+
+As you asked earlier, `FlatList` has built-in support.
+
+You don't normally need to manually create `RefreshControl`.
+
+```jsx
+const [refreshing, setRefreshing] = useState(false);
+
+const onRefresh = async () => {
+  setRefreshing(true);
+
+  await fetchProducts();
+
+  setRefreshing(false);
+};
+```
+
+Then:
+
+```jsx
+<FlatList
+  data={products}
+  renderItem={...}
+  refreshing={refreshing}
+  onRefresh={onRefresh}
+/>
+```
+
+Flow:
+
+```text
+User pulls down
+      ↓
+FlatList reaches refresh state
+      ↓
+refreshing = true
+      ↓
+Spinner
+      ↓
+API request
+      ↓
+Data updated
+      ↓
+refreshing = false
+```
+
+### 14. `onEndReached`
+
+Extremely important for pagination.
+
+```jsx
+<FlatList
+  data={products}
+  renderItem={...}
+  onEndReached={loadMoreProducts}
+/>
+```
+
+When the user gets close to the end:
+
+```text
+Product 95
+Product 96
+Product 97
+Product 98
+Product 99
+Product 100
+       ↓
+   near end
+       ↓
+loadMoreProducts()
+       ↓
+fetch page 2
+```
+
+### 15. `onEndReachedThreshold`
+
+Controls how early `onEndReached` fires.
+
+```jsx
+onEndReachedThreshold={0.5}
+```
+
+Conceptually:
+
+```text
+              Bottom
+                ↓
+────────────────────────
+        50% threshold
+────────────────────────
+                ↑
+          trigger here
+```
+
+A value of `0.5` means approximately half a viewport length from the end, not "50% of the entire list."
+
+This distinction is important.
+
+### 16. `inverted`
+
+Reverses the scrolling direction.
+
+```jsx
+<FlatList
+  inverted
+  data={messages}
+  renderItem={...}
+/>
+```
+
+Useful for chat interfaces.
+
+Conceptually:
+
+```text
+          Chat
+
+      Message 3
+      Message 2
+      Message 1
+──────────────────
+       Input
+```
+
+It's particularly useful when combined with message pagination/loading older messages.
+
+### 17. `initialNumToRender`
+
+Controls how many items are rendered initially.
+
+```jsx
+initialNumToRender={10}
+```
+
+Instead of initially trying to render a large number of cells, the list starts with a small initial batch.
+
+But don't blindly make this very small.
+
+If your screen displays 8 items, setting:
+
+```jsx
+initialNumToRender={2}
+```
+
+could cause unnecessary blank areas while the rest render.
+
+### 18. `maxToRenderPerBatch`
+
+Controls the approximate number of new items rendered in each batch.
+
+```jsx
+maxToRenderPerBatch={10}
+```
+
+Trade-off:
+
+```text
+Higher value
+    ↓
+More items rendered per batch
+    ↓
+Potentially smoother fast scrolling
+    ↓
+More JS work at once
+
+
+Lower value
+    ↓
+Less work per batch
+    ↓
+Potentially better responsiveness
+    ↓
+Greater chance of blank areas during very fast scrolling
+```
+
+Don't change this unless you actually have a performance reason.
+
+### 19. `windowSize`
+
+Controls how large the virtualization window is around the visible area.
+
+```jsx
+windowSize={21}
+```
+
+Think:
+
+```text
+           Items outside window
+
+───────────────────────────────
+           Render window
+───────────────────────────────
+           Visible screen
+───────────────────────────────
+           Render window
+───────────────────────────────
+
+           Items outside window
+```
+
+Larger:
+
+```text
+More cells kept/rendered
+        ↓
+More memory
+        ↓
+Less chance of blank areas
+```
+
+Smaller:
+
+```text
+Fewer cells
+        ↓
+Less memory
+        ↓
+Potentially more blank areas during rapid scrolling
+```
+
+### 20. `getItemLayout`
+
+This can be a **major optimization** when every item has a known fixed size.
+
+Suppose every row is exactly `80px` high.
+
+```jsx
+<FlatList
+  data={users}
+  getItemLayout={(data, index) => ({
+    length: 80,
+    offset: 80 * index,
+    index,
+  })}
+  renderItem={...}
+/>
+```
+
+Normally the list may need to determine item measurements.
+
+With known dimensions:
+
+```text
+Item 0 → offset 0
+Item 1 → offset 80
+Item 2 → offset 160
+Item 3 → offset 240
+```
+
+This is especially useful with:
+
+```jsx
+scrollToIndex()
+```
+
+because React Native can calculate where an item is without measuring every preceding item.
+
+### 21. `initialScrollIndex`
+
+Start at a particular item.
+
+```jsx
+initialScrollIndex={50}
+```
+
+The list initially positions itself around item 50.
+
+For this, `getItemLayout` is often important when item sizes are fixed.
+
+### 22. `onScrollToIndexFailed`
+
+Suppose you ask:
+
+```jsx
+flatListRef.current?.scrollToIndex({
+  index: 500
+});
+```
+
+but React Native hasn't measured enough information to immediately reach that item.
+
+You can handle the failure:
+
+```jsx
+onScrollToIndexFailed={(info) => {
+  console.log(info);
+}}
+```
+
+The callback gives information such as:
+
+```js
+{
+  index,
+  highestMeasuredFrameIndex,
+  averageItemLength
+}
+```
+
+You can then retry after allowing more content to render.
+
+### 23. `onViewableItemsChanged`
+
+One of the most useful advanced props.
+
+It tells you which items are currently considered viewable.
+
+```jsx
+onViewableItemsChanged={({ viewableItems }) => {
+  console.log(viewableItems);
+}}
+```
+
+Example:
+
+```text
+Screen:
+
+┌──────────────────┐
+│ Product 20       │ ← viewable
+│ Product 21       │ ← viewable
+│ Product 22       │ ← viewable
+└──────────────────┘
+```
+
+Could be useful for:
+
+* Analytics
+* Auto-playing videos
+* Marking notifications as seen
+* Tracking impressions
+* Ads
+
+### 24. `viewabilityConfig`
+
+Defines what "viewable" means.
+
+For example:
+
+```jsx
+const viewabilityConfig = {
+  itemVisiblePercentThreshold: 50,
+};
+```
+
+Then:
+
+```jsx
+<FlatList
+  ...
+  viewabilityConfig={viewabilityConfig}
+  onViewableItemsChanged={...}
+/>
+```
+
+An item needs approximately 50% of its area visible to be considered viewable.
+
+Other configuration concepts include minimum view time and wait-for-interaction behavior.
+
+### 25. `extraData`
+
+This is a common source of confusion.
+
+Suppose:
+
+```jsx
+const [selectedId, setSelectedId] = useState(null);
+```
+
+And:
+
+```jsx
+renderItem={({ item }) => (
+  <Product
+    product={item}
+    selected={item.id === selectedId}
+  />
+)}
+```
+
+Your `data` hasn't changed when `selectedId` changes.
+
+You can tell the list that another value affects rendering:
+
+```jsx
+<FlatList
+  data={products}
+  extraData={selectedId}
+  renderItem={...}
+/>
+```
+
+Conceptually:
+
+```text
+data ───────────────┐
+                    │
+extraData ──────────┤
+                    ↓
+               FlatList
+                    ↓
+              render items
+```
+
+### 26. `removeClippedSubviews`
+
+```jsx
+removeClippedSubviews
+```
+
+This allows views outside the clipping area to be detached from the native view hierarchy.
+
+It can reduce native view work/memory in some situations, particularly on Android.
+
+But:
+
+> Don't assume `true` is always faster.
+
+Complex layouts, transforms, animations, and certain edge cases can make it undesirable.
+
+### 27. `progressViewOffset`
+
+Controls the vertical offset of the refresh indicator.
+
+```jsx
+progressViewOffset={50}
+```
+
+Useful if your list has a custom header or the spinner needs to start lower.
+
+### 28. Scroll indicator props
+
+You can control the scrollbar:
+
+```jsx
+showsVerticalScrollIndicator={false}
+```
+
+and:
+
+```jsx
+showsHorizontalScrollIndicator={false}
+```
+
+### 29. `contentContainerStyle`
+
+This is technically inherited from the underlying scrollable list infrastructure, but it's worth knowing because it's frequently used.
+
+```jsx
+<FlatList
+  contentContainerStyle={{
+    padding: 20,
+  }}
+/>
+```
+
+This styles the  **content inside the scroll view** , rather than the outer list itself.
+
+For an empty list, you can do:
+
+```jsx
+contentContainerStyle={{
+  flexGrow: 1,
+  justifyContent: "center",
+}}
+```
+
+to center your empty-state component.
+
+### 30. `ItemSeparatorComponent` vs `ListHeaderComponent`
+
+Think:
+
+```text
+ListHeaderComponent
+        ↓
+      Item 1
+        ↓
+ItemSeparator
+        ↓
+      Item 2
+        ↓
+ItemSeparator
+        ↓
+      Item 3
+        ↓
+ListFooterComponent
+```
+
+That's a useful mental model.
+
+### 31. A realistic `FlatList`
+
+Here's a more production-like example:
+
+```jsx
+const [products, setProducts] = useState([]);
+const [refreshing, setRefreshing] = useState(false);
+const [loadingMore, setLoadingMore] = useState(false);
+
+const refreshProducts = async () => {
+  setRefreshing(true);
+
+  try {
+    const data = await fetchProducts(1);
+    setProducts(data);
+  } finally {
+    setRefreshing(false);
+  }
+};
+
+const loadMoreProducts = async () => {
+  if (loadingMore) return;
+
+  setLoadingMore(true);
+
+  try {
+    const nextProducts = await fetchProducts(2);
+
+    setProducts(prev => [
+      ...prev,
+      ...nextProducts,
+    ]);
+  } finally {
+    setLoadingMore(false);
+  }
+};
+```
+
+```jsx
+<FlatList
+  data={products}
+  keyExtractor={item => item.id}
+
+  renderItem={({ item }) => (
+    <ProductCard product={item} />
+  )}
+
+  ItemSeparatorComponent={() => (
+    <View style={{ height: 1 }} />
+  )}
+
+  ListEmptyComponent={
+    <Text>No products found.</Text>
+  }
+
+  ListFooterComponent={
+    loadingMore
+      ? <ActivityIndicator />
+      : null
+  }
+
+  refreshing={refreshing}
+  onRefresh={refreshProducts}
+
+  onEndReached={loadMoreProducts}
+  onEndReachedThreshold={0.5}
+
+  showsVerticalScrollIndicator={false}
+/>
+```
+
+This gives you:
+
+```text
+                 Product list
+                     │
+       ┌─────────────┴─────────────┐
+       │                           │
+   Pull down                  Scroll down
+       │                           │
+       ▼                           ▼
+    Refresh                   Near bottom
+       │                           │
+       ▼                           ▼
+     API call                 Load next page
+```
+
+### The most important FlatList props to know
+
+You don't need to memorize every obscure prop immediately. For your learning, prioritize these:
+
+Essential
+
+```text
+data
+renderItem
+keyExtractor
+```
+
+UI
+
+```text
+ListHeaderComponent
+ListFooterComponent
+ListEmptyComponent
+ItemSeparatorComponent
+```
+
+Layout
+
+```text
+horizontal
+numColumns
+columnWrapperStyle
+```
+
+Refresh / pagination
+
+```text
+refreshing
+onRefresh
+onEndReached
+onEndReachedThreshold
+```
+
+Virtualization/performance
+
+```text
+initialNumToRender
+maxToRenderPerBatch
+windowSize
+getItemLayout
+removeClippedSubviews
+```
+
+Visibility
+
+```text
+onViewableItemsChanged
+viewabilityConfig
+```
+
+Programmatic scrolling
+
+```text
+initialScrollIndex
+onScrollToIndexFailed
+```
+
+Re-rendering
+
+```text
+extraData
+```
+
+---
+
+# ----SectionList
+
+`SectionList` is for a list divided into  **sections** .
+
+Imagine contacts:
+
+```text
+A
+────────
+Arun
+Alex
+Adam
+
+B
+────────
+Ben
+Bob
+
+C
+────────
+Chris
+```
+
+You could manually construct this with a `FlatList`, but `SectionList` gives you the structure directly.
+
+### SectionList data structure
+
+This is the key difference.
+
+`FlatList`:
+
+```js
+const users = [
+  { id: "1", name: "Arun" },
+  { id: "2", name: "Alex" },
+  { id: "3", name: "Bob" },
+];
+```
+
+`SectionList`:
+
+```js
+const sections = [
+  {
+    title: "A",
+    data: [
+      { id: "1", name: "Arun" },
+      { id: "2", name: "Alex" },
+    ],
+  },
+
+  {
+    title: "B",
+    data: [
+      { id: "3", name: "Bob" },
+    ],
+  },
+];
+```
+
+So:
+
+```text
+SectionList
+   │
+   ├── Section A
+   │     ├── Arun
+   │     └── Alex
+   │
+   └── Section B
+         └── Bob
+```
+
+### Basic SectionList
+
+```jsx
+import {
+  SectionList,
+  Text,
+} from "react-native";
+```
+
+Then:
+
+```jsx
+<SectionList
+  sections={sections}
+
+  renderItem={({ item }) => (
+    <Text>{item.name}</Text>
+  )}
+
+  renderSectionHeader={({ section }) => (
+    <Text>{section.title}</Text>
+  )}
+/>
+```
+
+Result:
+
+```text
+A
+
+Arun
+Alex
+
+B
+
+Bob
+```
+
+### 1. `sections`
+
+This replaces `data` from `FlatList`.
+
+```jsx
+sections={sections}
+```
+
+Each section generally has:
+
+```js
+{
+  data: [...],
+  title: "A"
+}
+```
+
+You can add your own properties:
+
+```js
+{
+  title: "Today",
+  date: "28 Aug",
+  data: [...]
+}
+```
+
+Then:
+
+```jsx
+renderSectionHeader={({ section }) => (
+  <Text>
+    {section.title} - {section.date}
+  </Text>
+)}
+```
+
+### 2. `renderSectionHeader`
+
+Controls the section header.
+
+```jsx
+renderSectionHeader={({ section }) => (
+  <Text>
+    {section.title}
+  </Text>
+)}
+```
+
+For:
+
+```js
+{
+  title: "A",
+  data: [...]
+}
+```
+
+you get:
+
+```text
+A
+```
+
+### 3. `renderSectionFooter`
+
+You can also have a footer for every section.
+
+```jsx
+renderSectionFooter={({ section }) => (
+  <Text>
+    End of {section.title}
+  </Text>
+)}
+```
+
+Result:
+
+```text
+A
+Arun
+Alex
+
+End of A
+
+B
+Bob
+
+End of B
+```
+
+### 4. `SectionSeparatorComponent`
+
+Separates sections.
+
+```jsx
+<SectionList
+  ...
+  SectionSeparatorComponent={() => (
+    <View style={{ height: 20 }} />
+  )}
+/>
+```
+
+Conceptually:
+
+```text
+A
+Arun
+Alex
+
+       ← section separator
+
+B
+Bob
+```
+
+Don't confuse it with:
+
+```jsx
+ItemSeparatorComponent
+```
+
+which separates individual items.
+
+### 5. `stickySectionHeadersEnabled`
+
+This is particularly useful.
+
+```jsx
+stickySectionHeadersEnabled
+```
+
+As you scroll:
+
+```text
+A
+Arun
+Alex
+Adam
+```
+
+The `A` header can remain at the top:
+
+```text
+┌────────────────────┐
+│ A                  │ ← sticky
+├────────────────────┤
+│ Alex               │
+│ Adam               │
+│ ...                │
+└────────────────────┘
+```
+
+When B arrives:
+
+```text
+┌────────────────────┐
+│ B                  │ ← replaces A
+├────────────────────┤
+│ Bob                │
+│ Ben                │
+└────────────────────┘
+```
+
+This is excellent for:
+
+* Contacts
+* Settings grouped by category
+* Order history grouped by date
+* Messages grouped by day
+
+### `SectionList` also supports refresh
+
+Just like `FlatList`:
+
+```jsx
+<SectionList
+  sections={sections}
+  renderItem={...}
+  renderSectionHeader={...}
+  refreshing={refreshing}
+  onRefresh={onRefresh}
+/>
+```
+
+### `SectionList` also supports pagination
+
+```jsx
+<SectionList
+  sections={sections}
+  renderItem={...}
+  renderSectionHeader={...}
+  onEndReached={loadMore}
+/>
+```
+
+So it inherits many of the virtualization and scrolling capabilities of `FlatList`.
+
+### `FlatList` vs `SectionList`
+
+The easiest way to remember:
+
+FlatList
+
+```text
+ONE FLAT ARRAY
+
+[ A, B, C, D, E, F ]
+```
+
+SectionList
+
+```text
+ARRAY OF SECTIONS
+
+[
+  {
+    title: "A",
+    data: [A, B]
+  },
+
+  {
+    title: "B",
+    data: [C, D]
+  }
+]
+```
+
+### Example: Jewellery App
+
+Since you're working with business software, imagine a jewellery app.
+
+You could use `FlatList` for:
+
+```text
+All Jewellery
+
+Gold Ring
+Diamond Ring
+Gold Chain
+Bracelet
+Necklace
+```
+
+```jsx
+<FlatList
+  data={products}
+  renderItem={({ item }) => (
+    <ProductCard product={item} />
+  )}
+/>
+```
+
+But if you want:
+
+```text
+RINGS
+────────────
+Gold Ring
+Diamond Ring
+
+CHAINS
+────────────
+Gold Chain
+Diamond Chain
+
+BRACELETS
+────────────
+Gold Bracelet
+Diamond Bracelet
+```
+
+then:
+
+```jsx
+<SectionList
+  sections={categories}
+  renderSectionHeader={({ section }) => (
+    <Text>{section.title}</Text>
+  )}
+  renderItem={({ item }) => (
+    <ProductCard product={item} />
+  )}
+/>
+```
+
+---
+
+# ----VirtualizedList
+
+### What is `VirtualizedList`?
+
+There is another important component underneath these.
+
+The hierarchy is approximately:
+
+```text
+                VirtualizedList
+                 /          \
+                /            \
+               ▼              ▼
+          FlatList        SectionList
+```
+
+`VirtualizedList` is the lower-level virtualization component.
+
+It is useful when your data isn't conveniently represented as a normal array.
+
+For example, it lets you provide mechanisms such as:
+
+```jsx
+getItem
+getItemCount
+```
+
+to tell React Native how to access your data.
+
+Most applications  **do not need to use `VirtualizedList` directly** .
+
+Think:
+
+```text
+Normal list
+   ↓
+FlatList
+
+Grouped list
+   ↓
+SectionList
+
+Highly customized data/virtualization
+   ↓
+VirtualizedList
+```
+
+### Are there other list libraries?
+
+Yes.
+
+A major third-party option is **FlashList** from Shopify.
+
+Conceptually:
+
+```text
+React Native
+    │
+    ├── FlatList
+    │
+    └── SectionList
+
+Third-party
+    │
+    └── FlashList
+```
+
+FlashList aims to provide very high-performance list rendering and is particularly useful when you have demanding lists.
+
+There are also specialized list implementations for:
+
+* Masonry/Pinterest-style layouts
+* Bottom sheets
+* Extremely large datasets
+* Recycled views
+
+But  **don't start by learning all of these** .
+
+For React Native fundamentals, learn in this order:
+
+```text
+ScrollView
+    ↓
+FlatList
+    ↓
+SectionList
+    ↓
+Virtualization
+    ↓
+Performance optimization
+    ↓
+Third-party lists such as FlashList
+```
+
+### Most important SectionList-specific props
+
+Learn these:
+
+```text
+sections
+renderItem
+renderSectionHeader
+renderSectionFooter
+SectionSeparatorComponent
+stickySectionHeadersEnabled
+```
+
+And then remember that `SectionList` also provides most of the important list/scroll behavior that you know from `FlatList`.
+
+### One final mental model
+
+This is the model I'd recommend keeping in your head:
+
+```text
+                       LIST DATA
+                          │
+             ┌────────────┴────────────┐
+             │                         │
+             ▼                         ▼
+         FlatList                  SectionList
+             │                         │
+      One flat array            Sections + arrays
+             │                         │
+             └────────────┬────────────┘
+                          ▼
+                  VirtualizedList
+                          │
+                          ▼
+                    Virtualization
+                          │
+              ┌───────────┴───────────┐
+              │                       │
+        Visible items           Off-screen items
+              │                       │
+              ▼                       ▼
+          Rendered              Not rendered/
+                                recycled/detached
+```
+
+And the single most important distinction is:
+
+> **`ScrollView` is appropriate for smaller amounts of content, while `FlatList`/`SectionList` are designed for large, potentially dynamic lists because they use virtualization. `FlatList` handles one-dimensional data; `SectionList` handles grouped data with section headers/footers.**
+
+One correction to keep in mind from some simplified explanations online: **virtualization doesn't literally mean React Native permanently "destroys every item as soon as it leaves the screen."** It manages a render window and native cells/views according to its virtualization strategy. The important practical consequence is that you should  **not assume every item in a huge list is simultaneously mounted/rendered like a `ScrollView` with `.map()`** .
+
+---
+
+# ----Modal Component
+
+`Modal` is a React Native component that displays content  **above the current screen** .
+
+Think of things like:
+
+* Login dialog
+* Confirmation dialog
+* Image viewer
+* Bottom-sheet-like UI
+* Payment screen
+* Custom form
+* Full-screen workflow
+* "Edit Product" popup
+
+Basic example:
+
+```jsx
+import { Modal, View, Text, Button } from "react-native";
+import { useState } from "react";
+
+export default function App() {
+  const [visible, setVisible] = useState(false);
+
+  return (
+    <View>
+      <Button
+        title="Open Modal"
+        onPress={() => setVisible(true)}
+      />
+
+      <Modal visible={visible}>
+        <View>
+          <Text>Hello from Modal</Text>
+
+          <Button
+            title="Close"
+            onPress={() => setVisible(false)}
+          />
+        </View>
+      </Modal>
+    </View>
+  );
+}
+```
+
+When:
+
+```js
+visible = false
+```
+
+the modal isn't displayed.
+
+When:
+
+```js
+visible = true
+```
+
+it appears above your normal application UI.
+
+### Important concept: Modal is not just a `View`
+
+A common misconception is:
+
+```jsx
+<View>
+   ...
+</View>
+```
+
+versus:
+
+```jsx
+<Modal>
+   ...
+</Modal>
+```
+
+A `Modal` has special platform behavior.
+
+Conceptually:
+
+```text
+Normal React Native UI
+        │
+        ▼
+   Main UI hierarchy
+        │
+        │
+        └───────────────┐
+                        │
+                        ▼
+                     Modal
+                        │
+                        ▼
+                Separate presentation
+                above the main UI
+```
+
+On Android and iOS, React Native uses native platform mechanisms to present the modal.
+
+So it's not simply:
+
+```text
+<View style={{ position: "absolute" }}>
+```
+
+A custom absolute-positioned view and a `Modal` are different things.
+
+### 1. `visible`
+
+This is the most important `Modal` prop.
+
+```jsx
+<Modal visible={visible}>
+```
+
+Example:
+
+```jsx
+const [visible, setVisible] = useState(false);
+```
+
+Open:
+
+```js
+setVisible(true);
+```
+
+Close:
+
+```js
+setVisible(false);
+```
+
+You can think of it as:
+
+```text
+visible = false
+        ↓
+Modal hidden
+
+visible = true
+        ↓
+Modal displayed
+```
+
+### 2. `animationType`
+
+Controls how the modal appears/disappears.
+
+Available values are:
+
+```text
+"none"
+"slide"
+"fade"
+```
+
+**`none`**
+
+```jsx
+<Modal animationType="none">
+```
+
+Appears/disappears without an animation.
+
+**`slide`**
+
+```jsx
+<Modal animationType="slide">
+```
+
+Conceptually:
+
+```text
+       ↓
+     Modal
+       ↓
+   slides into
+     screen
+```
+
+**`fade`**
+
+```jsx
+<Modal animationType="fade">
+```
+
+The modal fades in/out.
+
+### 3. `transparent`
+
+This is extremely useful.
+
+```jsx
+<Modal
+  visible={visible}
+  transparent
+>
+```
+
+Without transparency, the modal's presentation generally behaves like an opaque screen.
+
+With:
+
+```jsx
+transparent={true}
+```
+
+you can see the underlying screen.
+
+For example:
+
+```jsx
+<Modal
+  visible={visible}
+  transparent
+  animationType="fade"
+>
+  <View
+    style={{
+      flex: 1,
+      backgroundColor: "rgba(0,0,0,0.5)",
+      justifyContent: "center",
+      alignItems: "center",
+    }}
+  >
+    <View
+      style={{
+        width: 300,
+        padding: 20,
+        backgroundColor: "white",
+        borderRadius: 12,
+      }}
+    >
+      <Text>Are you sure?</Text>
+    </View>
+  </View>
+</Modal>
+```
+
+Result conceptually:
+
+```text
+┌────────────────────────────┐
+│                            │
+│       Main screen          │
+│                            │
+│     ▓▓▓▓▓▓▓▓▓▓▓▓▓▓         │
+│     ▓ Are you sure? ▓      │
+│     ▓              ▓      │
+│     ▓   Cancel OK  ▓      │
+│     ▓▓▓▓▓▓▓▓▓▓▓▓▓▓         │
+│                            │
+└────────────────────────────┘
+       ↑
+   dark overlay
+```
+
+This is one of the most common uses of `Modal`.
+
+### 4. `onRequestClose`
+
+This is particularly important on  **Android** .
+
+```jsx
+<Modal
+  visible={visible}
+  onRequestClose={() => setVisible(false)}
+>
+```
+
+It is called when the user attempts to dismiss the modal using the Android back button.
+
+For example:
+
+```jsx
+<Modal
+  visible={visible}
+  onRequestClose={() => {
+    setVisible(false);
+  }}
+>
+```
+
+Flow:
+
+```text
+User presses Android Back
+          ↓
+onRequestClose()
+          ↓
+setVisible(false)
+          ↓
+Modal closes
+```
+
+**--Important**
+
+`onRequestClose` does **not** itself necessarily mean:
+
+> "React Native automatically changes `visible` to false."
+
+You normally need to update your state.
+
+### 5. `onShow`
+
+Called when the modal has been shown.
+
+```jsx
+<Modal
+  visible={visible}
+  onShow={() => {
+    console.log("Modal displayed");
+  }}
+>
+```
+
+Useful when you need to perform something after presentation.
+
+For example:
+
+```jsx
+onShow={() => {
+  inputRef.current?.focus();
+}}
+```
+
+### 6. `onDismiss`
+
+Called when the modal has been dismissed.
+
+```jsx
+<Modal
+  visible={visible}
+  onDismiss={() => {
+    console.log("Modal dismissed");
+  }}
+>
+```
+
+This is especially relevant to the modal's presentation lifecycle.
+
+One distinction:
+
+```text
+onShow
+   ↓
+Modal has been presented
+
+onDismiss
+   ↓
+Modal has been dismissed
+```
+
+Don't confuse `onDismiss` with your own close button:
+
+```jsx
+setVisible(false);
+```
+
+The latter changes your state; `onDismiss` is a lifecycle callback associated with dismissal.
+
+##### `onRequestClose()` vs `onDismiss()`
+
+They are related, but they happen at  **different points in the modal's lifecycle** .
+
+The easiest way to remember:
+
+> **`onRequestClose` = "The user is asking to close the modal."**
+>
+> **`onDismiss` = "The modal has finished being dismissed."**
+
+##### What about pressing your own Close button?
+
+Suppose:
+
+```jsx
+<Modal
+  visible={visible}
+  onRequestClose={() => setVisible(false)}
+  onDismiss={() => console.log("dismissed")}
+>
+  <Button
+    title="Close"
+    onPress={() => setVisible(false)}
+  />
+</Modal>
+```
+
+If the user taps your button:
+
+```text
+Close button
+     │
+     ▼
+setVisible(false)
+     │
+     ▼
+Modal closes
+     │
+     ▼
+onDismiss()
+```
+
+Notice:
+
+**`onRequestClose` doesn't necessarily run.**
+
+Why?
+
+Because your button directly changed:
+
+```js
+visible → false
+```
+
+There wasn't a native "request to close" that needed handling through `onRequestClose`.
+
+##### Android Back vs Close button
+
+This makes it very clear:
+
+| Action                 | `onRequestClose` | `onDismiss`       |
+| ---------------------- | ------------------ | ------------------- |
+| Android Back           | ✅                 | ✅ after dismissal  |
+| Your Close button      | ❌ usually         | ✅ after dismissal  |
+| `setVisible(false)`  | ❌                 | ✅ after dismissal  |
+| Programmatic dismissal | ❌                 | ✅ after dismissal  |
+| Meaning                | Request to close   | Dismissal completed |
+
+### 7. `statusBarTranslucent`
+
+Android-specific behavior concerning whether the modal can extend into the status bar area.
+
+```jsx
+<Modal
+  statusBarTranslucent
+>
+```
+
+This becomes relevant when designing edge-to-edge/full-screen modal interfaces.
+
+You won't normally need this for a basic modal.
+
+### 8. `navigationBarTranslucent`
+
+Also primarily Android-related.
+
+```jsx
+<Modal
+  navigationBarTranslucent
+>
+```
+
+It controls whether the modal can extend underneath the Android navigation bar.
+
+Again, this is mainly useful for advanced full-screen layouts.
+
+### 9. `presentationStyle`
+
+Primarily relevant to iOS.
+
+It controls how the modal is presented.
+
+Common values include:
+
+```text
+"fullScreen"
+"pageSheet"
+"formSheet"
+"overFullScreen"
+```
+
+For example:
+
+```jsx
+<Modal
+  visible={visible}
+  presentationStyle="pageSheet"
+>
+```
+
+This allows iOS-style modal presentation rather than always taking the entire screen.
+
+Conceptually:
+
+```text
+fullScreen
+
+┌──────────────┐
+│              │
+│    Modal     │
+│              │
+│              │
+└──────────────┘
+```
+
+versus a sheet-like presentation:
+
+```text
+┌──────────────┐
+│ Main screen  │
+│              │
+├──────────────┤
+│    Modal     │
+│              │
+└──────────────┘
+```
+
+### 10. `hardwareAccelerated`
+
+Android-specific.
+
+```jsx
+<Modal hardwareAccelerated>
+```
+
+Controls whether hardware acceleration is enabled for the modal's window.
+
+Most applications can simply leave this at its default.
+
+You generally shouldn't modify it unless you have a specific rendering/performance reason.
+
+### 11. `allowSwipeDismissal`
+
+This is relevant to iOS modal dismissal gestures.
+
+```jsx
+<Modal
+  visible={visible}
+  presentationStyle="pageSheet"
+  allowSwipeDismissal
+  onRequestClose={() => setVisible(false)}
+>
+```
+
+It allows the user to dismiss certain modal presentations with a swipe gesture.
+
+Important:
+
+The gesture doesn't magically update your React state in every situation. You should use the appropriate dismissal callback/state handling.
+
+### 12. `supportedOrientations`
+
+Controls which orientations the modal supports.
+
+For example:
+
+```jsx
+<Modal
+  supportedOrientations={[
+    "portrait",
+    "landscape"
+  ]}
+>
+```
+
+Possible orientation values include:
+
+```text
+portrait
+portrait-upside-down
+landscape
+landscape-left
+landscape-right
+```
+
+This can be useful for things like:
+
+* Video players
+* Image viewers
+* Games
+
+### 13. `onOrientationChange`
+
+iOS callback when the modal's orientation changes.
+
+```jsx
+<Modal
+  supportedOrientations={[
+    "portrait",
+    "landscape"
+  ]}
+  onOrientationChange={(orientation) => {
+    console.log(orientation);
+  }}
+>
+```
+
+### 14. `backdropColor`
+
+Android-related modal background behavior.
+
+```jsx
+<Modal
+  backdropColor="black"
+>
+```
+
+This is less commonly used when you're building a custom transparent modal because you can simply create your own backdrop:
+
+```jsx
+backgroundColor: "rgba(0,0,0,0.5)"
+```
+
+That gives you much more control.
+
+### A realistic custom confirmation Modal
+
+For example, deleting a jewellery product:
+
+```jsx
+import {
+  Modal,
+  View,
+  Text,
+  Pressable,
+} from "react-native";
+
+function DeleteModal({
+  visible,
+  onCancel,
+  onConfirm,
+}) {
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={onCancel}
+    >
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: "rgba(0,0,0,0.5)",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <View
+          style={{
+            width: 320,
+            padding: 24,
+            backgroundColor: "white",
+            borderRadius: 16,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 20,
+              fontWeight: "bold",
+            }}
+          >
+            Delete product?
+          </Text>
+
+          <Text>
+            This action cannot be undone.
+          </Text>
+
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "flex-end",
+              gap: 12,
+              marginTop: 20,
+            }}
+          >
+            <Pressable onPress={onCancel}>
+              <Text>Cancel</Text>
+            </Pressable>
+
+            <Pressable onPress={onConfirm}>
+              <Text>Delete</Text>
+            </Pressable>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+```
+
+This is where `Modal` shines: **you completely control the UI.**
+
+### Modal vs `View` with absolute positioning
+
+This is also worth understanding.
+
+You might think:
+
+```jsx
+<View
+  style={{
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  }}
+>
+```
+
+is equivalent to a modal.
+
+Not exactly.
+
+**-- Absolute-positioned overlay**
+
+```text
+React Native UI hierarchy
+       │
+       ├── Main screen
+       │
+       └── Overlay View
+```
+
+**-- Modal**
+
+```text
+Main application UI
+       │
+       ▼
+Platform modal presentation
+       │
+       ▼
+Modal content
+```
+
+`Modal` gets special native window/presentation behavior.
+
+An absolute overlay can be preferable for certain custom UI patterns, but it isn't the same mechanism.
+
+---
+
+# ----Alert
+
+Now let's look at `Alert`.
+
+Import:
+
+```jsx
+import { Alert } from "react-native";
+```
+
+Then:
+
+```jsx
+Alert.alert(
+  "Delete product?",
+  "Are you sure you want to delete this product?"
+);
+```
+
+The OS displays a native alert.
+
+Conceptually:
+
+```text
+┌────────────────────────────┐
+│                            │
+│       Your application     │
+│                            │
+│   ┌────────────────────┐   │
+│   │ Delete product?    │   │
+│   │                    │   │
+│   │ Are you sure?      │   │
+│   │                    │   │
+│   │ Cancel     Delete  │   │
+│   └────────────────────┘   │
+│                            │
+└────────────────────────────┘
+```
+
+The exact appearance is controlled by the platform.
+
+### Basic Alert syntax
+
+```jsx
+Alert.alert(
+  title,
+  message
+);
+```
+
+Example:
+
+```jsx
+Alert.alert(
+  "Success",
+  "Product saved successfully."
+);
+```
+
+### Adding buttons
+
+The third argument is an array of buttons.
+
+```jsx
+Alert.alert(
+  "Delete product?",
+  "This action cannot be undone.",
+  [
+    {
+      text: "Cancel",
+      style: "cancel",
+    },
+    {
+      text: "Delete",
+      style: "destructive",
+      onPress: () => {
+        deleteProduct();
+      },
+    },
+  ]
+);
+```
+
+Result conceptually:
+
+```text
+┌──────────────────────────┐
+│ Delete product?          │
+│                          │
+│ This action cannot       │
+│ be undone.               │
+│                          │
+│ Cancel       Delete      │
+└──────────────────────────┘
+```
+
+##### -- Alert button `text`
+
+```jsx
+{
+  text: "Cancel"
+}
+```
+
+Controls the button's displayed text.
+
+##### -- Alert button `onPress`
+
+```jsx
+{
+  text: "Delete",
+  onPress: () => {
+    deleteProduct();
+  }
+}
+```
+
+Called when the user presses the button.
+
+##### -- Alert button `style`
+
+Common values include:
+
+```text
+"default"
+"cancel"
+"destructive"
+```
+
+Example:
+
+```jsx
+{
+  text: "Delete",
+  style: "destructive"
+}
+```
+
+The platform decides how that style appears.
+
+### Alert with three buttons
+
+```jsx
+Alert.alert(
+  "Save changes?",
+  "What would you like to do?",
+  [
+    {
+      text: "Cancel",
+      style: "cancel",
+    },
+    {
+      text: "Discard",
+      style: "destructive",
+      onPress: () => {
+        discardChanges();
+      },
+    },
+    {
+      text: "Save",
+      onPress: () => {
+        saveChanges();
+      },
+    },
+  ]
+);
+```
+
+### `Alert.prompt()`
+
+There is another important API:
+
+```jsx
+Alert.prompt(...)
+```
+
+It displays a native prompt containing text input.
+
+For example:
+
+```jsx
+Alert.prompt(
+  "Rename product",
+  "Enter a new name",
+  (text) => {
+    console.log(text);
+  }
+);
+```
+
+### But there is a major platform limitation
+
+`Alert.prompt()` is **iOS-only** in React Native.
+
+So don't build an Android/iOS cross-platform feature around it unless you provide another implementation for Android.
+
+For cross-platform apps, a custom `Modal` containing a `TextInput` is often more appropriate.
+
+### Modal vs Alert
+
+This is the most important comparison.
+
+|                              | `Modal`               | `Alert`                  |
+| ---------------------------- | ----------------------- | -------------------------- |
+| UI                           | Completely customizable | Native/system UI           |
+| Buttons                      | Whatever you want       | Limited native buttons     |
+| TextInput                    | Yes                     | `prompt()`only on iOS    |
+| Images                       | Yes                     | No practical custom layout |
+| Forms                        | Yes                     | No                         |
+| Custom animations            | Yes                     | No                         |
+| Custom styling               | Yes                     | Very limited               |
+| Native appearance            | You create it           | Automatic                  |
+| Complex UI                   | Excellent               | Not suitable               |
+| Simple confirmation          | Possible                | Excellent                  |
+| Cross-platform customization | Excellent               | Platform-dependent         |
+
+### One subtle but important point
+
+`Alert` is  **imperative** .
+
+You don't write:
+
+```jsx
+<Alert />
+```
+
+Instead you call:
+
+```js
+Alert.alert(...)
+```
+
+It's an API/function.
+
+`Modal` is a  **React component** :
+
+```jsx
+<Modal visible={visible}>
+   ...
+</Modal>
+```
+
+This difference is important:
+
+```text
+Modal
+  ↓
+React component
+  ↓
+Controlled with state
+
+Alert
+  ↓
+Imperative API
+  ↓
+Call Alert.alert(...)
+```
+
+---
+
+# ----Styling in React Native
+
+Styling in React Native is very similar to CSS conceptually, but  **it is not CSS** . React Native has its own styling system built around JavaScript objects and native layout engines.
+
+Since you're learning React Native systematically, it's useful to understand styling from the foundation rather than just memorizing properties.
+
+### 1. The basic idea
+
+In web React, you might write:
+
+```jsx
+<div className="box">
+  Hello
+</div>
+```
+
+and CSS:
+
+```css
+.box {
+  width: 200px;
+  background-color: red;
+}
+```
+
+In React Native, you typically write:
+
+```jsx
+<View style={styles.box}>
+  <Text>Hello</Text>
+</View>
+```
+
+and:
+
+```js
+const styles = StyleSheet.create({
+  box: {
+    width: 200,
+    backgroundColor: "red",
+  },
+});
+```
+
+So:
+
+```text
+React Native component
+        │
+        ▼
+     style={}
+        │
+        ▼
+ JavaScript style object
+        │
+        ▼
+ React Native layout/rendering
+        │
+        ▼
+ Native UI
+```
+
+### 2. Inline styling
+
+You can directly provide an object:
+
+```jsx
+<View
+  style={{
+    width: 200,
+    height: 100,
+    backgroundColor: "blue",
+  }}
+/>
+```
+
+For example:
+
+```jsx
+<Text
+  style={{
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "red",
+  }}
+>
+  Hello
+</Text>
+```
+
+This is convenient for small/dynamic styles.
+
+### 3. `StyleSheet.create()`
+
+For reusable styles, React Native provides `StyleSheet`.
+
+```jsx
+import {
+  View,
+  Text,
+  StyleSheet,
+} from "react-native";
+
+export default function App() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>
+        Hello React Native
+      </Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+});
+```
+
+This is generally cleaner than putting large style objects directly inside JSX.
+
+> #### At first this looks like:
+>
+> ```text
+> App()
+>   ↓
+> styles.container   ❌
+>   ↓
+> But styles hasn't been defined yet!
+> ```
+>
+> But that's  **not actually what happens** .
+>
+> #### The important concept: function declaration + execution are different
+>
+> When JavaScript loads the module, it doesn't immediately execute the body of `App()`.
+>
+> It first processes the declarations in the module.
+>
+> Conceptually:
+>
+> ```text
+> JavaScript loads file
+>        │
+>        ├── defines App function
+>        │
+>        ├── creates styles
+>        │
+>        ▼
+> Module is ready
+>        │
+>        ▼
+> React calls App()
+>        │
+>        ▼
+> styles.container exists
+> ```
+>
+> So by the time React actually calls:
+>
+> ```js
+> App()
+> ```
+>
+> this has already executed:
+>
+> ```js
+> const styles = StyleSheet.create(...)
+> ```
+>
+> #### A simplified example
+>
+> This works:
+>
+> ```js
+> function sayHello() {
+>   console.log(name);
+> }
+>
+> const name = "Arun";
+>
+> sayHello();
+> ```
+>
+> Why?
+>
+> Because you're **defining** `sayHello()` before `name`, but you're **calling** it after `name` has been initialized.
+>
+> Equivalent idea:
+>
+> ```text
+> Define function
+>       ↓
+> Define name
+>       ↓
+> Call function
+> ```
+>
+> Therefore:
+>
+> ```js
+> console.log(name);
+> ```
+>
+> inside the function happens only after:
+>
+> ```js
+> const name = "Arun";
+> ```
+>
+> has run.
+>
+> #### Could you put `styles` before `App`?
+>
+> Absolutely.
+>
+> You could write:
+>
+> ```jsx
+> const styles = StyleSheet.create({
+>   container: {
+>     flex: 1,
+>   },
+> });
+>
+> export default function App() {
+>   return (
+>     <View style={styles.container}>
+>       ...
+>     </View>
+>   );
+> }
+> ```
+>
+> This is also perfectly valid.
+>
+> It's mostly a matter of code organization.
+
+### 4. React Native styles are JavaScript objects
+
+This is important.
+
+```js
+const styles = {
+  container: {
+    backgroundColor: "red",
+    padding: 20,
+  },
+};
+```
+
+Not:
+
+```css
+.container {
+  background-color: red;
+  padding: 20px;
+}
+```
+
+Notice several differences.
+
+CSS
+
+```css
+background-color
+font-size
+margin-top
+```
+
+React Native
+
+```js
+backgroundColor
+fontSize
+marginTop
+```
+
+React Native uses  **camelCase** .
+
+### 5. You generally don't write `px`
+
+Web CSS:
+
+```css
+width: 200px;
+padding: 20px;
+```
+
+React Native:
+
+```js
+width: 200,
+padding: 20,
+```
+
+You normally use numbers.
+
+```jsx
+<View
+  style={{
+    width: 200,
+    height: 100,
+  }}
+/>
+```
+
+The number represents a density-independent layout unit rather than literally "200 physical pixels."
+
+### 6. Dimensions
+
+Common dimension properties:
+
+```js
+width
+height
+
+minWidth
+maxWidth
+
+minHeight
+maxHeight
+```
+
+Example:
+
+```jsx
+<View
+  style={{
+    width: 200,
+    height: 100,
+  }}
+/>
+```
+
+### 7. `flex`
+
+`flex` is one of the  **most important concepts in React Native styling** .
+
+For example:
+
+```jsx
+<View style={{ flex: 1 }}>
+```
+
+means the view can expand to fill the available space.
+
+Consider:
+
+```jsx
+<View style={{ flex: 1 }}>
+  <View style={{ flex: 1 }} />
+  <View style={{ flex: 2 }} />
+</View>
+```
+
+Conceptually:
+
+```text
+┌──────────────────────┐
+│                      │
+│      Child 1         │  1 part
+│                      │
+├──────────────────────┤
+│                      │
+│                      │
+│      Child 2         │  2 parts
+│                      │
+└──────────────────────┘
+```
+
+The children receive space approximately in a `1:2` ratio.
+
+### 8. React Native's default `flexDirection`
+
+This is a  **major difference from web CSS** .
+
+React Native's default:
+
+```js
+flexDirection: "column"
+```
+
+So:
+
+```jsx
+<View>
+  <View />
+  <View />
+  <View />
+</View>
+```
+
+is conceptually:
+
+```text
+Child 1
+   ↓
+Child 2
+   ↓
+Child 3
+```
+
+On the web, flex containers commonly default to:
+
+```css
+flex-direction: row;
+```
+
+React Native defaults to:
+
+```js
+flexDirection: "column"
+```
+
+### 9. `flexDirection`
+
+Possible values:
+
+```js
+flexDirection: "column"
+flexDirection: "column-reverse"
+flexDirection: "row"
+flexDirection: "row-reverse"
+```
+
+Example:
+
+```jsx
+<View
+  style={{
+    flexDirection: "row",
+  }}
+>
+  <View />
+  <View />
+</View>
+```
+
+Now:
+
+```text
+┌──────┬──────┐
+│      │      │
+│  A   │  B   │
+│      │      │
+└──────┴──────┘
+```
+
+### 10. Main axis and cross axis
+
+Once you understand Flexbox, everything becomes much easier.
+
+With:
+
+```js
+flexDirection: "row"
+```
+
+the axes are:
+
+```text
+Main axis ───────────────────→
+             X
+
+Cross axis
+    │
+    │
+    ↓
+    Y
+```
+
+With:
+
+```js
+flexDirection: "column"
+```
+
+they switch:
+
+```text
+Cross axis ───────────────→ X
+
+
+Main axis
+    │
+    │
+    ↓
+    Y
+```
+
+This matters enormously for:
+
+* `justifyContent`
+* `alignItems`
+* `alignSelf`
+
+### 11. `justifyContent`
+
+Controls distribution  **along the main axis** .
+
+Example:
+
+```js
+flexDirection: "column",
+justifyContent: "center"
+```
+
+Since column is the default:
+
+```text
+Main axis = vertical
+
+        ↓
+
+┌──────────────┐
+│              │
+│              │
+│    Child     │
+│              │
+│              │
+└──────────────┘
+```
+
+Common values:
+
+```js
+justifyContent: "flex-start"
+justifyContent: "flex-end"
+justifyContent: "center"
+justifyContent: "space-between"
+justifyContent: "space-around"
+justifyContent: "space-evenly"
+```
+
+### 12. `alignItems`
+
+Controls alignment on the  **cross axis** .
+
+Example:
+
+```js
+alignItems: "center"
+```
+
+With the default column direction:
+
+```text
+┌──────────────────────┐
+│                      │
+│        Child         │
+│                      │
+└──────────────────────┘
+```
+
+The child is centered horizontally.
+
+Common values:
+
+```js
+"flex-start"
+"flex-end"
+"center"
+"stretch"
+"baseline"
+```
+
+### 13. The famous centering combination
+
+You'll see this everywhere:
+
+```jsx
+<View
+  style={{
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  }}
+>
+  <Text>Hello</Text>
+</View>
+```
+
+Because:
+
+```text
+flexDirection = column
+
+justifyContent
+      ↓
+vertical centering
+
+alignItems
+      ↓
+horizontal centering
+```
+
+Result:
+
+```text
+┌──────────────────────┐
+│                      │
+│                      │
+│        Hello         │
+│                      │
+│                      │
+└──────────────────────┘
+```
+
+### 14. `alignSelf`
+
+Overrides the parent's `alignItems` for a particular child.
+
+```jsx
+<View
+  style={{
+    alignItems: "center",
+  }}
+>
+  <View style={{ alignSelf: "flex-start" }} />
+</View>
+```
+
+So even though the parent says:
+
+```js
+alignItems: "center"
+```
+
+this particular child says:
+
+```js
+alignSelf: "flex-start"
+```
+
+and wins for that child.
+
+### 15. `flexWrap`
+
+Normally children remain on one line/column.
+
+```js
+flexWrap: "wrap"
+```
+
+allows them to move to another line.
+
+Example:
+
+```jsx
+<View
+  style={{
+    flexDirection: "row",
+    flexWrap: "wrap",
+  }}
+>
+  {/* many items */}
+</View>
+```
+
+Useful for:
+
+* Tags
+* Chips
+* Categories
+* Product grids
+
+### 16. `gap`
+
+Modern React Native supports:
+
+```js
+gap: 10
+```
+
+Example:
+
+```jsx
+<View
+  style={{
+    flexDirection: "row",
+    gap: 10,
+  }}
+>
+  <View />
+  <View />
+  <View />
+</View>
+```
+
+Conceptually:
+
+```text
+A    B    C
+```
+
+instead of manually adding margins to every child.
+
+There are also:
+
+```js
+rowGap
+columnGap
+```
+
+for controlling spacing separately.
+
+### 17. `zIndex`
+
+Controls stacking order.
+
+```jsx
+<View style={{ zIndex: 10 }}>
+```
+
+Higher `zIndex` generally places an element above lower ones when they overlap.
+
+Useful for:
+
+* Dropdowns
+* Overlays
+* Floating menus
+* Badges
+
+### 18. Shadows
+
+This is one area where iOS and Android differ.
+
+You may encounter:
+
+```js
+shadowColor
+shadowOffset
+shadowOpacity
+shadowRadius
+```
+
+primarily associated with iOS-style shadows.
+
+Android traditionally uses:
+
+```js
+elevation
+```
+
+Example:
+
+```jsx
+<View
+  style={{
+    elevation: 5,
+  }}
+/>
+```
+
+Modern React Native versions also have newer cross-platform shadow capabilities, but you should still understand the platform differences because shadow rendering isn't perfectly identical between Android and iOS.
+
+### 19. `textDecorationLine`
+
+Examples:
+
+```js
+textDecorationLine: "underline"
+```
+
+```js
+textDecorationLine: "line-through"
+```
+
+Useful for:
+
+```text
+Original price: ₹2,000
+                    ─────
+Sale price: ₹1,500
+```
+
+### 20. `StyleSheet.compose`
+
+You can combine styles.
+
+```jsx
+<View
+  style={StyleSheet.compose(
+    styles.box,
+    styles.active
+  )}
+>
+```
+
+But more commonly you'll see:
+
+```jsx
+<View
+  style={[
+    styles.box,
+    styles.active,
+  ]}
+/>
+```
+
+### 21. Style arrays
+
+This is  **very important** .
+
+```jsx
+<View
+  style={[
+    styles.button,
+    isDisabled && styles.disabled,
+  ]}
+/>
+```
+
+Suppose:
+
+```js
+const styles = StyleSheet.create({
+  button: {
+    padding: 15,
+    borderRadius: 10,
+  },
+
+  disabled: {
+    opacity: 0.5,
+  },
+});
+```
+
+When:
+
+```js
+isDisabled = true
+```
+
+React Native effectively applies:
+
+```text
+button
++
+disabled
+```
+
+When false:
+
+```text
+button
+```
+
+### 22. Which style wins?
+
+Later styles in an array override earlier styles when they conflict.
+
+```jsx
+<View
+  style={[
+    {
+      backgroundColor: "red",
+    },
+    {
+      backgroundColor: "blue",
+    },
+  ]}
+/>
+```
+
+The final background is:
+
+```text
+blue
+```
+
+Conceptually:
+
+```text
+Style 1
+   ↓
+Style 2
+   ↓
+Style 2 wins conflicting properties
+```
+
+This makes conditional styling extremely useful.
+
+### 23. Dynamic styles
+
+You can calculate styles from state/props.
+
+```jsx
+<View
+  style={{
+    backgroundColor: isActive
+      ? "blue"
+      : "gray",
+  }}
+/>
+```
+
+Or:
+
+```jsx
+<View
+  style={[
+    styles.card,
+    isSelected && styles.selectedCard,
+  ]}
+/>
+```
+
+### 24. Responsive styling
+
+React Native doesn't work like traditional web CSS media queries by default.
+
+You can use:
+
+```js
+useWindowDimensions()
+```
+
+For example:
+
+```jsx
+import { useWindowDimensions } from "react-native";
+
+function App() {
+  const { width } = useWindowDimensions();
+
+  return (
+    <View
+      style={{
+        width: width > 600 ? 500 : "90%",
+      }}
+    />
+  );
+}
+```
+
+Now your layout can react to screen dimensions.
+
+### 25. `Dimensions`
+
+Another API is:
+
+```js
+import { Dimensions } from "react-native";
+
+const { width, height } =
+  Dimensions.get("window");
+```
+
+However, for responsive components, `useWindowDimensions()` is generally preferable because it automatically updates when the dimensions change.
+
+### 26. Platform-specific styling
+
+Sometimes Android and iOS need different styles.
+
+React Native provides:
+
+```js
+Platform
+```
+
+Example:
+
+```jsx
+import { Platform } from "react-native";
+
+const styles = StyleSheet.create({
+  card: {
+    padding: Platform.OS === "ios" ? 20 : 16,
+  },
+});
+```
+
+You can also use:
+
+```js
+Platform.select({
+  ios: {...},
+  android: {...},
+  default: {...},
+});
+```
+
+> ### `Platform.select()` in detail
+>
+> `Platform` is a React Native API that lets you determine the current platform.
+>
+> Import:
+>
+> ```js
+> import { Platform } from "react-native";
+> ```
+>
+> You can do:
+>
+> ```js
+> Platform.OS
+> ```
+>
+> which returns:
+>
+> ```text
+> "android"
+> "ios"
+> "web"
+> ```
+>
+> depending on where your app is running.
+>
+> For example:
+>
+> ```js
+> console.log(Platform.OS);
+> ```
+>
+> On your Samsung:
+>
+> ```text
+> android
+> ```
+>
+> On an iPhone:
+>
+> ```text
+> ios
+> ```
+>
+> ### `Platform.select()` lets you provide different values for different platforms.
+>
+> Basic example:
+>
+> ```js
+> const padding = Platform.select({
+>   ios: 20,
+>   android: 16,
+>   default: 10,
+> });
+> ```
+>
+> On Android:
+>
+> ```js
+> padding = 16
+> ```
+>
+> On iOS:
+>
+> ```js
+> padding = 20
+> ```
+>
+> On another platform:
+>
+> ```js
+> padding = 10
+> ```
+>
+> #### Example with styles
+>
+> Instead of:
+>
+> ```js
+> const styles = StyleSheet.create({
+>   card: {
+>     padding: Platform.OS === "ios" ? 20 : 16,
+>   },
+> });
+> ```
+>
+> you can write:
+>
+> ```js
+> const styles = StyleSheet.create({
+>   card: {
+>     padding: Platform.select({
+>       ios: 20,
+>       android: 16,
+>     }),
+>   },
+> });
+> ```
+>
+> This becomes particularly useful when the style differences are larger.
+>
+> #### Multiple platform-specific properties
+>
+> For example:
+>
+> ```js
+> const styles = StyleSheet.create({
+>   card: Platform.select({
+>     ios: {
+>       padding: 20,
+>       borderRadius: 16,
+>     },
+>
+>     android: {
+>       padding: 16,
+>       borderRadius: 12,
+>       elevation: 4,
+>     },
+>
+>     default: {
+>       padding: 10,
+>     },
+>   }),
+> });
+> ```
+>
+> So:
+>
+> ```text
+>                     Platform.select()
+>                           │
+>               ┌───────────┼───────────┐
+>               ▼           ▼           ▼
+>              ios       android      default
+>               │           │           │
+>               ▼           ▼           ▼
+>           iOS style   Android style  fallback
+> ```
+>
+> #### `Platform.select()` isn't only for styles
+>
+> You can use it for any value.
+>
+> For example:
+>
+> ```js
+> const apiUrl = Platform.select({
+>   ios: "https://ios.example.com",
+>   android: "https://android.example.com",
+> });
+> ```
+>
+> Or:
+>
+> ```js
+> const buttonText = Platform.select({
+>   ios: "Continue",
+>   android: "Next",
+>   default: "Continue",
+> });
+> ```
+>
+> Or:
+>
+> ```js
+> const config = Platform.select({
+>   ios: {
+>     timeout: 5000,
+>   },
+>
+>   android: {
+>     timeout: 10000,
+>   },
+> });
+> ```
+>
+> So conceptually:
+>
+>> `Platform.select()` = **choose a value based on the platform.**
+>>
+
+### 27. Platform-specific files
+
+For larger differences, you can create:
+
+```text
+Button.ios.js
+Button.android.js
+```
+
+Then:
+
+```jsx
+import Button from "./Button";
+```
+
+React Native selects the appropriate file.
+
+This is more useful when behavior/UI differs substantially rather than just one style property.
+
+### 28. What React Native styling does NOT support like web CSS
+
+This is very important when coming from React/web development.
+
+React Native does **not** simply give you the entire browser CSS system.
+
+For example, you don't normally have:
+
+```css
+:hover
+:focus
+::before
+::after
+```
+
+in the same way as web CSS.
+
+There is also no traditional CSS cascade where arbitrary stylesheets cascade through the DOM.
+
+Instead:
+
+```text
+React Native style
+        ↓
+JavaScript object
+        ↓
+Component
+```
+
+### 29. No traditional CSS inheritance
+
+Some properties of `Text` can inherit through nested text, but React Native isn't a general CSS inheritance system.
+
+For example, don't think:
+
+```jsx
+<View style={{ color: "red" }}>
+  <Text>Hello</Text>
+</View>
+```
+
+means the `Text` automatically gets the same `color` like normal web CSS behavior.
+
+Instead:
+
+```jsx
+<View>
+  <Text style={{ color: "red" }}>
+    Hello
+  </Text>
+</View>
+```
+
+### 30. Styling a component doesn't mean styling its native children
+
+For example:
+
+```jsx
+<Pressable
+  style={{
+    backgroundColor: "blue",
+    padding: 20,
+  }}
+>
+  <Text>Submit</Text>
+</Pressable>
+```
+
+The `Pressable` receives the style.
+
+The `Text` is still a separate component and may need its own text styling:
+
+```jsx
+<Text
+  style={{
+    color: "white",
+    fontSize: 16,
+  }}
+>
+  Submit
+</Text>
+```
+
+### 31. A practical card example
+
+Here's a realistic React Native card combining the concepts:
+
+```jsx
+<View style={styles.card}>
+  <Text style={styles.title}>
+    Gold Ring
+  </Text>
+
+  <Text style={styles.subtitle}>
+    22K • Diamond
+  </Text>
+
+  <Text style={styles.price}>
+    ₹50,000
+  </Text>
+
+  <Pressable style={styles.button}>
+    <Text style={styles.buttonText}>
+      View Product
+    </Text>
+  </Pressable>
+</View>
+```
+
+Styles:
+
+```js
+const styles = StyleSheet.create({
+  card: {
+    width: "90%",
+    padding: 20,
+    margin: 10,
+
+    backgroundColor: "#fff",
+
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 16,
+
+    elevation: 4,
+  },
+
+  title: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#222",
+  },
+
+  subtitle: {
+    marginTop: 5,
+    fontSize: 14,
+    color: "#666",
+  },
+
+  price: {
+    marginTop: 12,
+    fontSize: 22,
+    fontWeight: "700",
+  },
+
+  button: {
+    marginTop: 16,
+    padding: 14,
+    borderRadius: 10,
+    alignItems: "center",
+    backgroundColor: "#3A5DE2",
+  },
+
+  buttonText: {
+    color: "#fff",
+    fontWeight: "600",
+  },
+});
+```
+
+This is the kind of styling you'll constantly write in React Native.
+
+### 32. The most important styling categories to learn
+
+For your React Native learning, I'd organize the styling system like this:
+
+```text
+React Native Styling
+│
+├── 1. Style objects
+│   ├── Inline styles
+│   ├── StyleSheet.create()
+│   └── Style arrays
+│
+├── 2. Dimensions
+│   ├── width
+│   ├── height
+│   ├── min/max
+│   └── percentages
+│
+├── 3. Flexbox ⭐⭐⭐
+│   ├── flex
+│   ├── flexDirection
+│   ├── justifyContent
+│   ├── alignItems
+│   ├── alignSelf
+│   ├── flexWrap
+│   └── gap
+│
+├── 4. Spacing
+│   ├── margin
+│   └── padding
+│
+├── 5. Positioning
+│   ├── relative
+│   ├── absolute
+│   ├── top/right/bottom/left
+│   └── zIndex
+│
+├── 6. Colors
+│   ├── color
+│   ├── backgroundColor
+│   └── opacity
+│
+├── 7. Borders
+│   ├── borderWidth
+│   ├── borderColor
+│   └── borderRadius
+│
+├── 8. Shadows
+│   ├── elevation
+│   └── shadow*
+│
+├── 9. Typography
+│   ├── fontSize
+│   ├── fontWeight
+│   ├── fontFamily
+│   ├── lineHeight
+│   ├── letterSpacing
+│   └── textAlign
+│
+├── 10. Images
+│   └── resizeMode
+│
+├── 11. Responsive UI
+│   ├── useWindowDimensions()
+│   ├── Dimensions
+│   └── percentages
+│
+├── 12. Safe areas
+│
+└── 13. Platform-specific styling
+    ├── Platform.OS
+    ├── Platform.select()
+    └── .ios/.android files
+```
+
+### The biggest thing to master
+
+If you're coming from web/Next.js/Tailwind, **don't approach React Native styling as "CSS but with camelCase."**
+
+The most important conceptual shift is:
+
+> **React Native layout is heavily based around Flexbox, and its default flex direction is `column`.**
+
+Once you are comfortable with  **`flex`, `flexDirection`, `justifyContent`, `alignItems`, spacing, absolute positioning, dimensions, and style arrays** , most React Native layouts become straightforward.
+
+---
+
+# ----CSS pseudo-classes & psuedo-elements alternatives
+
+Coming from web development, you're probably thinking about:
+
+```css
+button:hover
+button:active
+input:focus
+button:disabled
+```
+
+React Native doesn't have CSS selectors like those because it doesn't have a browser DOM/CSS engine.
+
+Instead, React Native generally handles these states through  **component state/props and callbacks** .
+
+### `Pressable` is the main alternative
+
+This is one of the most important things to learn.
+
+`Pressable` has a callback that receives:
+
+```js
+pressed
+```
+
+You can therefore do:
+
+```jsx
+<Pressable
+  style={({ pressed }) => [
+    styles.button,
+    pressed && styles.pressed,
+  ]}
+>
+  <Text>Press me</Text>
+</Pressable>
+```
+
+Styles:
+
+```js
+const styles = StyleSheet.create({
+  button: {
+    padding: 16,
+    backgroundColor: "blue",
+  },
+
+  pressed: {
+    opacity: 0.6,
+  },
+});
+```
+
+This is conceptually similar to:
+
+```css
+button:active {
+  opacity: 0.6;
+}
+```
+
+But React Native isn't using a CSS pseudo-class.
+
+Instead:
+
+```text
+User presses
+    ↓
+Pressable detects it
+    ↓
+pressed = true
+    ↓
+style function runs
+    ↓
+pressed style applied
+```
+
+### `:hover` equivalent
+
+On devices with a mouse/trackpad, `Pressable` can provide hover-related information in supported environments.
+
+For example:
+
+```jsx
+<Pressable
+  onHoverIn={() => {
+    setHovered(true);
+  }}
+  onHoverOut={() => {
+    setHovered(false);
+  }}
+>
+```
+
+Then:
+
+```jsx
+<Pressable
+  style={[
+    styles.button,
+    hovered && styles.hovered,
+  ]}
+>
+```
+
+Conceptually:
+
+```text
+Web:
+
+button:hover
+     ↓
+CSS automatically applies style
+
+
+React Native:
+
+onHoverIn
+    ↓
+setHovered(true)
+    ↓
+hovered && styles.hovered
+```
+
+However, hover isn't relevant to typical touch-only mobile interaction.
+
+### `:focus` equivalent
+
+For inputs, React Native provides events such as:
+
+```jsx
+<TextInput
+  onFocus={() => setFocused(true)}
+  onBlur={() => setFocused(false)}
+/>
+```
+
+Then:
+
+```jsx
+<TextInput
+  style={[
+    styles.input,
+    focused && styles.inputFocused,
+  ]}
+/>
+```
+
+This is conceptually equivalent to:
+
+```css
+input:focus {
+  border-color: blue;
+}
+```
+
+But again, it's implemented through React state/events rather than CSS.
+
+### `:disabled` equivalent
+
+On the web:
+
+```css
+button:disabled {
+  opacity: 0.5;
+}
+```
+
+React Native:
+
+```jsx
+<Pressable
+  disabled={isDisabled}
+  style={[
+    styles.button,
+    isDisabled && styles.disabled,
+  ]}
+>
+```
+
+For example:
+
+```js
+const styles = StyleSheet.create({
+  button: {
+    padding: 16,
+    backgroundColor: "blue",
+  },
+
+  disabled: {
+    opacity: 0.5,
+  },
+});
+```
+
+So:
+
+```text
+disabled
+   ↓
+disabled && styles.disabled
+   ↓
+disabled styling
+```
+
+### So React Native's "pseudo-class system" is really state-driven styling
+
+Think:
+
+```text
+              Interaction
+                   │
+        ┌──────────┼──────────┐
+        ▼          ▼          ▼
+      press       focus      hover
+        │          │          │
+        ▼          ▼          ▼
+    Pressable   TextInput   Pressable
+        │          │          │
+        └──────────┼──────────┘
+                   ▼
+             React state
+                   │
+                   ▼
+            Conditional style
+```
+
+For example:
+
+```jsx
+style={[
+  styles.button,
+  pressed && styles.pressed,
+  disabled && styles.disabled,
+]}
+```
+
+This is one of the most common React Native patterns.
+
+### What about pseudo-elements like `::before` and `::after`?
+
+This is an even bigger difference.
+
+Web CSS:
+
+```css
+.button::before {
+  content: "";
+}
+```
+
+React Native doesn't have CSS pseudo-elements like:
+
+```text
+::before
+::after
+```
+
+Instead, you simply create another component.
+
+For example, web:
+
+```css
+.card::before {
+  ...
+}
+```
+
+React Native:
+
+```jsx
+<View style={styles.card}>
+  <View style={styles.decorativeLine} />
+
+  <Text>
+    Product
+  </Text>
+</View>
+```
+
+So:
+
+```text
+Web                         React Native
+
+::before                    <View />
+    │                           │
+    ▼                           ▼
+Pseudo-element               Real component
+```
+
+##### Example: decorative line
+
+Suppose you want:
+
+```text
+┌──────────────────────┐
+│ ━━━━━                │
+│ Gold Ring             │
+│ ₹50,000               │
+└──────────────────────┘
+```
+
+Web might use:
+
+```css
+.card::before {
+  content: "";
+  ...
+}
+```
+
+React Native:
+
+```jsx
+<View style={styles.card}>
+  <View style={styles.accent} />
+
+  <Text style={styles.title}>
+    Gold Ring
+  </Text>
+
+  <Text>
+    ₹50,000
+  </Text>
+</View>
+```
+
+```js
+const styles = StyleSheet.create({
+  card: {
+    padding: 20,
+  },
+
+  accent: {
+    width: 40,
+    height: 4,
+    marginBottom: 10,
+  },
+});
+```
+
+This is actually often easier to reason about because the decorative element is an explicit part of the component tree.
+
+##### What about `:nth-child()`?
+
+Web:
+
+```css
+.item:nth-child(2) {
+  ...
+}
+```
+
+React Native doesn't have that CSS selector.
+
+Instead, you have your data:
+
+```js
+const products = [
+  { id: 1, name: "Ring" },
+  { id: 2, name: "Chain" },
+  { id: 3, name: "Bracelet" },
+];
+```
+
+and can use the index:
+
+```jsx
+{products.map((product, index) => (
+  <View
+    key={product.id}
+    style={[
+      styles.item,
+      index === 1 && styles.special,
+    ]}
+  >
+    <Text>{product.name}</Text>
+  </View>
+))}
+```
+
+Or, more commonly, encode the desired state in your data instead of relying on positional selectors.
+
+### Putting everything together
+
+Here's a realistic React Native button:
+
+```jsx
+function MyButton({ disabled }) {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <Pressable
+      disabled={disabled}
+      onHoverIn={() => setHovered(true)}
+      onHoverOut={() => setHovered(false)}
+      style={({ pressed }) => [
+        styles.button,
+
+        pressed && styles.pressed,
+
+        hovered && styles.hovered,
+
+        disabled && styles.disabled,
+      ]}
+    >
+      <Text style={styles.text}>
+        Continue
+      </Text>
+    </Pressable>
+  );
+}
+```
+
+This is roughly analogous to having:
+
+```css
+.button {
+   ...
+}
+
+.button:hover {
+   ...
+}
+
+.button:active {
+   ...
+}
+
+.button:disabled {
+   ...
+}
+```
+
+But the React Native implementation is  **state/event-driven rather than selector-driven** .
+
+### The mental mapping from Web → React Native
+
+Since you already know web development, this mapping will help:
+
+| Web CSS          | React Native approach                       |
+| ---------------- | ------------------------------------------- |
+| `:hover`       | `onHoverIn`/`onHoverOut`+ state         |
+| `:active`      | `Pressable`'s `pressed`state            |
+| `:focus`       | `onFocus`/`onBlur`+ state               |
+| `:disabled`    | `disabled`prop + conditional style        |
+| `:checked`     | State + conditional style                   |
+| `:nth-child()` | Array/index/data-driven logic               |
+| `::before`     | Extra `<View>`/component                  |
+| `::after`      | Extra `<View>`/component                  |
+| `@media`       | `useWindowDimensions()`/ responsive logic |
+| CSS selectors    | Explicit component styles                   |
+| CSS cascade      | Explicit style composition                  |
 
 ---
