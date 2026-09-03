@@ -6593,7 +6593,7 @@ For your eventual  **CreoGrid SaaS products** , I'd consider PostHog one of the 
 
 ---
 
-# ----Coding with AI
+# ----Coding with AI - 1
 
 **The *AGENTS.md* file is the foundational context for your project. Without it, AI agents may suffer from inconsistent architectural decisions or library drift.**
 
@@ -6638,10 +6638,6 @@ Exmaple-
 
 ![1788374940690](image/ReactNative2/1788374940690.png)
 
-**Hence Constraints means,**
-
-![1788375047184](image/ReactNative2/1788375047184.png)
-
 **ALSO**
 
 ![1788374966636](image/ReactNative2/1788374966636.png)
@@ -6662,4 +6658,32 @@ If no constarints, ambuiguity---
 
 ![1788375361922](image/ReactNative2/1788375361922.png)
 
-EXAMPLE
+##### EXAMPLE OF POCD
+
+![1788375569357](image/ReactNative2/1788375569357.png)
+
+##### ALWAYS TELL HOW THE APP SHOULD BEHAVE NOT HOW TO CODE
+
+The coding part will be and should be figured out by the AI model
+
+![1788375688794](image/ReactNative2/1788375688794.png)
+
+---
+
+# ----Coding with AI - 2
+
+### **AGENTS.md Setup**
+
+* **Centralized Context:** Understand that the `AGENTS.md` file acts as the single source of truth for your AI, containing the project's role, tech stack, folder rules, and styling conventions.
+* **Strategic Placement:** Ensure this file is located at the **root of your project** so that development tools (like *Cursor* or *Claude Code*) can read it automatically.
+* **Evolving Documentation:** Treat the file as a living document; as you encounter recurring errors (e.g., *NativeWind* compatibility issues), **ADD** them to the file so the AI learns to avoid those mistakes in future prompts.
+* **Agent Skills:** Learn how to install reusable instruction packs using `npx skills add` to teach your AI how to handle specific services like *Expo* effectively.
+
+### **Let AI do the boring stuff like Boilerplate or Setups for example- Nativewind Setup**
+
+Here is how the workflow leverages AI to handle the setup:
+
+* **Automating Boilerplate:** Instead of manually running every CLI command and editing configuration files, you provide your AI agent with the official *NativeWind v5* documentation. The agent then understands your current project structure and automatically handles the creation of `globals.css`, modifies `babel` and `metro` configs, and sets up the necessary *TypeScript* types .
+* **Version Accuracy:** By providing the specific documentation link to the agent, you ensure it applies the correct settings for *NativeWind v5*, avoiding common pitfalls associated with outdated setup tutorials or incorrect versions.
+* **Verification and Context:** The AI doesn't just write code; it provides a summary of the changes it performed. This allows you to quickly verify that the styling layer is integrated correctly without having to dig through every configuration file manually.
+* **Seamless Integration:** Once the AI finishes the heavy lifting, the final step involves simple testing—reloading the app and using basic class names (like `text-indigo-600`) to confirm the design system is fully operational.
