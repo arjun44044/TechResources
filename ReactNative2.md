@@ -5503,7 +5503,7 @@ Before production, you'll need to complete the information Google asks for.
 
 This includes things such as:
 
-Basic information
+**Basic information**
 
 ```text
 App name
@@ -5511,7 +5511,7 @@ Short description
 Full description
 ```
 
-Graphics
+**Graphics**
 
 ```text
 App icon
@@ -5519,7 +5519,7 @@ Screenshots
 Feature graphic
 ```
 
-App information
+**App information**
 
 ```text
 Category
@@ -5527,7 +5527,7 @@ Tags
 Contact information
 ```
 
-### Privacy/data information
+**Privacy/data information**
 
 You'll also have to provide information such as:
 
@@ -5890,6 +5890,1634 @@ Remember this:
 ```
 
 One particularly important point for  **your situation** : because you're currently using a personal/new developer account rather than an established organization account, don't be surprised by the **12 testers + 14 days closed-testing requirement** before production access. That's a Google Play policy, not an Expo/EAS requirement. ([Google Help](https://support.google.com/googleplay/android-developer/answer/14151465?hl=en-GB&utm_source=chatgpt.com "App testing requirements for new personal developer accounts - Play Console Help"))
+
+---
+
+# ----Expo Prebuild, Android Studio and XCode
+
+### 🧩 1. What is `expo prebuild`?
+
+If you're using Expo, you've probably been thinking of your project as:
+
+```text
+Practise1/
+├── app/
+├── assets/
+├── app.json
+├── package.json
+└── ...
+```
+
+But a React Native application ultimately needs  **native Android and iOS projects** .
+
+Those native projects are:
+
+```text
+android/
+ios/
+```
+
+`npx expo prebuild` is the command that  **generates those native Android and iOS projects from your Expo configuration and installed packages** . Expo calls this approach  **Continuous Native Generation (CNG)** . ([Expo Documentation](https://docs.expo.dev/guides/adopting-prebuild/?utm_source=chatgpt.com "Adopt Prebuild - Expo Documentation"))
+
+So think:
+
+```text
+              YOUR EXPO PROJECT
+                     │
+                     │ expo prebuild
+                     ▼
+          ┌──────────────────────┐
+          │ Native projects      │
+          │                      │
+          │ android/             │
+          │ ios/                 │
+          └──────────┬───────────┘
+                     │
+              ┌──────┴──────┐
+              ▼             ▼
+        Android Studio     Xcode
+              │             │
+              ▼             ▼
+           Android          iOS
+```
+
+### ⚙️ 2. Why does Expo need to generate these?
+
+When you use Expo, you normally don't need to see native code.
+
+For example, you install:
+
+```powershell
+npx expo install expo-camera
+```
+
+and configure something in `app.json`.
+
+Expo knows that the native Android/iOS projects need certain changes.
+
+`prebuild` takes your:
+
+```text
+app.json
+package.json
+Expo packages
+config plugins
+```
+
+and generates/configures:
+
+```text
+android/
+ios/
+```
+
+For example:
+
+```text
+app.json
+   │
+   ├── app name
+   ├── icon
+   ├── splash screen
+   ├── package ID
+   ├── permissions
+   └── plugins
+          │
+          ▼
+      expo prebuild
+          │
+          ▼
+   ┌───────────────┐
+   │               │
+android/         ios/
+   │               │
+Gradle          Xcode project
+Android         iOS project
+```
+
+### 🆚 3. Expo Go vs Prebuild
+
+This distinction is  **very important** .
+
+When you use:
+
+```powershell
+npx expo start
+```
+
+and scan the QR code with  **Expo Go** , you're using an already-built native application provided by Expo.
+
+```text
+Your JS/TS
+   ↓
+Metro
+   ↓
+Expo Go
+   ↓
+Android phone
+```
+
+You don't need an `android/` directory for that.
+
+But when your app needs its  **own native application** , you need a development build/native project.
+
+```text
+Your JS/TS
+   ↓
+expo prebuild
+   ↓
+android/
+   ↓
+Gradle
+   ↓
+Your own APK
+```
+
+That's why prebuild becomes important when you move beyond the limitations of Expo Go.
+
+### 🏗️ 4. What exactly does `prebuild` create?
+
+If you run:
+
+```powershell
+npx expo prebuild
+```
+
+Expo can generate:
+
+```text
+Practise1/
+│
+├── android/
+│   ├── app/
+│   ├── gradle/
+│   ├── build.gradle
+│   ├── settings.gradle
+│   └── ...
+│
+├── ios/
+│   ├── Practise1/
+│   ├── Practise1.xcodeproj
+│   ├── Practise1.xcworkspace
+│   ├── Podfile
+│   └── ...
+│
+├── app/
+├── assets/
+├── app.json
+└── package.json
+```
+
+Now you've got actual native projects.
+
+The Android project can be opened in **Android Studio** and the iOS project in  **Xcode** . ([Expo Documentation](https://docs.expo.dev/modules/get-started/?utm_source=chatgpt.com "Expo Modules API: Get started - Expo Documentation"))
+
+### 🧹 5. What does `--clean` mean?
+
+You'll often see:
+
+```powershell
+npx expo prebuild --clean
+```
+
+This is different from:
+
+```powershell
+npx expo prebuild
+```
+
+Normal
+
+```powershell
+npx expo prebuild
+```
+
+generates/layers native configuration onto the existing native directories.
+
+Clean
+
+```powershell
+npx expo prebuild --clean
+```
+
+essentially says:
+
+> **Delete the existing generated native projects and regenerate them from scratch.**
+
+This is particularly useful when:
+
+* you changed `app.json`
+* installed a native library
+* upgraded Expo
+* changed native configuration
+* the generated native project has become inconsistent
+
+Expo recommends `--clean` when regenerating native directories to avoid accumulated native changes. ([Expo Documentation](https://docs.expo.dev/develop/development-builds/introduction/?utm_source=chatgpt.com "Introduction to development builds - Expo Documentation"))
+
+### ⚠️ 6. The most important warning about `android/` and `ios/`
+
+Suppose you run:
+
+```powershell
+npx expo prebuild
+```
+
+Then manually modify:
+
+```text
+android/
+```
+
+For example, you directly change:
+
+```text
+android/app/build.gradle
+```
+
+Then later run:
+
+```powershell
+npx expo prebuild --clean
+```
+
+Your manual modification can be  **overwritten** .
+
+That's why Expo recommends using **app config/config plugins** for changes that need to survive regeneration, rather than manually modifying generated native files when following CNG. ([Expo Documentation](https://docs.expo.dev/workflow/overview/?utm_source=chatgpt.com "Develop an app with Expo - Expo Documentation"))
+
+Think of it like:
+
+```text
+app.json
+   +
+config plugins
+   +
+dependencies
+        │
+        ▼
+    PREBUILD
+        │
+        ▼
+android/ + ios/
+```
+
+So the source of truth is ideally:
+
+```text
+Expo configuration
+```
+
+rather than:
+
+```text
+manually modified android/
+manually modified ios/
+```
+
+### 🤖 7. Now let's run your Expo app in Android Studio
+
+Since you're on  **Windows** , Android Studio is available to you.
+
+First, make sure Android Studio and the Android SDK are installed/configured.
+
+Then from your project:
+
+```powershell
+npx expo prebuild -p android
+```
+
+This generates:
+
+```text
+android/
+```
+
+Expo's current documentation explicitly supports this workflow. ([Expo Documentation](https://docs.expo.dev/debugging/runtime-issues/?utm_source=chatgpt.com "Debugging runtime issues - Expo Documentation"))
+
+Now open the `android` directory in Android Studio.
+
+You can either:
+
+**-- Option A — Android Studio GUI**
+
+```text
+Android Studio
+   ↓
+Open
+   ↓
+Practise1/android
+```
+
+**-- Option B — terminal**
+
+On Windows, you can use Android Studio's launcher/command-line integration if configured, but the GUI **Open** method is simplest.
+
+### 🔄 8. What happens when Android Studio opens it?
+
+Android Studio will recognize:
+
+```text
+android/
+```
+
+as a native Android/Gradle project.
+
+It will perform Gradle synchronization:
+
+```text
+android/
+   ↓
+Gradle sync
+   ↓
+Resolve dependencies
+   ↓
+Configure project
+   ↓
+Ready to build
+```
+
+The first sync/build can take some time.
+
+Then you can choose:
+
+```text
+Device
+```
+
+from the Android Studio toolbar.
+
+For example:
+
+```text
+Pixel 9 Emulator
+```
+
+or your physical Samsung device if connected.
+
+Then press:
+
+▶️ **Run**
+
+Android Studio compiles:
+
+```text
+React Native + native modules
+          ↓
+       Gradle
+          ↓
+         APK
+          ↓
+      Emulator/device
+```
+
+### 📱 9. You can also avoid Android Studio's Run button
+
+For normal development, you don't necessarily need to manually open Android Studio every time.
+
+You can run:
+
+```powershell
+npx expo run:android
+```
+
+Expo does the important pieces:
+
+```text
+expo run:android
+       │
+       ├── prebuild if necessary
+       ├── compile native Android project
+       ├── install app
+       └── start development server
+```
+
+Expo's documentation specifically states that `npx expo run:android` generates native directories if necessary, compiles the app, installs it and starts the development server. ([Expo Documentation](https://docs.expo.dev/develop/development-builds/introduction/?utm_source=chatgpt.com "Introduction to development builds - Expo Documentation"))
+
+So for you:
+
+```powershell
+npx expo run:android
+```
+
+is usually the easiest command.
+
+### 📱 10. Run it on your physical Samsung
+
+You can connect your Samsung to your Windows PC through USB.
+
+Enable:
+
+```text
+Developer options
+        ↓
+USB debugging
+```
+
+Then:
+
+```powershell
+npx expo run:android --device
+```
+
+Expo documents `--device` for installing on a physical Android device. ([Expo Documentation](https://docs.expo.dev/develop/development-builds/introduction/?utm_source=chatgpt.com "Introduction to development builds - Expo Documentation"))
+
+You'll likely see your phone appear as a target.
+
+Then:
+
+```text
+Gradle
+ ↓
+Build
+ ↓
+Install
+ ↓
+Samsung Galaxy A17 5G
+```
+
+This is different from:
+
+```text
+Expo Go
+ ↓
+QR code
+```
+
+because you're installing  **your own native development build** .
+
+### 🍎 11. Now what about Xcode?
+
+Here's the big difference:
+
+> **Xcode is macOS-only.**
+
+You cannot natively run Xcode on Windows.
+
+So if you're sitting at your Windows PC:
+
+```text
+Windows
+ ├── Android Studio ✅
+ └── Xcode ❌
+```
+
+For iOS native development:
+
+```text
+macOS
+   ↓
+Xcode
+   ↓
+iOS Simulator / iPhone
+```
+
+Expo's documentation confirms Xcode is required and the Xcode workflow is only available on macOS. ([Expo Documentation](https://docs.expo.dev/debugging/runtime-issues/?utm_source=chatgpt.com "Debugging runtime issues - Expo Documentation"))
+
+### 🍎 12. How you run an Expo app in Xcode
+
+On a Mac:
+
+```powershell
+npx expo prebuild -p ios
+```
+
+This generates:
+
+```text
+ios/
+```
+
+Then:
+
+```powershell
+xed ios
+```
+
+`xed ios` opens the generated iOS workspace/project in Xcode. Expo's current docs use exactly this workflow. ([Expo Documentation](https://docs.expo.dev/debugging/runtime-issues/?utm_source=chatgpt.com "Debugging runtime issues - Expo Documentation"))
+
+Then Xcode does:
+
+```text
+ios/
+ ↓
+CocoaPods/dependencies
+ ↓
+Xcode project
+ ↓
+Build
+ ↓
+iOS Simulator / iPhone
+```
+
+Select an iPhone simulator:
+
+```text
+iPhone 17
+```
+
+or whatever simulator is installed.
+
+Then press:
+
+▶️ Run
+
+or:
+
+```text
+⌘ + R
+```
+
+### 🧩 13. The complete local development picture
+
+Now you can see what each thing does:
+
+```text
+                 EXPO PROJECT
+                      │
+                 app.json
+                      │
+                      ▼
+               expo prebuild
+                      │
+            ┌─────────┴─────────┐
+            ▼                   ▼
+        android/               ios/
+            │                   │
+            ▼                   ▼
+     Android Studio           Xcode
+            │                   │
+            ▼                   ▼
+       Gradle build        Xcode build
+            │                   │
+            ▼                   ▼
+       Android app           iOS app
+```
+
+But you can often skip explicitly running prebuild because:
+
+```powershell
+npx expo run:android
+```
+
+and:
+
+```powershell
+npx expo run:ios
+```
+
+will run prebuild automatically if the native directories don't exist. ([Expo Documentation](https://docs.expo.dev/develop/development-builds/introduction/?utm_source=chatgpt.com "Introduction to development builds - Expo Documentation"))
+
+### 🔄 14. When do you actually need to prebuild?
+
+This is  **probably the most useful thing to remember** .
+
+**🟢 You changed only TypeScript/JavaScript**
+
+For example:
+
+```text
+app/index.tsx
+```
+
+You changed:
+
+```tsx
+<Text>Hello</Text>
+```
+
+to:
+
+```tsx
+<Text>Hello Arun</Text>
+```
+
+You  **do NOT need prebuild** .
+
+Just:
+
+```powershell
+npx expo start
+```
+
+or if using a development build:
+
+```powershell
+npx expo start --dev-client
+```
+
+**🟡 You installed a native dependency**
+
+For example, you install something that requires native code.
+
+```powershell
+npx expo install expo-camera
+```
+
+You may need:
+
+```powershell
+npx expo prebuild --clean
+```
+
+and then rebuild.
+
+Expo explicitly identifies installing/updating native dependencies as one of the cases where you need to regenerate native projects. ([Expo Documentation](https://docs.expo.dev/develop/development-builds/introduction/?utm_source=chatgpt.com "Introduction to development builds - Expo Documentation"))
+
+**🟡 You changed `app.json`**
+
+For example:
+
+```json
+"orientation": "landscape"
+```
+
+or:
+
+```json
+"android": {
+  "package": "com.creogrid.practise1"
+}
+```
+
+or:
+
+```json
+"plugins": [...]
+```
+
+Those changes may affect native configuration.
+
+Therefore:
+
+```powershell
+npx expo prebuild --clean
+```
+
+then rebuild.
+
+**🟡 You upgraded Expo SDK**
+
+For example:
+
+```text
+SDK 54
+   ↓
+SDK 55
+```
+
+You'll generally need to regenerate/rebuild the native projects.
+
+Expo explicitly lists upgrading the Expo SDK as another reason to regenerate. ([Expo Documentation](https://docs.expo.dev/develop/development-builds/introduction/?utm_source=chatgpt.com "Introduction to development builds - Expo Documentation"))
+
+### 🚀 15. Prebuild vs EAS Build
+
+This is another major distinction.
+
+`expo prebuild`
+
+Runs **on your computer** and generates:
+
+```text
+android/
+ios/
+```
+
+It doesn't mean:
+
+> "Publish my app."
+
+`expo run:android`
+
+Uses your local Android environment:
+
+```text
+Windows
+ ↓
+Android SDK
+ ↓
+Gradle
+ ↓
+Android app
+```
+
+`eas build`
+
+Uses Expo's cloud build infrastructure:
+
+```text
+Your computer
+      ↓
+EAS
+      ↓
+Expo cloud
+      ↓
+Android/iOS build
+```
+
+EAS Build is specifically intended to produce a ready-to-submit binary for app stores. ([Expo Documentation](https://docs.expo.dev/build/setup/?utm_source=chatgpt.com "Create your first build - Expo Documentation"))
+
+### 🏭 16. Local Android Studio build vs EAS production build
+
+You can think of it this way:
+
+```text
+              DEVELOPMENT
+                  │
+          npx expo run:android
+                  │
+                  ▼
+           Android Studio
+                  │
+                  ▼
+              Debug APK
+```
+
+Whereas:
+
+```text
+             PRODUCTION
+                  │
+          eas build -p android
+                  │
+                  ▼
+              EAS Cloud
+                  │
+                  ▼
+               AAB
+                  │
+                  ▼
+            Google Play
+```
+
+You **can** build production locally with Android Studio/Gradle, but EAS makes signing, build infrastructure and cloud builds much easier. Expo's docs describe local production builds as requiring the normal native tooling and signing setup. ([Expo Documentation](https://docs.expo.dev/guides/local-app-overview/?utm_source=chatgpt.com "Build locally: Overview - Expo Documentation"))
+
+### ⚠️ 17. One thing I want you to avoid
+
+Because you're learning Expo, don't fall into this pattern:
+
+```text
+npx expo prebuild
+       ↓
+Open android/
+       ↓
+Change lots of native files manually
+       ↓
+npx expo prebuild --clean
+       ↓
+😱 Changes gone
+```
+
+Instead, when possible:
+
+```text
+app.json / app.config.js
+        +
+config plugins
+        ↓
+expo prebuild
+        ↓
+android/ ios/
+```
+
+That's the  **CNG/Expo-friendly approach** . ([Expo Documentation](https://docs.expo.dev/workflow/overview/?utm_source=chatgpt.com "Develop an app with Expo - Expo Documentation"))
+
+If you intentionally decide to maintain native projects manually, that's possible too—but then you're moving toward a more traditional React Native workflow, and repeated prebuild regeneration can overwrite your manual changes. Expo explicitly warns about this. ([Expo Documentation](https://docs.expo.dev/workflow/overview/?utm_source=chatgpt.com "Develop an app with Expo - Expo Documentation"))
+
+> ### 🧩 If you want to configure something that Expo supports through configuration,  **put that configuration in `app.json` / `app.config.js` or a config plugin** , rather than manually editing the generated `android/` or `ios/` files.
+>
+> For example:
+>
+> ```json
+> {
+>   "expo": {
+>     "name": "My App",
+>     "icon": "./assets/icon.png",
+>     "android": {
+>       "package": "com.example.myapp",
+>       "permissions": ["CAMERA"]
+>     }
+>   }
+> }
+> ```
+>
+> Then:
+>
+> ```bash
+> npx expo prebuild
+> ```
+>
+> Expo generates the corresponding native configuration.
+>
+> #### ⚠️ Why `--clean` matters
+>
+> Suppose you manually modify:
+>
+> ```text
+> android/
+>    app/
+>       src/
+>          main/
+>             AndroidManifest.xml
+> ```
+>
+> Then later run:
+>
+> ```bash
+> npx expo prebuild --clean
+> ```
+>
+> `--clean` essentially says:
+>
+>> **Delete the existing native projects and regenerate them from my Expo configuration.**
+>>
+>
+> So your manual modification can disappear.
+>
+> That's why this is safer:
+>
+> ```text
+> ❌ Manually modify android/ios
+>            ↓
+>      prebuild --clean
+>            ↓
+>      modification may disappear
+> ```
+>
+> versus:
+>
+> ```text
+> ✅ app.json / app.config.js
+>           +
+>     config plugins
+>           ↓
+>     prebuild --clean
+>           ↓
+>     same configuration regenerated
+> ```
+>
+> #### 🛠️ What about things that aren't supported by `app.json`?
+>
+> This is where **config plugins** become important.
+>
+> Imagine a native Android setting that Expo doesn't expose directly through `app.json`.
+>
+> Instead of manually doing:
+>
+> ```text
+> android/
+>    ...
+>    manually modify native files
+> ```
+>
+> you can create/use a  **config plugin** :
+>
+> ```text
+> app.json / app.config.js
+>         ↓
+>    config plugin
+>         ↓
+>     expo prebuild
+>         ↓
+> android/ + ios/
+> ```
+>
+> The plugin programmatically makes the required native changes every time Prebuild runs.
+>
+> So even:
+>
+> ```bash
+> npx expo prebuild --clean
+> ```
+>
+> can regenerate those changes.
+>
+> #### 🧠 But don't take this as "NEVER edit native code"
+>
+> This is the important nuance.
+>
+> There are situations where you  **do need to work directly with native Android/iOS code** .
+>
+> For example:
+>
+> * Writing custom Kotlin/Java native modules
+> * Writing custom Swift/Objective-C native modules
+> * Deep native SDK integrations
+> * Custom Android services
+> * Advanced iOS capabilities
+> * Native code that doesn't have a config-plugin solution
+>
+> In those cases, direct native development is completely legitimate.
+>
+> The question is  **which workflow you're choosing** .
+>
+> ### Expo CNG workflow
+>
+> ```text
+>               app.json
+>                  │
+>         app.config.js
+>                  │
+>          config plugins
+>                  │
+>                  ▼
+>           expo prebuild
+>              /       \
+>             /         \
+>        android/       ios/
+>             │           │
+>       Android Studio   Xcode
+> ```
+>
+> Here, `android/` and `ios/` are essentially  **generated outputs** .
+>
+> ### Fully native/custom workflow
+>
+> You may instead treat:
+>
+> ```text
+> android/
+> ios/
+> ```
+>
+> as permanent source code and manually maintain them.
+>
+> In that case, you wouldn't casually run:
+>
+> ```bash
+> npx expo prebuild --clean
+> ```
+>
+> because you could wipe out native work.
+>
+> #### 🎯 The practical rule I want you to remember
+>
+> For your current Expo learning:
+>
+>> **If Expo provides a configuration option → use `app.json` / `app.config.js`.**
+>>
+>
+>> **If the native configuration needs custom automation → use a config plugin.**
+>>
+>
+>> **If you genuinely need custom native behavior/code → work in `android/` / `ios/`, but understand that you're moving away from a purely generated CNG workflow.**
+>>
+>
+> So yes, your understanding is correct:
+>
+> **The reason I recommended `app.json`/`app.config.js` + config plugins is precisely because those changes can be reproduced when you regenerate the native projects, including with `prebuild --clean`.**
+>
+> The key concept is not really " **never touch native code** "; it's " **don't manually modify generated native code when the same customization can be expressed declaratively through Expo config/config plugins.** "
+
+### 🧠 The one diagram to remember
+
+```text
+                         EXPO
+                          │
+                  app.json + JS/TS
+                          │
+                          ▼
+                    PREBUILD
+                          │
+              ┌───────────┴───────────┐
+              ▼                       ▼
+         android/                    ios/
+              │                       │
+              ▼                       ▼
+      Android Studio                Xcode
+              │                       │
+              ▼                       ▼
+        Android APK               iOS App
+              │                       │
+              └───────────┬───────────┘
+                          │
+                          ▼
+                     EAS BUILD
+                          │
+                    ☁️ EAS Cloud
+                          │
+              ┌───────────┴───────────┐
+              ▼                       ▼
+             AAB                     IPA
+              │                       │
+              ▼                       ▼
+        Google Play               App Store
+```
+
+**The key takeaway:** `prebuild` is  **not a deployment command** . It's the bridge between your  **Expo-managed project and the underlying native Android/iOS projects** . `run:android`/`run:ios` then compile those projects locally, while `eas build` can compile them in Expo's cloud. ([Expo Documentation](https://docs.expo.dev/develop/development-builds/introduction/?utm_source=chatgpt.com "Introduction to development builds - Expo Documentation"))
+
+---
+
+# ----Expo API Routes
+
+**Expo API Routes** are one of the more useful parts of modern Expo because they let you put  **server-side API endpoints inside an Expo project** , rather than creating a completely separate Express/Node backend for simple applications.
+
+### 🚀 1. What are Expo API Routes?
+
+Expo API Routes allow you to create backend HTTP endpoints such as:
+
+```text
+GET  /api/users
+POST /api/users
+GET  /api/products
+POST /api/orders
+```
+
+inside your Expo project.
+
+Conceptually:
+
+```text
+                    Your Expo project
+                         │
+             ┌───────────┴───────────┐
+             │                       │
+       React Native UI          API Routes
+             │                       │
+             │                  server-side code
+             │                       │
+             ▼                       ▼
+          Mobile app              Database
+                                  External APIs
+                                  Secrets
+                                  Business logic
+```
+
+So instead of:
+
+```text
+React Native app
+       ↓
+Express backend
+       ↓
+MongoDB
+```
+
+you can have:
+
+```text
+Expo app
+ ├── React Native screens
+ └── API routes
+        ↓
+     Database
+```
+
+This is particularly convenient for smaller apps and prototypes.
+
+### 📁 2. Where do API routes live?
+
+If you're using  **Expo Router** , you can create an `app` directory structure like:
+
+```text
+app/
+├── index.tsx
+├── products.tsx
+│
+└── api/
+    └── products+api.ts
+```
+
+The important part is:
+
+```text
+products+api.ts
+```
+
+The `+api` suffix tells Expo Router:
+
+> "This file is an API route, not a screen."
+
+For example:
+
+```ts
+// app/api/products+api.ts
+
+export function GET() {
+  return Response.json({
+    products: [
+      { id: 1, name: "Ring" },
+      { id: 2, name: "Necklace" }
+    ]
+  });
+}
+```
+
+Now the route can respond to:
+
+```text
+/api/products
+```
+
+with JSON.
+
+### 🔄 3. How does the request work?
+
+Suppose your React Native app does:
+
+```ts
+const response = await fetch("/api/products");
+
+const data = await response.json();
+```
+
+The conceptual flow is:
+
+```text
+┌──────────────────────┐
+│   React Native App   │
+│                      │
+│   fetch("/api/...")  │
+└──────────┬───────────┘
+           │
+           │ HTTP request
+           ▼
+┌──────────────────────┐
+│    Expo API Route    │
+│                      │
+│ products+api.ts      │
+└──────────┬───────────┘
+           │
+           ▼
+      Business logic
+           │
+           ▼
+       Database
+           │
+           ▼
+        Response
+           │
+           ▼
+      React Native
+```
+
+This is essentially a normal HTTP API.
+
+### 🧩 4. You can have different HTTP methods
+
+For example:
+
+```ts
+// app/api/products+api.ts
+
+export function GET() {
+  return Response.json({
+    message: "Fetching products"
+  });
+}
+
+export async function POST(request: Request) {
+  const body = await request.json();
+
+  return Response.json({
+    message: "Product created",
+    product: body
+  });
+}
+```
+
+Now:
+
+```text
+GET  /api/products
+```
+
+calls:
+
+```ts
+GET()
+```
+
+while:
+
+```text
+POST /api/products
+```
+
+calls:
+
+```ts
+POST()
+```
+
+You can similarly implement:
+
+```ts
+PUT()
+PATCH()
+DELETE()
+```
+
+### 🛡️ 5. Why is this useful?
+
+One **very important** reason is that API Routes run on the  **server** , rather than inside your mobile application's JavaScript bundle.
+
+Suppose you need to call an external service requiring a secret API key:
+
+```text
+React Native
+      │
+      │ ❌ Don't put secret here
+      │
+      ▼
+API Route
+      │
+      │ secret API key
+      ▼
+External API
+```
+
+For example:
+
+```ts
+export async function POST(request: Request) {
+  const body = await request.json();
+
+  const response = await fetch("https://some-api.com", {
+    headers: {
+      Authorization: `Bearer ${process.env.SECRET_API_KEY}`
+    }
+  });
+
+  return Response.json(await response.json());
+}
+```
+
+Your secret stays on the server.
+
+That's a major difference between:
+
+```text
+Mobile app code
+```
+
+and:
+
+```text
+Server-side API route
+```
+
+### 🗄️ 6. API Routes can talk to databases
+
+This is where things become much more interesting for the kind of SaaS applications you're thinking about.
+
+For example:
+
+```text
+React Native
+     │
+     │ POST /api/products
+     ▼
+Expo API Route
+     │
+     │ Prisma
+     ▼
+PostgreSQL
+```
+
+An API route could theoretically do:
+
+```ts
+export async function POST(request: Request) {
+  const body = await request.json();
+
+  const product = await prisma.product.create({
+    data: {
+      name: body.name,
+      price: body.price
+    }
+  });
+
+  return Response.json(product);
+}
+```
+
+So your Expo application can have:
+
+```text
+Mobile UI
+     ↓
+API Routes
+     ↓
+Prisma
+     ↓
+PostgreSQL
+```
+
+That's essentially a full-stack application.
+
+### 📱 7. How is this different from Express?
+
+This is an important distinction.
+
+With Express you might have:
+
+```text
+my-project/
+│
+├── mobile/
+│   └── React Native
+│
+└── server/
+    ├── server.js
+    ├── routes/
+    ├── controllers/
+    ├── middleware/
+    └── models/
+```
+
+And:
+
+```text
+React Native
+     ↓
+Express API
+     ↓
+MongoDB/PostgreSQL
+```
+
+With Expo API Routes:
+
+```text
+my-project/
+│
+├── app/
+│   ├── index.tsx
+│   ├── products.tsx
+│   │
+│   └── api/
+│       └── products+api.ts
+│
+└── ...
+```
+
+And:
+
+```text
+Expo
+├── Mobile UI
+└── API
+     ↓
+ Database
+```
+
+So Expo API Routes are somewhat analogous to  **Next.js Route Handlers** , rather than being a replacement for every possible Express backend.
+
+### 🌐 8. But here's the important part: where does the API actually run?
+
+This is where beginners sometimes misunderstand Expo API Routes.
+
+Your API route isn't magically running **inside the user's phone** as a secure backend.
+
+In a deployed application, the API route needs a  **server environment** .
+
+For example:
+
+```text
+                    Internet
+                       │
+                       ▼
+                ┌─────────────┐
+                │ API Server  │
+                │             │
+                │ +api.ts     │
+                └──────┬──────┘
+                       │
+                       ▼
+                  PostgreSQL
+```
+
+Your mobile app communicates with that server.
+
+So:
+
+```text
+Expo API Routes ≠ local mobile functions
+```
+
+They are  **server-side endpoints** .
+
+### 🧪 9. What happens during development?
+
+When you're developing locally, you can run the Expo development server.
+
+Your project might effectively have:
+
+```text
+Computer
+│
+├── Expo development server
+│       │
+│       └── API routes
+│
+└── React Native app
+        │
+        └── requests API
+```
+
+For example:
+
+```text
+Phone
+  │
+  │ HTTP
+  ▼
+Your PC
+  │
+  └── Expo dev server
+          │
+          └── /api/products
+```
+
+This is one reason your earlier LAN/network issue with Expo is relevant: **the phone needs to be able to reach the development machine when using local development networking.**
+
+### ☁️ 10. What about production?
+
+This is where you need to think about deployment.
+
+Conceptually:
+
+```text
+                 Production
+                    │
+        ┌───────────┴───────────┐
+        │                       │
+   Mobile App              API Server
+        │                       │
+        └────────── HTTP ───────┘
+                                │
+                                ▼
+                           PostgreSQL
+```
+
+Your API routes need to be deployed somewhere that can execute the server-side code.
+
+So when choosing Expo API Routes, you also need to consider the hosting/runtime that will serve those routes.
+
+### 🔥 11. Expo API Routes vs your usual MERN backend
+
+Since you're learning MERN, here's the comparison I'd keep in your head:
+
+|                           | Expo API Routes          | Express      |
+| ------------------------- | ------------------------ | ------------ |
+| Backend endpoints         | ✅                       | ✅           |
+| HTTP methods              | ✅                       | ✅           |
+| Database access           | ✅                       | ✅           |
+| Server secrets            | ✅                       | ✅           |
+| Middleware ecosystem      | More limited             | Huge         |
+| Complex backend           | Possible, but less ideal | ✅ Excellent |
+| Full backend architecture | Less flexible            | ✅           |
+| Simple mobile backend     | ⭐⭐⭐⭐⭐               | ⭐⭐⭐⭐     |
+| Existing MERN knowledge   | Some new concepts        | ⭐⭐⭐⭐⭐   |
+
+For a small application:
+
+```text
+Expo
+ ├── UI
+ └── API routes
+       ↓
+    Database
+```
+
+can be wonderfully simple.
+
+For a large SaaS:
+
+```text
+Mobile
+Web
+Admin
+Third-party integrations
+Workers
+Queues
+Webhooks
+Payments
+Complex auth
+RBAC
+Background jobs
+Microservices
+```
+
+you may eventually want a more dedicated backend architecture.
+
+### 🧠 12. A very important distinction: Expo API Routes vs Expo Router
+
+Don't confuse these two.
+
+**Expo Router**
+
+Handles  **navigation** :
+
+```text
+app/
+├── index.tsx
+├── login.tsx
+├── products.tsx
+└── settings.tsx
+```
+
+These represent screens/routes in your application.
+
+**Expo API Routes**
+
+Use:
+
+```text
++api.ts
+```
+
+to represent  **HTTP API endpoints** .
+
+So:
+
+```text
+app/
+│
+├── index.tsx
+│       ↓
+│   Mobile screen
+│
+├── products.tsx
+│       ↓
+│   Mobile screen
+│
+└── api/
+    └── products+api.ts
+            ↓
+        HTTP API endpoint
+```
+
+Same router system, but two different kinds of routes.
+
+### ⚠️ 13. One thing I want you to be careful about
+
+Don't think:
+
+> "I'm using Expo, therefore I don't need a backend."
+
+That's not quite right.
+
+Rather:
+
+> **Expo API Routes are one way of implementing your backend/API layer within an Expo project.**
+
+You still have:
+
+```text
+Frontend
+   +
+Backend/API
+   +
+Database
+```
+
+You are simply putting the frontend and API code into the same project/repository.
+
+### 🧭 14. The easiest mental model
+
+Remember these four:
+
+```text
+📱 React Native
+       ↓
+   UI / frontend
+
+🧭 Expo Router
+       ↓
+   navigation
+
+🌐 Expo API Routes
+       ↓
+   server/API
+
+🗄️ PostgreSQL / MongoDB
+       ↓
+   data
+```
+
+And the complete picture:
+
+```text
+             📱 Expo App
+                  │
+        ┌─────────┴─────────┐
+        │                   │
+   Screens/UI          API Routes
+        │                   │
+        │              Business Logic
+        │                   │
+        │              Authentication
+        │                   │
+        │              External APIs
+        │                   │
+        │                   ▼
+        │              🗄️ Database
+        │
+        └────── HTTP ───────┘
+```
+
+**That's the core idea of Expo API Routes.**
+
+One additional thing worth learning next is  **how Expo API Routes actually get deployed and what happens with `app/api/...+api.ts` when you run `eas build`** —because that's where the distinction between an Expo  *mobile binary* , the  *Expo development server* , and the *actual production API server* becomes very important.
 
 ---
 
@@ -6593,6 +8221,576 @@ For your eventual  **CreoGrid SaaS products** , I'd consider PostHog one of the 
 
 ---
 
+# ----Stream & Vision Agent
+
+### 👁️ 1. What is Stream Vision Agents?
+
+**Stream Vision Agents** is an  **open-source Python framework for building real-time AI agents that can see, hear, speak, and act** .
+
+It is made by Stream (GetStream), and is designed around real-time **WebRTC audio/video** rather than ordinary request → response AI APIs. Stream currently describes it as a production-oriented framework with 25+ integrations, tool calling, pluggable computer-vision pipelines, and sub-500 ms real-time experiences. ([Stream](https://getstream.io/vision-agents/?utm_source=chatgpt.com "Vision Agents by Stream - Real-Time AI That Can See"))
+
+The easiest way to understand it is:
+
+> **Stream Vision Agents is infrastructure for building an AI agent that can participate in a live audio/video conversation and process what it sees and hears in real time.**
+
+### 🧠 2. What makes it different from a normal AI chatbot?
+
+A normal chatbot looks like:
+
+```text
+You
+ │
+ │ "What is this?"
+ ▼
+Frontend
+ │
+ ▼
+Backend
+ │
+ ▼
+LLM
+ │
+ ▼
+Text response
+ │
+ ▼
+You
+```
+
+But imagine you open your camera and point it at a machine:
+
+```text
+              📱 Camera + Microphone
+                       │
+                       ▼
+                Stream WebRTC
+                       │
+                       ▼
+              Vision AI Agent
+                │     │     │
+                │     │     └── 🔊 Voice
+                │     └──────── 👁️ Vision
+                └────────────── 🧠 LLM
+                       │
+                       ▼
+                 Agent response
+```
+
+You could ask:
+
+> "What's wrong with this machine?"
+
+The agent can potentially:
+
+1. receive your camera video,
+2. process video frames,
+3. detect objects/visual information,
+4. listen to your question,
+5. reason using an AI model,
+6. call an external API/tool if necessary,
+7. speak the answer back.
+
+That's  **multimodal real-time AI** . ([Amazon Web Services, Inc.](https://aws.amazon.com/blogs/machine-learning/real-time-voice-agents-with-stream-vision-agents-and-amazon-nova-2-sonic/?utm_source=chatgpt.com "Real-time voice agents with Stream Vision Agents and Amazon Nova 2 Sonic | Artificial Intelligence"))
+
+### 👁️ 3. Why is it called "Vision Agents"?
+
+Because the agent can receive  **visual information** .
+
+For example:
+
+```text
+Camera
+   ↓
+Video frames
+   ↓
+Vision processor
+   ↓
+AI agent
+   ↓
+"That's a welding machine."
+```
+
+But Vision Agents isn't limited to computer vision.
+
+It can combine:
+
+```text
+👁️ Vision
++
+🎤 Audio
++
+🧠 LLM
++
+🔊 Speech
++
+🔧 Tools/APIs
++
+💾 Memory/RAG
+```
+
+That's why **multimodal agent** is a better description.
+
+### ⚡ 4. The "real-time" part is extremely important
+
+Suppose you're building a normal image-analysis application.
+
+You might do:
+
+```text
+Take photo
+   ↓
+Upload image
+   ↓
+Send to AI
+   ↓
+Wait
+   ↓
+Receive result
+```
+
+That's fine for many applications.
+
+Vision Agents is designed for something more like:
+
+```text
+Camera continuously streaming
+           ↓
+      Video frames
+           ↓
+     AI processing
+           ↓
+       Response
+           ↓
+     Voice response
+```
+
+The interaction can happen continuously rather than treating every interaction as an independent image upload.
+
+Stream's current Vision Agents platform emphasizes real-time WebRTC and sub-500 ms experiences. ([Stream](https://getstream.io/vision-agents/?utm_source=chatgpt.com "Vision Agents by Stream - Real-Time AI That Can See"))
+
+### 🏗️ 5. The architecture
+
+This is probably the most important part for you as a developer.
+
+Imagine:
+
+```text
+                 📱 React Native App
+                 /    Web App
+                /
+               ▼
+        ┌──────────────────┐
+        │  Stream WebRTC   │
+        │   Infrastructure │
+        └────────┬─────────┘
+                 │
+          Audio + Video
+                 │
+                 ▼
+       ┌─────────────────────┐
+       │   Vision Agent      │
+       │     Python          │
+       └─────────┬───────────┘
+                 │
+        ┌────────┼───────────┐
+        ▼        ▼           ▼
+      👁️       🎤          🧠
+     Vision    Audio        LLM
+     models   pipeline    / Realtime
+        │        │           │
+        └────────┼───────────┘
+                 ▼
+              🔧 Tools
+                 │
+        ┌────────┼─────────┐
+        ▼        ▼         ▼
+       API      DB       MCP
+                 │
+                 ▼
+              Response
+                 │
+                 ▼
+             🔊 User
+```
+
+The key idea is that  **Stream handles much of the real-time media infrastructure** , while your Python agent contains the AI behavior/orchestration. AWS's recent example describes the Vision Agent worker receiving audio from Stream's WebRTC infrastructure, passing it to a real-time model, and streaming the response back. ([Amazon Web Services, Inc.](https://aws.amazon.com/blogs/machine-learning/real-time-voice-agents-with-stream-vision-agents-and-amazon-nova-2-sonic/?utm_source=chatgpt.com "Real-time voice agents with Stream Vision Agents and Amazon Nova 2 Sonic | Artificial Intelligence"))
+
+### 🐍 6. Why Python?
+
+This is an important point for you because you're primarily learning:
+
+```text
+JavaScript
+TypeScript
+React
+React Native
+Node.js
+```
+
+Vision Agents itself is a  **Python framework** .
+
+A simplified agent can look conceptually like:
+
+```python
+agent = Agent(
+    edge=getstream.Edge(),
+    agent_user=agent_user,
+    instructions="You are a helpful AI assistant.",
+    llm=gemini.Realtime(),
+)
+```
+
+You then add processors or integrations.
+
+For example, Stream's current examples show a Gemini realtime model combined with an Ultralytics YOLO pose processor. ([Stream](https://getstream.io/vision-agents/?utm_source=chatgpt.com "Vision Agents by Stream - Real-Time AI That Can See"))
+
+So your architecture could be:
+
+```text
+React Native
+     │
+     │ WebRTC / Stream SDK
+     ▼
+Stream infrastructure
+     │
+     ▼
+Python Vision Agent
+     │
+     ├── Gemini
+     ├── OpenAI
+     ├── Claude/etc.
+     ├── YOLO
+     ├── ElevenLabs
+     ├── Deepgram
+     └── Your APIs
+```
+
+### 🔌 7. What are "processors"?
+
+This is one of the coolest concepts.
+
+You can insert processing stages into the agent.
+
+For example:
+
+```text
+Camera
+  ↓
+YOLO
+  ↓
+LLM
+  ↓
+Response
+```
+
+YOLO might detect:
+
+```text
+Person
+Car
+Helmet
+Welding machine
+Bottle
+Dog
+```
+
+Or you could have:
+
+```text
+Camera
+  ↓
+Pose estimation
+  ↓
+LLM
+  ↓
+Fitness coach
+```
+
+Or:
+
+```text
+Camera
+  ↓
+Object detection
+  ↓
+LLM
+  ↓
+Safety assistant
+```
+
+Stream describes these as  **pluggable vision pipelines** , supporting things such as YOLO, Roboflow and custom PyTorch/ONNX models. ([Stream](https://getstream.io/vision-agents/?utm_source=chatgpt.com "Vision Agents by Stream - Real-Time AI That Can See"))
+
+### 🎤 8. Voice is another major component
+
+Imagine:
+
+```text
+You:
+"Is my posture correct?"
+
+       🎤
+       ↓
+
+Vision Agent
+       ↓
+Camera + pose model
+       ↓
+LLM
+       ↓
+
+🔊 "Your shoulders are slightly forward."
+```
+
+The agent can combine:
+
+```text
+Speech → understanding
+Camera → visual information
+LLM → reasoning
+TTS → speech
+```
+
+Stream has integrations for voice technologies including ElevenLabs, Deepgram, AWS Polly and Cartesia. ([Stream](https://getstream.io/vision-agents/?utm_source=chatgpt.com "Vision Agents by Stream - Real-Time AI That Can See"))
+
+### 💾 9. Memory and RAG
+
+Vision Agents can also be connected to persistent information.
+
+Imagine a machine-service assistant.
+
+Customer says:
+
+> "This is the same welding generator we serviced last month."
+
+The agent could retrieve:
+
+```text
+Customer
+   ↓
+Machine
+   ↓
+Previous service records
+   ↓
+Warranty
+   ↓
+Parts replaced
+```
+
+and use that context.
+
+Stream's current Vision Agents platform lists **memory and RAG** capabilities, including TurboPuffer vector search integration and persistent context through Stream Chat. ([Stream](https://getstream.io/vision-agents/?utm_source=chatgpt.com "Vision Agents by Stream - Real-Time AI That Can See"))
+
+So:
+
+```text
+Current video
+     +
+Current conversation
+     +
+Previous customer data
+     +
+Knowledge base
+     ↓
+Better AI response
+```
+
+### 📱 10. How does this relate to your React Native learning?
+
+This is particularly relevant to you.
+
+You  **wouldn't normally run the Python Vision Agent inside your React Native app** .
+
+Instead:
+
+```text
+             MOBILE APP
+          React Native / Expo
+                 │
+                 │
+                 ▼
+        Stream Video SDK
+                 │
+                 │ WebRTC
+                 ▼
+          Stream backend
+                 │
+                 ▼
+       Python Vision Agent
+                 │
+          ┌──────┼───────┐
+          ▼      ▼       ▼
+        Gemini  YOLO    APIs
+```
+
+The React Native side is mainly responsible for:
+
+* camera
+* microphone
+* UI
+* displaying video
+* displaying agent responses
+* joining the Stream call/session
+
+The  **agent logic lives on your backend** .
+
+AWS's current integration documentation specifically notes that Vision Agents provides client SDK support for React, iOS, Android, Flutter and  **React Native** . ([Amazon Web Services, Inc.](https://aws.amazon.com/blogs/machine-learning/real-time-voice-agents-with-stream-vision-agents-and-amazon-nova-2-sonic/?utm_source=chatgpt.com "Real-time voice agents with Stream Vision Agents and Amazon Nova 2 Sonic | Artificial Intelligence"))
+
+### 🆚 11. Vision Agents vs a normal computer-vision system
+
+Traditional computer vision:
+
+```text
+Camera
+ ↓
+OpenCV / YOLO
+ ↓
+"Person detected"
+```
+
+Vision Agent:
+
+```text
+Camera
+ ↓
+YOLO
+ ↓
+LLM
+ ↓
+Conversation
+ ↓
+Tool calling
+ ↓
+Voice response
+```
+
+For example:
+
+**Traditional CV**
+
+> "Person detected."
+
+**Vision Agent**
+
+> "I can see a person standing near the welding machine. They're not wearing safety goggles. Please put on eye protection before operating it."
+
+That's the difference between **detection** and an  **interactive intelligent system** .
+
+### 💡 12. What could you actually build with it?
+
+There are some very interesting applications.
+
+**🏋️ AI Fitness Coach**
+
+```text
+Camera
+ ↓
+Pose detection
+ ↓
+AI
+ ↓
+"Your squat depth is too shallow."
+```
+
+**👷 Industrial Safety Agent**
+
+```text
+Camera
+ ↓
+YOLO
+ ↓
+Safety rules
+ ↓
+AI
+ ↓
+"Worker isn't wearing helmet."
+```
+
+**🔧 Equipment Service Assistant**
+
+```text
+Camera
+ ↓
+Identify equipment
+ ↓
+Retrieve equipment information
+ ↓
+Check service history
+ ↓
+Voice response
+```
+
+**👓 Accessibility Assistant**
+
+```text
+Camera
+ ↓
+Vision model
+ ↓
+AI
+ ↓
+Voice:
+"There is a chair two meters ahead."
+```
+
+**🎓 Interview Coach**
+
+```text
+Camera
+ ↓
+Pose / face / visual analysis
+ ↓
+AI
+ ↓
+Voice feedback
+```
+
+These aren't hypothetical categories—the ecosystem already demonstrates use cases around vision processing, voice agents and real-time multimodal interaction. ([Stream](https://getstream.io/vision-agents/?utm_source=chatgpt.com "Vision Agents by Stream - Real-Time AI That Can See"))
+
+### 🧠 13. The simplest mental model
+
+If you're learning this as part of your React Native journey, remember:
+
+```text
+                 STREAM
+                   │
+            Real-time transport
+                   │
+                   ▼
+          ┌─────────────────┐
+          │ VISION AGENT    │
+          │                 │
+          │ 👁️ Vision       │
+          │ 🎤 Audio        │
+          │ 🧠 AI           │
+          │ 🔊 Voice        │
+          │ 🔧 Tools        │
+          │ 💾 Memory       │
+          └────────┬────────┘
+                   │
+                   ▼
+              Your App
+```
+
+And the  **most important distinction** :
+
+> **Stream Video** helps move real-time audio/video between participants.
+
+> **Stream Vision Agents** lets an AI agent become one of those participants and process/respond to the live interaction.
+
+That is why you can think of the AI as essentially another participant in a WebRTC session. AWS's architecture describes the Vision Agent worker as joining the session as an agent/robot peer and receiving and sending audio through the same real-time infrastructure. ([Amazon Web Services, Inc.](https://aws.amazon.com/blogs/machine-learning/real-time-voice-agents-with-stream-vision-agents-and-amazon-nova-2-sonic/?utm_source=chatgpt.com "Real-time voice agents with Stream Vision Agents and Amazon Nova 2 Sonic | Artificial Intelligence"))
+
+For  **your CreoGrid direction** , I would not learn Vision Agents immediately alongside basic React Native. I'd first get comfortable with  **React Native → API → authentication → backend → deployment** , then learn  **WebRTC/Stream** , and only then add Vision Agents. It becomes much easier once you understand the pieces underneath it.
+
+### 🚀 14. STREAM SKILLS
+
+Stream Agent Skills are a markdown skill pack that teaches AI coding agents how to build and work with [Stream](https://getstream.io/) [Chat](https://getstream.io/chat/docs/), [Video](https://getstream.io/video/docs/), [Feeds](https://getstream.io/activity-feeds/docs/) and [Moderation](https://getstream.io/moderation/docs/). They give an agent correct, up-to-date context the moment it starts writing Stream code.
+
+Example in npm,
+
+`npx skills add GetStream/agent-skills`
+
+---
+
 # ----Coding with AI - 1
 
 **The *AGENTS.md* file is the foundational context for your project. Without it, AI agents may suffer from inconsistent architectural decisions or library drift.**
@@ -6672,14 +8870,14 @@ The coding part will be and should be figured out by the AI model
 
 # ----Coding with AI - 2
 
-### **AGENTS.md Setup**
+### AGENTS.md Setup
 
 * **Centralized Context:** Understand that the `AGENTS.md` file acts as the single source of truth for your AI, containing the project's role, tech stack, folder rules, and styling conventions.
 * **Strategic Placement:** Ensure this file is located at the **root of your project** so that development tools (like *Cursor* or *Claude Code*) can read it automatically.
 * **Evolving Documentation:** Treat the file as a living document; as you encounter recurring errors (e.g., *NativeWind* compatibility issues), **ADD** them to the file so the AI learns to avoid those mistakes in future prompts.
 * **Agent Skills:** Learn how to install reusable instruction packs using `npx skills add` to teach your AI how to handle specific services like *Expo* effectively.
 
-### **Let AI do the boring stuff like Boilerplate or Setups for example- Nativewind Setup**
+### Let AI do the boring stuff like Boilerplate or Setups for example- Nativewind Setup
 
 Here is how the workflow leverages AI to handle the setup:
 
@@ -6687,3 +8885,402 @@ Here is how the workflow leverages AI to handle the setup:
 * **Version Accuracy:** By providing the specific documentation link to the agent, you ensure it applies the correct settings for *NativeWind v5*, avoiding common pitfalls associated with outdated setup tutorials or incorrect versions.
 * **Verification and Context:** The AI doesn't just write code; it provides a summary of the changes it performed. This allows you to quickly verify that the styling layer is integrated correctly without having to dig through every configuration file manually.
 * **Seamless Integration:** Once the AI finishes the heavy lifting, the final step involves simple testing—reloading the app and using basic class names (like `text-indigo-600`) to confirm the design system is fully operational.
+
+##### Prompt
+
+Read AGENTS.md first and follow it strictly.
+
+Set up NativeWind in this Expo app by following the NativeWind documentation I provided exactly. Use the installed NativeWind version and apply the required config, globals.css setup, Babel/Metro changes, TypeScript types, and app entry imports as needed. Do not use outdated setup steps or different version docs.
+
+([Here paste the latest Nativewind documentation](https://www.nativewind.dev/v5/getting-started/installation))
+
+##### AI can also help you with implementation reasoning hbehind the AI generated code
+
+Example prompt-
+
+Explain each _layout in detail including the reasoning, architectural chocies and design decisions behind the implementation
+
+### SEQUENTIAL IMPLEMENTATION PROMPTS FOR AN AI Languages Teacher App-Lingua
+
+##### Design Theme- Prompt
+
+Read AGENTS.md first and follow it strictly.
+
+Implement the full design system using NativeWind based on the attached design theme. Set up global CSS utilities, separate design tokens in theme folder, and font loading/config for the app. Ensure everything is as is shown in attached design theme.
+
+@prompt_material/01-design-system.png (Below)
+
+![1788431323155](image/ReactNative2/1788431323155.png)
+
+**This btw can be generated by AI. Also the images and assets can be generated by ChatGPT Image generation.**
+
+##### Onboarding- Prompt
+
+Read AGENTS.md first and follow it strictly.
+
+Implement the onboarding screen as shown in the attached design exactly as is using assets from the assets folder. Add a navigation link on the home route (/) to open the onboarding screen. Use the mascot-logo image for the top logo alongside the app name “muolingo” (replace “lingua”), and do not include the pagination dots.
+
+@prompt_material/02-onboarding-screen.png (Below)
+
+![1788432054577](image/ReactNative2/1788432054577.png)
+
+##### Authentication-UI Prompt
+
+Read AGENTS.md first and follow it strictly.
+
+Implement the Sign Up screen exactly as shown in the attached design. Then create a matching Sign In screen using the same layout and visual style, but with sign-in copy and no password field. Both screens should use email and social auth UI only.
+
+Update onboarding so pressing Get Started navigates to the Sign Up screen.
+
+When the main Sign Up or Sign In button is pressed, show a verification modal saying the user has received an email and should enter the verification code.
+
+The code should be 6 digits, use the number pad, keep the modal above the keyboard, and automatically navigate to the home route (/) when the last digit is entered.
+
+@prompt_material/03-auth-screen.png (Below)
+
+![1788432692533](image/ReactNative2/1788432692533.png)
+
+##### Authentication- Functionality with Clerk
+
+Can install the clerk skill `npx skills add clerk/skills` (The installation code available in Clerk doc). After entering that, select these choices-- Core/Clerk, Clerk-webhook and Clerk-expo-patterns
+
+**-- Now the prompt--- (For [Clerk documentation](https://clerk.com/docs/expo/getting-started/quickstart) choose- "javascript(Native sign-in optional)")**
+
+Read AGENTS.md first and follow it strictly.
+
+Study the existing auth screens and current mocked auth flow, then replace the mock behavior with real JavaScript Native Sign in Clerk authentication by following the Clerk documentation provided below.
+
+Keep the existing UI and navigation flow intact. Implement email-based Sign Up, Sign In, social auth where supported, and verification code handling through Clerk.
+
+After successful verification/authentication, navigate to the home route (/). If not authenticated, show onboarding route (/onboarding(. If authenticated, show home route (/).
+
+Do not change the screen design. If there is any need, ask me before implementation
+
+(Here paste the latest [**Clerk documentation**](https://clerk.com/docs/expo/getting-started/quickstart))
+
+##### Content System (This comes under /data)
+
+Read AGENTS.md first and follow it strictly.
+
+Create the learning content system using hardcoded TypeScript data. Add `types/learning.ts`, `data/languages.ts`, `data/units.ts`, and `data/lessons.ts`. Define supported languages, units, lessons, activities, vocabulary, phrases, lesson goals, and AI teacher prompts for future audio-based Vision Agent lessons. Include a small beginner-friendly sample dataset for a few languages and keep it simple, typed, and easy to extend.
+
+**-- OUTPUT EXAMPLES--**
+
+**languages.ts**
+
+```typescript
+import { Language } from "@/types/learning";
+
+export const LANGUAGES: Language[] = [
+  {
+    code: "es",
+    name: "Spanish",
+    nativeName: "Español",
+    flag: "https://flagcdn.com/w320/es.png",
+    color: "#FF9500",
+    learners: "28.4M",
+  },
+  {
+    code: "fr",
+    name: "French",
+    nativeName: "Français",
+    flag: "https://flagcdn.com/w320/fr.png",
+    color: "#4D88FF",
+    learners: "19.4M",
+  },
+  {
+    code: "ja",
+    name: "Japanese",
+    nativeName: "日本語",
+    flag: "https://flagcdn.com/w320/jp.png",
+    color: "#FF3B30",
+    learners: "12.7M",
+  },
+  {
+    code: "de",
+    name: "German",
+    nativeName: "Deutsch",
+    flag: "https://flagcdn.com/w320/de.png",
+    color: "#FFCC00",
+    learners: "8.1M",
+  },
+..................................
+];
+
+```
+
+**lessons.ts**
+
+```typescript
+
+import { Lesson } from '@/types/learning';
+
+export const LESSONS: Lesson[] = [
+  // ─── Spanish ───────────────────────────────────────────────────────────────
+
+  {
+    id: 'es-lesson-1',
+    unitId: 'es-unit-1',
+    title: 'Hola! Greetings',
+    description: 'Learn how to say hello and goodbye in Spanish',
+    icon: '👋',
+    xpReward: 10,
+    goals: [
+      { description: 'Learn 5 greeting words', xpReward: 5 },
+      { description: 'Complete all activities', xpReward: 5 },
+    ],
+    vocabulary: [
+      { word: 'Hola', translation: 'Hello', pronunciation: 'OH-lah', emoji: '👋' },
+      { word: 'Adiós', translation: 'Goodbye', pronunciation: 'ah-DYOHS', emoji: '👋' },
+      { word: 'Buenos días', translation: 'Good morning', pronunciation: 'BWEH-nohs DEE-ahs', emoji: '🌅' },
+      { word: 'Buenas tardes', translation: 'Good afternoon', pronunciation: 'BWEH-nahs TAR-dehs', emoji: '☀️' },
+      { word: 'Buenas noches', translation: 'Good night', pronunciation: 'BWEH-nahs NOH-chehs', emoji: '🌙' },
+    ],
+    phrases: [
+      { text: '¿Cómo estás?', translation: 'How are you?', pronunciation: 'KOH-moh ehs-TAHS' },
+      { text: 'Estoy bien, gracias.', translation: 'I am fine, thank you.', pronunciation: 'ehs-TOY BYEHN, GRAH-syahs' },
+      { text: 'Mucho gusto.', translation: 'Nice to meet you.', pronunciation: 'MOO-choh GOOS-toh' },
+    ],
+    activities: [
+      {
+        id: 'es-lesson-1-act-1',
+        type: 'multiple-choice',
+        question: 'What does "Hola" mean?',
+        correctAnswer: 'Hello',
+        options: ['Hello', 'Goodbye', 'Thank you', 'Please'],
+      },
+      {
+        id: 'es-lesson-1-act-2',
+        type: 'multiple-choice',
+        question: 'How do you say "Good morning" in Spanish?',
+        correctAnswer: 'Buenos días',
+        options: ['Buenas noches', 'Buenos días', 'Buenas tardes', 'Adiós'],
+      },
+      {
+        id: 'es-lesson-1-act-3',
+        type: 'translate',
+        question: 'Translate: "Good night"',
+        correctAnswer: 'Buenas noches',
+        hint: 'Think about when you go to sleep.',
+      },
+      {
+        id: 'es-lesson-1-act-4',
+        type: 'multiple-choice',
+        question: 'What does "¿Cómo estás?" mean?',
+        correctAnswer: 'How are you?',
+        options: ['How are you?', 'What is your name?', 'Where are you from?', 'Nice to meet you.'],
+      },
+    ],
+    aiTeacherPrompt: {
+      systemPrompt:
+        "You're Luna, an upbeat Spanish teacher in a real back-and-forth voice lesson about Spanish greetings. This is an INTERACTIVE conversation — not a lecture. Introduce ONE word at a time: say it, give the English meaning, add a quick pronunciation tip, then END YOUR TURN and wait silently for the student. Your turn ENDS at the question mark — stop there and output nothing else. Never write a reaction in the same turn as a teaching step. Keep every reply to one or two sentences. Stay strictly within: Hola, Adiós, Buenos días, Buenas tardes, Buenas noches, ¿Cómo estás?, Estoy bien gracias, and Mucho gusto.",
+      introMessage:
+        "¡Hola! I'm Luna, your Spanish teacher — let's kick off our very first lesson with some greetings!",
+      topics: ['greetings', 'farewells', 'time-of-day phrases', 'asking how someone is'],
+    },
+.............................................
+.............................................
+  },
+
+```
+
+**unit.ts**
+
+```typescript
+import { Unit } from '@/types/learning';
+
+export const UNITS: Unit[] = [
+  {
+    id: 'es-unit-1',
+    languageCode: 'es',
+    title: 'Greetings & Basics',
+    description: 'Start your Spanish journey with everyday phrases',
+    order: 1,
+    lessonIds: ['es-lesson-1', 'es-lesson-2', 'es-lesson-3'],
+  },
+  {
+    id: 'fr-unit-1',
+    languageCode: 'fr',
+    title: 'Bonjour! Greetings',
+    description: 'Learn how to greet and introduce yourself in French',
+    order: 1,
+    lessonIds: ['fr-lesson-1', 'fr-lesson-2', 'fr-lesson-3', 'fr-lesson-4', 'fr-lesson-5'],
+  },
+  {
+    id: 'ja-unit-1',
+    languageCode: 'ja',
+    title: 'はじめまして — First Steps',
+    description: 'Learn essential Japanese phrases for meeting people',
+    order: 1,
+    lessonIds: ['ja-lesson-1', 'ja-lesson-2', 'ja-lesson-3', 'ja-lesson-4', 'ja-lesson-5'],
+  },
+  {
+    id: 'de-unit-1',
+    languageCode: 'de',
+    title: 'Hallo! German Basics',
+    description: 'Master everyday German greetings and introductions',
+    order: 1,
+    lessonIds: ['de-lesson-1', 'de-lesson-2', 'de-lesson-3', 'de-lesson-4', 'de-lesson-5'],
+  },
+];
+
+```
+
+##### Languages Screen- Prompt
+
+Read AGENTS.md first and follow it strictly.
+
+Implement the language selection screen UI based on the attached design. Use the hardcoded languages from `data/languages.ts` and the existing NativeWind/global.css design utilities.
+
+Replace "See all languages" with confirmation button and use the earth image from the assets folder properly.
+
+Add a link on the home screen route (/) to navigate to the language selection screen route.
+
+@prompt_material/04-language-selection-screen.png
+
+![1788435875316](image/ReactNative2/1788435875316.png)
+
+##### State Management, Zustand- Prompt
+
+Read AGENTS.md first and follow it strictly.
+
+Integrate language selection state. Store the selected language using Zustand with the modern `@react-native-async-storage/async-storage` package. If an authenticated user has no selected language, route them to the language selection screen. Only after selecting a language should they access the home route (/). Preserve the existing UI exactly.
+
+Add a button on home screen route to clear async storage for testing language selection state functionality
+
+##### Bottom Tab Navigation- Prompt
+
+Read AGENTS.md first and follow it strictly.
+
+Implement only the bottom tab navigation based on the attached design. Create the tab routes for Home, Learn, AI Teacher, Chat, and Profile with simple placeholder screens for now.
+
+Build a custom tab bar with an active circular indicator for the selected tab. The active tab should appear inside a colored circle showing only the icon (no label), while inactive tabs should show both icon and label. Add a smooth animated transition for the active circle moving between tabs.
+
+Do not implement the Home screen UI yet.
+
+@prompt_material/05-home-and-tab-navigation.png (Below)
+
+![1788437199841](image/ReactNative2/1788437199841.png)
+
+##### Home Screen- Prompt
+
+Read AGENTS.md first and follow it strictly.
+
+Implement the Home screen UI exactly as shown in the attached design with spacing structure and such neatly exactly done. Display the logged-in user information from Clerk and the selected language from Zustand + AsyncStorage.
+
+Use the learning data from `data/*` to show current lesson, progress, and today’s plan.
+
+Use assets from the assets folder via the centralized images import. If any image is missing, use a suitable placeholder from Unsplash or Picsum.
+
+@prompt_material/05-home-and-tab-navigation.png
+
+![1788439406990](image/ReactNative2/1788439406990.png)
+
+##### Lesson Screen- Prompt
+
+Read AGENTS.md first and follow it strictly.
+
+Implement the Lessons screen exactly as shown in the attached design. Use the selected language from Zustand + AsyncStorage and display the matching units/lessons from the hardcoded learning data.
+
+Allow users to select/open any lesson (no locking logic for now). If a selected language has fewer than 2 lessons in the dataset, extend the data by adding at least 5 more lessons in the same structure and style.
+
+Use assets from the assets folder and for each lesson selection use its respective image. If any image is missing, use a suitable placeholder from Unsplash or Picsum.
+
+Each lesson card should still visually indicate status (completed, in progress, etc.) based on local state or mock data.
+
+@prompt_material/06-lesson-screen.png (Below)
+
+![1788440586405](image/ReactNative2/1788440586405.png)
+
+##### Audio lesson Screen- Prompt
+
+Read AGENTS.md first and follow it strictly.
+
+Implement the AI Teacher audio lesson screen exactly as shown in the attached design. When the user taps any lesson from the Learn/Lessons screen, open this screen with the selected lesson id and display the selected lesson’s language, title, goal, phrases, and AI teacher context from the hardcoded learning data.
+
+This should be an audio-only experience. Do not implement video calling. Keep the camera area as a visual teacher preview/placeholder only if needed, and focus on audio lesson controls such as mic, subtitles, end call, lesson feedback, teacher response bubble, and session status.
+
+Use assets from the assets folder via the centralized images import and keep everything consistent with the existing design system and bottom tab navigation.
+
+@prompt_material/07-audio-lesson-screen.png (Below)
+
+![1788440826617](image/ReactNative2/1788440826617.png)
+
+##### Stream Integration- Prompt
+
+Read AGENTS.md first and follow it strictly.
+
+Use the installed GetStream agent skills and the Stream docs to implement Stream audio call setup for the selected lesson flow. When a user taps a lesson, keep the existing Audio Lesson screen UI and add the ability to start, join, mute/unmute, and end an audio-only Stream call.
+
+Use Expo API routes for Stream token generation and call creation. Do not expose Stream secrets in the Expo app. Use the selected lesson, selected language, and logged-in Clerk user when creating the call/session.
+
+Preserve the existing UI and lesson data. Add clear loading, joined, error, muted, connecting, ended states and user info on audio ui.
+
+##### Vision Agents- Prompt
+
+Install Vision Agents Skill- `npx skills add https://visionagents.ai/`
+
+Read AGENTS.md first and follow it strictly.
+
+Use the installed Vision Agents skill to create a Python service at vision-agent/ inside this repo. It is the AI language teacher, voice only, using OpenAI Realtime as the LLM and Stream Edge for transport.
+
+Reuse STREAM_API_KEY/STREAM_API_SECRET from the parent .env and add OPENAI_API_KEY. By default the teacher always speaks English and teaches the selected language through English.
+
+Before writing any lifecycle code, verify the join and lifecycle method shapes against the installed SDK in this repo and confirm it starts cleanly.
+
+##### Vision Agent Connection to UI- Prompt
+
+Read AGENTS.md first and follow it strictly.
+
+Use the installed Vision Agents skill and Stream skills to connect the Audio Lesson screen to the Vision Agent so the AI teacher joins the same Stream call as the user.
+
+Add Expo API routes to start and stop the agent that proxy to the Vision Agent server, and pack the selected lesson, language, goals, vocabulary, phrases, and AI teacher prompt into the Stream call's custom data so the agent can read it on join. Update the Python agent to actually consume those fields.
+
+Make sure the agent has permission to publish audio in audio_room (admin role + goLive). Clean up the agent session both when the user ends the call and when the screen unmounts.
+
+Do not expose any secrets in the mobile app. Keep the existing Stream audio flow intact. Show the agent connection status with idle, connecting, connected, and failed states.
+
+##### AI Teacher Improvement- Prompt
+
+Read AGENTS.md first and follow it strictly.
+
+Improve the AI teacher’s spoken output so it feels warm, human, energetic, and lesson-focused instead of robotic. Update only the Vision Agent kickoff prompt and the per-lesson entries in `data/lessons.ts`.
+
+The AI teacher should act like a real-world language teacher for the currently selected language and lesson only. It should stay strictly within that lesson’s goal, vocabulary, phrases, and context, and should not teach unrelated topics or switch to other languages.
+
+The teacher should mostly speak English, introduce target-language words slowly with translations, use short natural sentences with contractions and gentle encouragement, listen to the user’s response, adapt the next explanation accordingly, and ask the student to repeat or try again. Keep replies to one or two conversational sentences.
+
+##### Live Captions- Prompt
+
+Read AGENTS.md first and follow it strictly.
+
+Use the installed skills for stream and vision agents and implement realtime live captions in the Audio Lesson screen for both the AI teacher's speech and the user's speech, as they happen.
+
+##### More PostHog- Prompt
+
+Read AGENTS.md first and follow it strictly.
+
+Add PostHog event tracking to the existing app using the PostHog instance already initialized in lib/posthog.ts. Do not reinitialize PostHog and do not change the existing PostHogProvider setup.
+
+User identification:
+
+- After Clerk authentication completes (sign-in or sign-up), call posthog.identify() with the Clerk user's id as distinctId.
+- On the first identify call after sign-up, set user properties: signup_date (current ISO date, via $set_once) and preferred_language (the language the user selected during onboarding, or null if not yet selected).
+- On every subsequent identify, update preferred_language if it has changed.
+
+Three custom events, captured at these moments:
+
+1. language_selected — fires when the user confirms their language on the language selection screen.
+   Properties: { language_code: string, language_name: string }
+2. lesson_started — fires when the lesson screen mounts and the user begins the lesson.
+   Properties: { lesson_id: string, language: string, lesson_number: number }
+3. lesson_abandoned — fires when the user exits a lesson before lesson_completed fires (back navigation, screen unmount before completion).
+   Properties: { lesson_id: string, time_into_lesson_seconds: number, last_question_index: number }
+
+Implementation rules:
+
+- Track lesson start time with a ref captured on mount so duration_seconds is accurate.
+- Do not modify any UI.
+- Do not expose any keys; PostHog is already configured via environment variables.
+
+---
